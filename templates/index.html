@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Full width container -->
+
+<div class="dark-blue-background">
+    <h1>Transform Your Teaching with AI-Powered Lesson Planning</h1>
+</div>
+    <!-- Image Section -->
+    <div class="image-container">
+        <img src="{{ url_for('static', filename='images/lesson3.jpg') }}" alt="Cover Image" class="full-width-image">
+    </div>
+</div>
+
+
+
+<div class="container-fluid">
+    
+    <!-- Top Row for Sidebar and Main Content -->
+    <div class="row">
+        <!-- Left Sidebar for Widgets -->
+        <div class="col-lg-2">
+            <!-- Widgets here -->
+            <div class="sidebar-widget">
+                <h4>Follow Us</h4>
+                <!-- Social Media Links Widget -->
+                <ul class="social-media-links list-inline">
+                    <li class="list-inline-item"><a href="YOUR_TWITTER_LINK" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a></li>
+                    <li class="list-inline-item"><a href="YOUR_FACEBOOK_LINK" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
+                    <li class="list-inline-item"><a href="YOUR_LINKEDIN_LINK" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a></li>
+                    <!-- More links as needed -->
+                </ul>
+            <hr>
+                <h4>Place Ad Here</h4>
+                <img src="" />
+            </div>
+            <div class="sidebar-widget">
+                <!-- Placeholder for Google AdSense Widget -->
+                <div class="adsense-widget">
+                    <!-- Include your Google AdSense script here -->
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <!-- AdSense ad unit code -->
+                </div>
+            </div>
+            <!-- Additional widgets as needed -->
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="col-lg-7">
+            <div class="homepage-content">
+                <p class="lead">
+                    Embrace the future of education with our innovative AI-powered Lesson Plan Writer, crafted for educators who aspire to bring creativity and precision to their classrooms.
+                </p>
+
+                <!-- Info Section with List Group -->
+                <div class="info-section mb-4">
+                    <h3 class="mb-3">Why Choose Our AI Lesson Plan Writer?</h3>
+                    <p>
+                        Choose our AI Lesson Plan Writer for seamless lesson planning with customizable templates, 
+                        standards-compliant content, engaging multimedia integration, an intuitive organization interface, 
+                        cloud-based accessibility, and dedicated 24/7 support for educators.
+                    </p>
+
+                    <!-- Testimonials Section -->
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Right Sidebar for Widgets or Ads -->
+        <div class="col-lg-3">
+            <div class="sidebar-widget">
+                <!-- This could be another Google AdSense spot or a custom widget -->
+                <div class="link">
+                    <p>
+                      Join us in the AI revolution and empower your educational journey. Sign up and elevate your lesson planning today!
+                    </p>
+                </div>
+            
+                <div class="cta-buttons">
+                    <a href="{{ url_for('main.signup') }}" class="cta-signup">Sign Up for Free | </a>
+                </div>
+                <div>
+                    <a href="{{ url_for('main.generate_lesson') }}" class="cta-generate">Start a New Lesson Plan if you already have an account</a>
+                </div>
+                
+                <img src="" />
+                <div class="adsense-widget">
+                    <!-- Google AdSense code or widget content goes here -->
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <!-- AdSense ad unit code -->
+                </div>
+            </div>
+            <!-- Additional widgets as needed -->
+        </div>
+    </div>
+
+    <!-- Bottom Widgets Area -->
+    <!-- Make sure to close the previous -->
+    <div class="dark-blue-background2">
+        <h2>Ready? <a href="{{ url_for('main.signup') }}" class="cta-signup">Get Started Here </a>
+    </div>
+
+<!-- Testimonials Section -->
+<div class="testimonials-section py-5 bg-dark-blue text-white">
+    <div class="container">
+        <div class="user_say">
+        <h2 class="text-center mb-4">What Our Users Say</h2>
+        </div>
+        <div class="row">
+            <!-- Testimonial 1 -->
+            <div class="col-md-4">
+                <div class="testimonial-item">
+                    <img src="/static/images/lee.png" alt="Samantha Lee" class="testimonial-img mb-3">
+                    <p class="testimonial-text testimonial-text-color">"I was initially hesitant about AI in the classroom, but the AI Lesson Plan Writer has completely transformed how I prepare my classes. My students are more engaged than ever, and I've found a newfound joy in teaching!"</p>
+                    <p class="testimonial-name">- Samantha Lee, 6th Grade Math Teacher</p>
+                </div>
+            </div>
+            <!-- Testimonial 2 -->
+            <div class="col-md-4">
+                <div class="testimonial-item">
+                    <img src="/static/images/carter.png" alt="James Carter" class="testimonial-img mb-3">
+                    <p class="testimonial-text testimonial-text-color">"The AI Lesson Plan Writer has slashed my planning time by more than 40%. This has allowed me to spend more quality time with my students and less time in front of the computer. It's a win-win for everyone!"</p>
+                    <p class="testimonial-name">- James Carter, High School History Teacher</p>
+                </div>
+            </div>
+            <!-- Testimonial 3 -->
+            <div class="col-md-4">
+                <div class="testimonial-item">
+                    <img src="/static/images/maria.png" alt="Maria Gonzalez" class="testimonial-img mb-3">
+                    <p class="testimonial-text testimonial-text-color">"Implementing the AI Lesson Plan Writer in schools I work with has led to a noticeable uptick in teacher satisfaction and student performance. It's an essential tool for any educational institution looking to advance into the 21st-century curriculum planning."</p>
+                    <p class="testimonial-name">- Maria Gonzalez, Educational Technology Consultant</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

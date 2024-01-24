@@ -1,0 +1,15 @@
+<!-- admin_dashboard.html -->
+{% extends "_base.html" %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <h1>Admin Dashboard</h1>
+    <div class="dashboard-links">
+        <ul>
+            <li><a href="{{ url_for('core.manage_users') }}">Manage Users</a></li>
+            <!-- Add other links as needed -->
+
+        </ul>
+    </div>
+</div>
+{% endblock %}

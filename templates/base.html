@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LessonPlanAI</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Bundle JS (includes Popper.js) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+
+
+</head>
+
+<body>
+
+    <header class="bg-primary text-white">
+        <div class="container">
+            <div class="row align-items-center py-2"> <!-- Use row to align items in a grid -->
+                <!-- Logo section -->
+                <div id="logo" class="col-md-6 d-flex align-items-center"> <!-- Adjust the size of logo's column as per requirement -->
+                    <img src="/static/images/logo.png" alt="Lesson Plan Writer Logo" class="mr-3">
+                    <h2></h2>
+                </div>
+                <!-- Navigation section, right-aligned -->
+                <div class="col-md-6">
+                    <nav class="navbar navbar-expand-lg">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse justify-content-end">
+                            <ul class="navbar-nav text-white">
+                                <!-- Navigation items go here -->
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
+
+                    {% if not current_user.is_authenticated %}
+                    <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.signup') }}">Sign Up</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a></li>
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.generate_lesson') }}">Generate Lesson</a></li>
+                    <!-- Admin-only link -->
+                    {% if current_user.is_admin %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.admin_dashboard') }}">Admin Dashboard</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a></li>
+                {% else %} 
+                {% endif %}
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+                                
+
+
+    <div class="container mt-4">
+        <!-- Google AdSense section -->
+        <div id="adsense" class="my-4">
+            <!-- You'd typically embed your Google AdSense code here -->
+        </div>
+
+        <div>
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <!-- Social Media Widgets -->
+    <div id="social-media" class="bg-light py-4">
+        <div class="container">
+            <!-- Place your social media embeds or icons here -->
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-3">
+        <div class="container text-center">
+            &copy; 2024 LessonPlanAI. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
