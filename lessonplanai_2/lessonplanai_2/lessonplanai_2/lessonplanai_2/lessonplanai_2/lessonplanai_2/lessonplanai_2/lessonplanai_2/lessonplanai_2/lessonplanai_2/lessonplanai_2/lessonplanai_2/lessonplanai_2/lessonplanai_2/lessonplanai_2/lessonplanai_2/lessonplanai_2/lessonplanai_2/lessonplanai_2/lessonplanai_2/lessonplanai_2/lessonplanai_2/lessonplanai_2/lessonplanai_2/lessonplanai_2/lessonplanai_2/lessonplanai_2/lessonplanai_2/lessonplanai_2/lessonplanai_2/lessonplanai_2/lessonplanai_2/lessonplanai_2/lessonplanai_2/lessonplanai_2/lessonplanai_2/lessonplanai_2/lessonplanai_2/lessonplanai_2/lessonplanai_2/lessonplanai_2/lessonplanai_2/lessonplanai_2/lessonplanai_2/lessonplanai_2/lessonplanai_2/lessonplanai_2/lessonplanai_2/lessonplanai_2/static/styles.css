@@ -1,0 +1,246 @@
+/* Make sure the page is at least full height */
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#social-media {
+    flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+}
+
+/* styles.css */
+
+/* Social Media Icons */
+.social-media-icons {
+    text-align: center;
+    padding-top: 1rem; /* Add some spacing at the top */
+}
+
+.social-media-icons a {
+    color: #333; /* Icon color */
+    margin: 0 10px; /* Spacing between icons */
+    font-size: 24px; /* Icon size */
+    transition: color 0.3s ease; /* Smooth color transition for hover effect */
+}
+
+.social-media-icons a:hover {
+    color: #0056b3; /* Icon color on hover */
+}
+
+/* Main content styles */
+#main-content {
+    /* Add any specific styles for your main content here */
+}
+
+/* Social media column */
+#social-media-column {
+    padding-left: 1rem; /* Add some padding to the left of the social media column */
+}
+
+@media (max-width: 768px) {
+    /* For smaller screens, stack the columns */
+    .social-media-icons {
+        padding-top: 0;
+    }
+    
+    #social-media-column {
+        padding-left: 0;
+        margin-top: 1rem; /* Add some space above the social media section on small screens */
+    }
+}
+
+/* Add this to your styles.css file */
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'><path stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/></svg>");
+}
+
+.navbar-nav .nav-link {
+    color: white !important;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus {
+    color: rgba(255, 255, 255, 0.75) !important; /* Adjust the hover/focus color as needed */
+}
+.navbar-nav {
+    margin-bottom: 0;
+    
+}
+.py-2 {
+    background-color: rgba(179, 197, 21, 0.781) !important;
+}
+
+/* Sticky Social Media Sidebar Styles */
+.social-media-sidebar {
+    position: sticky;
+    top: 100px; /* Adjust based on your header's height */
+    height: fit-content;
+}
+
+.social-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.social-links a {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    color: #fff; /* White color text */
+    background-color: #333; /* Dark background for the icons */
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.social-links a i {
+    margin-right: 0.5rem;
+}
+
+/* Hover effect */
+.social-links a:hover,
+.social-links a:focus {
+    color: #fff;
+    background-color: #007bff; /* Highlight color */
+    text-decoration: none; /* Removes underline from icons */
+}
+
+/* Responsive adjustment */
+@media (max-width: 991px) {
+    .social-media-sidebar {
+        display: none;
+    }
+}
+
+/* Testimonials */
+
+/* Custom CSS file */
+.testimonial-text-color {
+    color: #f8f9fa; /* This is a light color suitable for dark backgrounds */
+}
+
+.testimonial-img {
+    width: 100%; /* This ensures images are responsive */
+    border-radius: 0.25rem; /* Optional: Adds slight rounding to image corners */
+}
+
+/* If you're using Bootstrap, its utility classes can handle the background and text color changes */
+.bg-dark-blue {
+    background-color: #003366 !important; /* This sets a dark blue background */
+}
+
+/* body cover photo area style */
+
+/*.features-section {
+ /*   background-color: #f4f7f6; /* Soft background color */
+ /*   color: #333; /* Primary text color */
+ /*   text-align: center; /* Center-align text */
+  /*  padding: 15px 0; /* Padding for top and bottom */
+  /*  margin-right: 50px;
+
+} */
+/* .features-section h3 {
+    color: #2a5298; /* Dark blue color for heading */
+    margin-bottom: 1rem; /* Spacing after the heading */
+} */
+/* .row {
+    margin-right: 0;
+    margin-left: 0;
+} */
+/* .col-md-8 {
+    padding-right: 0;
+    padding-left: 0;
+} */
+/* .img-fluid {
+    width: 200%; /* Forces the image to expand to the full width */
+    /* height: auto; /* Maintains aspect ratio */
+   /* border-radius: 0; /* If you want no rounded corners */
+   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    /*display: block; /* Removes bottom space under the image */
+/*} */
+
+hr {
+  border: none;
+  height: 5px;
+  background-color: red; /* Set the color */
+}
+
+
+.full-width-image {
+  width: 100%; /* Make the image take the full width of its container */
+  height: auto; /* Adjust the height automatically */
+  display: block; /* Display block to remove any space below the image */
+  margin-top: 2px !important;
+}
+
+
+.dark-blue-background {
+    background-color: #00008B; /* Dark blue background */
+    color: white; /* White text */
+    text-align: center; /* Center text */
+    padding: 10px 0; /* Padding above and below the text */
+    margin-top: 0px;
+    animation: fadeIn 1.5s ease-out; /* Apply the fadeIn animation */
+  }
+  
+  .dark-blue-background h3 {
+    margin: 0; /* Remove default margin */
+    padding: 10px 0; /* Add some padding */
+    font-size: 24px; /* Adjust font size as needed */
+    font-weight: bold; /* Bold font */
+  }
+  
+  /* .dark-blue-background {
+    background-color: #001f3f; /* Dark blue color */
+    /* color: #ffffff; 
+    padding: 20px;
+    text-align: center; */
+
+/*} */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0; /* Start with 0 opacity */
+    }
+    to {
+        opacity: 1; /* End with full opacity */
+    }
+}
+
+
+
+  .dark-blue-background2 {
+    background-color: #00008B; /* Dark blue background */
+    color: white; /* White text */
+    text-align: center; /* Center text */
+    padding: 10px 0; /* Padding above and below the text */
+    margin-bottom: 5px !important;
+  }
+  
+  .dark-blue-background2 h3 {
+    margin: 0; /* Remove default margin */
+    padding: 5px 0; /* Add some padding */
+    font-size: 15px; /* Adjust font size as needed */
+    font-weight: bold; /* Bold font */
+  }
+
+
+  .image-container {
+    width: 100%; /* Full width */
+    overflow: hidden; /* Hide any overflow */
+    margin-bottom: 10px;
+  }
+  
+  .full-width-image {
+    width: 100%; /* Full width of its container */
+    height: auto; /* Keep aspect ratio */
+    display: block; /* Display block to avoid extra space below the image */
+  }
