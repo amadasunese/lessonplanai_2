@@ -257,3 +257,7 @@ margin-top: 2px !important;
   height: auto; /* Keep aspect ratio */
   display: block; /* Display block to avoid extra space below the image */
 }
+
+.testimonial-img{
+  height: 50%;
+}

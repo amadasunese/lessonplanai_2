@@ -20,3 +20,5 @@ def send_feedback(to, subject, template):
         sender=app.config["MAIL_DEFAULT_SENDER"],
     )
     mail.send(msg)
+
+

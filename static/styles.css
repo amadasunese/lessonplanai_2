@@ -19,28 +19,28 @@ footer {
 /* Social Media Icons */
 .social-media-icons {
     text-align: center;
-    padding-top: 1rem; /* Add some spacing at the top */
+    padding-top: 1rem;
 }
 
 .social-media-icons a {
-    color: #333; /* Icon color */
-    margin: 0 10px; /* Spacing between icons */
-    font-size: 24px; /* Icon size */
-    transition: color 0.3s ease; /* Smooth color transition for hover effect */
+    color: #333;
+    margin: 0 10px;
+    font-size: 24px;
+    transition: color 0.3s ease;
 }
 
 .social-media-icons a:hover {
-    color: #0056b3; /* Icon color on hover */
+    color: #0056b3;
 }
 
 /* Main content styles */
 #main-content {
-    /* Add any specific styles for your main content here */
+    
 }
 
 /* Social media column */
 #social-media-column {
-    padding-left: 1rem; /* Add some padding to the left of the social media column */
+    padding-left: 1rem; 
 }
 
 @media (max-width: 768px) {
@@ -51,7 +51,7 @@ footer {
     
     #social-media-column {
         padding-left: 0;
-        margin-top: 1rem; /* Add some space above the social media section on small screens */
+        margin-top: 1rem; 
     }
 }
 
@@ -66,7 +66,7 @@ footer {
 
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link:focus {
-    color: rgba(255, 255, 255, 0.75) !important; /* Adjust the hover/focus color as needed */
+    color: rgba(255, 255, 255, 0.75) !important;
 }
 .navbar-nav {
     margin-bottom: 0;
@@ -79,7 +79,7 @@ footer {
 /* Sticky Social Media Sidebar Styles */
 .social-media-sidebar {
     position: sticky;
-    top: 100px; /* Adjust based on your header's height */
+    top: 100px; 
     height: fit-content;
 }
 
@@ -93,8 +93,8 @@ footer {
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
-    color: #fff; /* White color text */
-    background-color: #333; /* Dark background for the icons */
+    color: #fff; 
+    background-color: #333; 
     padding: 0.5rem;
     border-radius: 0.25rem;
     width: 100%;
@@ -109,8 +109,8 @@ footer {
 .social-links a:hover,
 .social-links a:focus {
     color: #fff;
-    background-color: #007bff; /* Highlight color */
-    text-decoration: none; /* Removes underline from icons */
+    background-color: #007bff; 
+    text-decoration: none;
 }
 
 /* Responsive adjustment */
@@ -122,125 +122,106 @@ footer {
 
 /* Testimonials */
 
-/* Custom CSS file */
 .testimonial-text-color {
-    color: #f8f9fa; /* This is a light color suitable for dark backgrounds */
+    color: #f8f9fa; 
 }
 
 .testimonial-img {
-    width: 100%; /* This ensures images are responsive */
-    border-radius: 0.25rem; /* Optional: Adds slight rounding to image corners */
+    width: 100%; 
+    border-radius: 0.25rem; 
 }
 
-/* If you're using Bootstrap, its utility classes can handle the background and text color changes */
+
 .bg-dark-blue {
-    background-color: #003366 !important; /* This sets a dark blue background */
+    background-color: #003366 !important; 
 }
 
-/* body cover photo area style */
-
-/*.features-section {
- /*   background-color: #f4f7f6; /* Soft background color */
- /*   color: #333; /* Primary text color */
- /*   text-align: center; /* Center-align text */
-  /*  padding: 15px 0; /* Padding for top and bottom */
-  /*  margin-right: 50px;
-
-} */
-/* .features-section h3 {
-    color: #2a5298; /* Dark blue color for heading */
-    margin-bottom: 1rem; /* Spacing after the heading */
-} */
-/* .row {
-    margin-right: 0;
-    margin-left: 0;
-} */
-/* .col-md-8 {
-    padding-right: 0;
-    padding-left: 0;
-} */
-/* .img-fluid {
-    width: 200%; /* Forces the image to expand to the full width */
-    /* height: auto; /* Maintains aspect ratio */
-   /* border-radius: 0; /* If you want no rounded corners */
-   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    /*display: block; /* Removes bottom space under the image */
-/*} */
 
 hr {
   border: none;
   height: 5px;
-  background-color: red; /* Set the color */
+  background-color: red; 
 }
 
 
 .full-width-image {
-  width: 100%; /* Make the image take the full width of its container */
-  height: auto; /* Adjust the height automatically */
-  display: block; /* Display block to remove any space below the image */
+  width: 100%; 
+  height: auto; 
+  display: block; 
   margin-top: 2px !important;
 }
 
 
 .dark-blue-background {
-    background-color: #00008B; /* Dark blue background */
-    color: white; /* White text */
-    text-align: center; /* Center text */
-    padding: 10px 0; /* Padding above and below the text */
+    background-color: #00008B; 
+    color: white; 
+    text-align: center; 
+    padding: 10px 0; 
     margin-top: 0px;
-    animation: fadeIn 1.5s ease-out; /* Apply the fadeIn animation */
+    animation: fadeIn 1.5s ease-out;
   }
   
   .dark-blue-background h3 {
-    margin: 0; /* Remove default margin */
-    padding: 10px 0; /* Add some padding */
-    font-size: 24px; /* Adjust font size as needed */
-    font-weight: bold; /* Bold font */
-  }
+    margin: 0; 
+    padding: 10px 0;
+    font-size: 24px; 
+    font-weight: bold;
   
-  /* .dark-blue-background {
-    background-color: #001f3f; /* Dark blue color */
-    /* color: #ffffff; 
-    padding: 20px;
-    text-align: center; */
-
-/*} */
 
 @keyframes fadeIn {
     from {
-        opacity: 0; /* Start with 0 opacity */
+        opacity: 0; 
     }
     to {
-        opacity: 1; /* End with full opacity */
+        opacity: 1; 
     }
 }
 
 
-
   .dark-blue-background2 {
-    background-color: #00008B; /* Dark blue background */
-    color: white; /* White text */
-    text-align: center; /* Center text */
-    padding: 10px 0; /* Padding above and below the text */
+    background-color: #00008B; 
+    color: white; 
+    text-align: center; 
+    padding: 10px 0; 
     margin-bottom: 5px !important;
   }
   
   .dark-blue-background2 h3 {
-    margin: 0; /* Remove default margin */
-    padding: 5px 0; /* Add some padding */
-    font-size: 15px; /* Adjust font size as needed */
-    font-weight: bold; /* Bold font */
+    margin: 0; 
+    padding: 5px 0; 
+    font-size: 15px;
+    font-weight: bold; 
   }
 
 
   .image-container {
-    width: 100%; /* Full width */
-    overflow: hidden; /* Hide any overflow */
+    width: 100%; 
+    overflow: hidden; 
     margin-bottom: 10px;
   }
   
   .full-width-image {
-    width: 100%; /* Full width of its container */
-    height: auto; /* Keep aspect ratio */
-    display: block; /* Display block to avoid extra space below the image */
+    width: 100%;
+    height: auto;
+    display: block;
   }
+
+  .bcol-lg-3 {
+    background-color: #0056b3 !important;
+  }
+
+
+  /* testimonials */
+
+  /* Add this to your styles.css or within your HTML file */
+.testimonial-item {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.testimonial-item.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+}

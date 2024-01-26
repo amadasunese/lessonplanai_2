@@ -14,6 +14,7 @@ from flask_mail import Message, Mail
 from src import app
 import smtplib
 from werkzeug.security import generate_password_hash
+from itsdangerous import URLSafeTimedSerializer
 
 accounts_bp = Blueprint("accounts", __name__)
 
@@ -22,9 +23,9 @@ client = OpenAI()
 # Configure your email settings
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'amadasunese@gmail.com'
-EMAIL_HOST_PASSWORD = 'qxxo axga dzia jjsw'
-RECIPIENT_ADDRESS = 'amadasunese@gmail.com'
+EMAIL_HOST_USER = 'lessonplanai@gmail.com'
+EMAIL_HOST_PASSWORD = 'kyvy fwml epob tcta'
+RECIPIENT_ADDRESS = 'lessonplanai@gmail.com'
 mail = Mail(app)
 
 
@@ -203,17 +204,17 @@ def contact():
 
 
 # from here
-
+s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 def send_password_reset_email(user):
     """Password reset email
     """
     token = s.dumps(user.email, salt='password-reset-salt')
-    msg = Message('Reset Your Password', sender='amadasunese@gmail.com',
+    msg = Message('Reset Your Password', sender='lessonplanai@gmail.com',
                   recipients=[user.email])
     msg.body = (
         f"To reset your password, visit the following link: "
-        f"{url_for('main.reset_password', token=token, _external=True)}"
+        f"{url_for('accounts.reset_password', token=token, _external=True)}"
     )
     mail.send(msg)
 
@@ -228,8 +229,8 @@ def reset_password_request():
         if user:
             send_password_reset_email(user)
         flash('Password reset email sent if your email is in our system.')
-        return redirect(url_for('main.login'))
-    return render_template('reset_password_request.html',
+        return redirect(url_for('accounts.login'))
+    return render_template('accounts/reset_password_request.html',
                            title='Reset Password', form=form)
 
 
@@ -239,19 +240,22 @@ def reset_password(token):
         email = s.loads(token, salt='password-reset-salt', max_age=3600)
     except Exception:
         flash('The password reset link is invalid or has expired.')
-        return redirect(url_for('reset_password_request'))
+        return redirect(url_for('accounts.reset_password_request'))
 
     user = User.query.filter_by(email=email).first()
     if user is None:
         flash('Invalid user.')
-        return redirect(url_for('reset_password_request'))
+        return redirect(url_for('accounts.reset_password_request'))
 
     form = ResetPasswordForm()
     if form.validate_on_submit():
         # Update user's password
-        user.password_hash = generate_password_hash(form.password.data)
+        user.password_hash = bcrypt.generate_password_hash(form.password.data)
         db.session.commit()
         flash('Your password has been reset.')
-        return redirect(url_for('main.login'))
-    return render_template('reset_password.html',
+        return redirect(url_for('accounts.login'))
+    return render_template('accounts/reset_password.html',
                            title='Reset Password', form=form, token=token)
+
+
+
