@@ -4,7 +4,7 @@
 <div class="container mt-5 rounded-lg" style="background: linear-gradient(to right, #f5f5f5, #e0e0e0);">
   <div class="row justify-content-center">
     <div class="col-lg-6 text-center">
-      <h1 class="display-4 mb-4" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);">Welcome, {{ name }}!</h1>
+      <h2 class="display-4 mb-4" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);">Welcome, {{ current_user.first_name }}!</h2>
       <div class="btn-group">
         <a href="{{ url_for('core.generate_lesson') }}" class="btn btn-primary btn-lg rounded-pill" style="box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease-in-out;">Generate Lesson Plan</a>
         <a href="{{ url_for('core.subscribe') }}" class="btn btn-outline-primary btn-lg rounded-pill" style="box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease-in-out;">Subscribe to a Plan</a>
@@ -20,6 +20,11 @@
         <p><strong>Start Date:</strong> {{ current_user.subscription.start_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
         <p><strong>End Date:</strong> {{ current_user.subscription.end_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
         <p><strong>Remaining Usages:</strong> {{ current_user.subscription.remaining_usages }}</p>
+        {% if current_user.subscription.paid %}
+            <p class="text-success"><strong>Status:</strong> Subscription Successful</p>
+        {% else %}
+            <p class="text-warning"><strong>Status:</strong> Awaiting Payment</p>
+        {% endif %}
       {% else %}
       <p class="text-center text-muted">No active subscription.</p>
     {% endif %}

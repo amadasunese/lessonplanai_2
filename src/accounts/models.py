@@ -45,14 +45,18 @@ class Subscription(db.Model):
     start_date = db.Column(db.DateTime, default=datetime.utcnow)
     end_date = db.Column(db.DateTime)
     remaining_usages = db.Column(db.Integer)
+    paid = db.Column(db.Boolean, default=False)  # Added paid attribute
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     paystack_subscription_id = db.Column(db.String(50), nullable=False)
 
-    def __init__(self, plan, amount, end_date, remaining_usages, user_id):
+    def __init__(self, plan, amount, start_date, end_date, remaining_usages, paid, paystack_subscription_id, user_id):
         self.plan = plan
         self.amount = amount
+        self.start_date = start_date
         self.end_date = end_date
         self.remaining_usages = remaining_usages
+        self.paid = paid  # Set the paid attribute
+        self.paystack_subscription_id = paystack_subscription_id
         self.user_id = user_id
 
     def __repr__(self):

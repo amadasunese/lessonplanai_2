@@ -14,6 +14,9 @@ from src import bcrypt
 from dotenv import load_dotenv
 import os
 
+from paystackapi.transaction import Transaction
+
+
 
 core_bp = Blueprint("core", __name__)
 
@@ -92,59 +95,59 @@ plans = {
 @core_bp.route('/subscribe', methods=['GET', 'POST'])
 @login_required
 def subscribe():
-    user_info = {
-        'email': current_user.email,
-        'first_name': current_user.first_name,
-        'last_name': current_user.last_name,
-    }
+    # user_info = {
+    #     'email': current_user.email,
+    #     'first_name': current_user.first_name,
+    #     'last_name': current_user.last_name,
+    # }
 
-    if request.method == 'POST':
-        selected_plan = request.form.get('selectedPlan')
-        if selected_plan not in plans:
-            flash('Invalid subscription plan selected.', 'danger')
-            return redirect(url_for('accounts.subscribe'))
+    # if request.method == 'POST':
+    #     selected_plan = request.form.get('selectedPlan')
+    #     if selected_plan not in plans:
+    #         flash('Invalid subscription plan selected.', 'danger')
+    #         return redirect(url_for('accounts.subscribe'))
 
-        try:
-            """
-            Create Paystack subscription
-            """
-            subscription_response = paystack.subscription.create(
-                customer=current_user.email,
-                plan=plans[selected_plan],
-                authorization=paystack
-            )
+    #     try:
+    #         """
+    #         Create Paystack subscription
+    #         """
+    #         subscription_response = paystack.subscription.create(
+    #             customer=current_user.email,
+    #             plan=plans[selected_plan],
+    #             authorization=paystack
+    #         )
 
-            if subscription_response['status']:
-                """
-                Create Subscription model instance
-                """
-                subscription = Subscription(
-                    plan=selected_plan,
-                    amount=plans[selected_plan]['cost'],
-                    start_date=datetime.utcnow(),
-                    end_date=datetime.utcnow() + timedelta(days=plans[selected_plan]['duration']),
-                    remaining_usages=plans[selected_plan]['usage_limit'],
-                    user_id=current_user.id,
-                    paystack_subscription_id=subscription_response['data']['id'],
-                )
+    #         if subscription_response['status']:
+    #             """
+    #             Create Subscription model instance
+    #             """
+    #             subscription = Subscription(
+    #                 plan=selected_plan,
+    #                 amount=plans[selected_plan]['cost'],
+    #                 start_date=datetime.utcnow(),
+    #                 end_date=datetime.utcnow() + timedelta(days=plans[selected_plan]['duration']),
+    #                 remaining_usages=plans[selected_plan]['usage_limit'],
+    #                 user_id=current_user.id,
+    #                 paystack_subscription_id=subscription_response['data']['id'],
+    #             )
 
-                db.session.add(subscription)
-                db.session.commit()
+    #             db.session.add(subscription)
+    #             db.session.commit()
 
-                flash('Subscription successful!', 'success')
-                return redirect(url_for('accounts.dashboard'))
-            else:
-                flash('Paystack subscription creation failed.', 'danger')
+    #             flash('Subscription successful!', 'success')
+    #             return redirect(url_for('accounts.dashboard'))
+    #         else:
+    #             flash('Paystack subscription creation failed.', 'danger')
 
-        except Exception as e:
-            flash(f'Subscription creation failed: {str(e)}', 'danger')
-            db.session.rollback() 
+    #     except Exception as e:
+    #         flash(f'Subscription creation failed: {str(e)}', 'danger')
+    #         db.session.rollback() 
 
-        return redirect(url_for('accounts.subscribe'))
+    #     return redirect(url_for('accounts.subscribe'))
 
-    plans_list = [(plan_id, plans[plan_id]) for plan_id in plans]
+    # plans_list = [(plan_id, plans[plan_id]) for plan_id in plans]
 
-    return render_template('accounts/subscribe.html', user=current_user, plans=plans_list, user_info=user_info)
+    return render_template('accounts/subscribe.html') # , user=current_user, plans=plans_list, user_info=user_info
 
 
 # Admin user configuration
@@ -168,3 +171,146 @@ def delete_user(user_id):
     else:
         flash('User not found', 'error')
     return redirect(url_for('core/admin_dashboard'))  
+
+# Payment processing routes
+
+@core_bp.route('/subscribe_starter', methods=['GET', 'POST'])
+@login_required
+def subscribe_starter():
+    plan = 'Starter'
+    amount = '20000'
+    first_name = current_user.first_name
+    last_name = current_user.last_name
+    email = current_user.email
+
+    response = Transaction.initialize(amount=amount, email=email)
+
+    ref = response['data']['reference']
+    print(f"{first_name} {last_name}")
+    # create_pay_instance = Subscription(current_user_name=first_name, customers_email=email,
+    #                                                plan='Starter', reference=ref, amount='2000')
+    
+    create_subscription_instance = Subscription(
+        plan='Starter',
+        amount=2000,
+        start_date=datetime.utcnow(),
+        end_date=datetime.utcnow() + timedelta(days=plans['starter']['duration']),
+        remaining_usages=plans['starter']['usage_limit'],
+        paid=True,  # Set paid to True for a successful payment
+        user_id=current_user.id,
+        paystack_subscription_id=response['data']['reference']
+    )
+    db.session.add(create_subscription_instance)
+    db.session.commit()
+
+    # flash('Subscription successful!', 'success')
+    # return render_template('core/admin_dashboard.html')
+
+    a_url = response['data']['authorization_url']
+    return redirect(a_url)
+
+@core_bp.route('/subscribe_basic', methods=['GET', 'POST'])
+@login_required
+def subscribe_basic():
+    amount = '5000'
+    first_name = current_user.first_name
+    last_name = current_user.last_name
+    email = current_user.email
+
+    response = Transaction.initialize(amount=amount, email=email)
+
+    ref = response['data']['reference']
+    print(f"{first_name} {last_name}")
+    # create_pay_instance = Subscription(current_user_name=first_name, customers_email=email,
+    #                                                plan='Starter', reference=ref, amount='2000')
+    
+    create_subscription_instance = Subscription(
+        plan='Starter',
+        amount=5000,
+        start_date=datetime.utcnow(),
+        end_date=datetime.utcnow() + timedelta(days=plans['basic']['duration']),
+        remaining_usages=plans['basic']['usage_limit'],
+        paid=True,  # Set paid to True for a successful payment
+        user_id=current_user.id,
+        paystack_subscription_id=response['data']['reference']
+    )
+    db.session.add(create_subscription_instance)
+    db.session.commit()
+
+    # flash('Subscription successful!', 'success')
+    # return render_template('core/admin_dashboard.html')
+
+    a_url = response['data']['authorization_url']
+    return redirect(a_url)
+
+@core_bp.route('/subscribe_premium', methods=['GET', 'POST'])
+@login_required
+def subscribe_premium():
+    amount = '10000'
+    first_name = current_user.first_name
+    last_name = current_user.last_name
+    email = current_user.email
+
+    response = Transaction.initialize(amount=amount, email=email)
+
+    ref = response['data']['reference']
+    print(f"{first_name} {last_name}")
+    # create_pay_instance = Subscription(current_user_name=first_name, customers_email=email,
+    #                                                plan='Starter', reference=ref, amount='2000')
+    
+    create_subscription_instance = Subscription(
+        plan='Starter',
+        amount=10000,
+        start_date=datetime.utcnow(),
+        end_date=datetime.utcnow() + timedelta(days=plans['premium']['duration']),
+        remaining_usages=plans['premium']['usage_limit'],
+        paid=True,  # Set paid to True for a successful payment
+        user_id=current_user.id,
+        paystack_subscription_id=response['data']['reference']
+    )
+    db.session.add(create_subscription_instance)
+    db.session.commit()
+
+    # flash('Subscription successful!', 'success')
+    # return render_template('core/admin_dashboard.html')
+
+    a_url = response['data']['authorization_url']
+    return redirect(a_url)
+
+
+
+@core_bp.route('/verify_payment', methods=['GET', 'POST'])
+@login_required
+def verify_payment():
+    paramz = request.args.get('trxref', 'None')  # Use request.args to get query parameters
+    first_name = current_user.first_name
+    last_name = current_user.last_name
+    email = current_user.email
+    print(paramz)
+    
+    # Assuming you have a method to verify the payment in your Transaction class
+    details = Transaction.verify(reference=paramz)
+    status = details['data']['status']
+    
+    if status == 'success':
+        pay_instance = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
+        if pay_instance:
+            if pay_instance.plan == 'Starter':
+                expiry_date = pay_instance.start_date + timedelta(days=1)
+            elif pay_instance.plan == 'Basic':
+                expiry_date = pay_instance.start_date + timedelta(days=7)
+            elif pay_instance.plan == 'Premium':
+                expiry_date = pay_instance.start_date + timedelta(days=30)
+
+            pay_instance.update(paid=True, end_date=expiry_date)
+
+            # Update the user subscription details
+            current_user.update(subscribed=True, expiry_date=expiry_date)
+            print('Payment successful!')
+        else:
+            print('Subscription not found for the given transaction reference.')
+
+    else:
+        print('Payment not successful')
+
+    return redirect('core.dashboard')
