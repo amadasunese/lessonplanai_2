@@ -1,0 +1,35 @@
+<!-- manage_users.html -->
+
+{% extends '_base.html' %} <!-- This extends from your base template -->
+
+{% block content %}
+
+<h2>Manage Users</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Profession</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for current_user in users %}
+      <tr>
+        <td>{{ current_user.name }}</td>
+        <td>{{ current_user.email }}</td>
+        <td>{{ current_user.profession }}</td>
+        <td>
+          <form action="{{ url_for('main.remove_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to remove this user?');">
+            {{ csrf_token() }} <!-- Generates CSRF token input field -->
+            <button type="submit" class="btn btn-danger">Remove</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

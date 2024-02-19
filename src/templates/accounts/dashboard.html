@@ -1,8 +1,39 @@
 {% extends '_base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Welcome, {{ name }}</h2>
-    <a href="{{ url_for('core.generate_lesson') }}" class="btn btn-primary">Generate a Lesson Plan</a>
+<div class="container mt-5 rounded-lg" style="background: linear-gradient(to right, #f5f5f5, #e0e0e0);">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 text-center">
+      <h1 class="display-4 mb-4" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);">Welcome, {{ name }}!</h1>
+      <div class="btn-group">
+        <a href="{{ url_for('core.generate_lesson') }}" class="btn btn-primary btn-lg rounded-pill" style="box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease-in-out;">Generate Lesson Plan</a>
+        <a href="{{ url_for('core.subscribe') }}" class="btn btn-outline-primary btn-lg rounded-pill" style="box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease-in-out;">Subscribe to a Plan</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mt-5 p-4 rounded-lg shadow-sm">
+    <h3 class="text-center mb-4">Subscription Information</h3>
+    {% if current_user.subscription %}
+        <p><strong>Plan:</strong> {{ current_user.subscription.plan }}</p>
+        <p><strong>Amount:</strong> {{ current_user.subscription.amount }}</p>
+        <p><strong>Start Date:</strong> {{ current_user.subscription.start_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        <p><strong>End Date:</strong> {{ current_user.subscription.end_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        <p><strong>Remaining Usages:</strong> {{ current_user.subscription.remaining_usages }}</p>
+      {% else %}
+      <p class="text-center text-muted">No active subscription.</p>
+    {% endif %}
+    {% with message = get_flashed_messages(with_categories=true) %}
+      {% if message %}
+        <div class="alert alert-{{ message[0][1] }} alert-dismissible fade show mt-3" role="alert">
+          {{ message[0][0] }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endif %}
+    {% endwith %}
+  </div>
 </div>
+
 {% endblock %}

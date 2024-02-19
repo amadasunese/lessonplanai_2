@@ -11,8 +11,14 @@ class LoginForm(FlaskForm):
 
 
 class RegisterForm(FlaskForm):
-    email = EmailField(
-        "Email", validators=[DataRequired(), Email(message=None), Length(min=6, max=40)]
+    email = StringField(
+        "Email", validators=[DataRequired(), Email(), Length(min=6, max=40)]
+    )
+    first_name = StringField(
+        "First Name", validators=[DataRequired(), Length(min=2, max=25)]
+    )
+    last_name = StringField(
+        "Last Name", validators=[DataRequired(), Length(min=2, max=25)]
     )
     password = PasswordField(
         "Password", validators=[DataRequired(), Length(min=6, max=25)]
@@ -42,7 +48,6 @@ class LessonPlanForm(FlaskForm):
     prompt = TextAreaField('Enter a topic or description', validators=[DataRequired()])
     submit = SubmitField('Generate Lesson Plan')
 
-# Define the ContactForm class here
 class ContactForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])

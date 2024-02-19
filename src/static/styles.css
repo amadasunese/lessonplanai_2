@@ -47,9 +47,9 @@ footer {
 }
 
 /* Main content styles */
-#main-content {
+/* #main-content {
   /* Add any specific styles for your main content here */
-}
+/* } */ */
 
 /* Social media column */
 #social-media-column {
@@ -162,8 +162,8 @@ footer {
 } */
 /* .features-section h3 {
   color: #2a5298; /* Dark blue color for heading */
-  margin-bottom: 1rem; /* Spacing after the heading */
-} */
+  /* margin-bottom: 1rem; /* Spacing after the heading */
+/* } */ */ */
 /* .row {
   margin-right: 0;
   margin-left: 0;
@@ -260,4 +260,11 @@ margin-top: 2px !important;
 
 .testimonial-img{
   height: 50%;
+}
+
+
+/* subscribe email field */
+
+.wider-input {
+  width: 300px; /* Adjust the width to your preference */
 }

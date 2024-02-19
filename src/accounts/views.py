@@ -37,7 +37,12 @@ def register():
         return redirect(url_for("core.home"))
     form = RegisterForm(request.form)
     if form.validate_on_submit():
-        user = User(email=form.email.data, password=form.password.data)
+        user = User(
+            email=form.email.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            password=form.password.data
+        )
         db.session.add(user)
         db.session.commit()
         token = generate_token(user.email)
@@ -60,13 +65,13 @@ def register():
 def login():
     if current_user.is_authenticated:
         flash("You are already logged in.", "info")
-        return redirect(url_for("core.home"))
+        return redirect(url_for("core.index"))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, request.form["password"]):
             login_user(user)
-            return redirect(url_for('core.dashboard'))
+            return redirect(url_for('core.home'))
         
         # Check if user is admin
         if user.is_admin:
@@ -82,10 +87,7 @@ def login():
     else:
         flash('Login Unsuccessful. Please check email and password', 'danger')
 
-    return render_template('accounts/login.html', form=form)
-
-
-
+    return render_template('core/landing_page.html', form=form)
 
 
 @accounts_bp.route("/confirm/<token>")
@@ -137,47 +139,22 @@ def logout():
     return redirect(url_for("accounts.login"))
 
 
-# @accounts_bp.route('/generate_lesson', methods=['GET', 'POST'])
-# @login_required
-# def generate_lesson():
-#     form = LessonPlanForm()
-#     lesson_content = None
-#     if form.validate_on_submit():
-#         response = client.chat.completions.create(
-#             model="gpt-3.5-turbo",
-#             messages=[{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": form.prompt.data}],
-#             temperature=0,
-#             max_tokens=2048
-#         )
-#         text_content = response.choices[0].message.content
-        
-#         # Convert line breaks to HTML paragraphs
-#         lesson_content = Markup('<p>' + '</p><p>'.join(text_content.split('\n\n')) + '</p>')
-        
-#     return render_template('accounts/generate_lesson.html', form=form, lesson_content=lesson_content)
-
-
-# @accounts_bp.route('/admin/users')
-# @login_required
-# def manage_users():
-#     if not current_user.is_admin:
-#         flash('Access denied: You must be an admin to view this page.', 'danger')
-#         return redirect(url_for('main.index'))
-#     users = User.query.all()
-#     return render_template('manage_users.html', users=users)
-
-
 @accounts_bp.route('/contact', methods=['GET', 'POST'])
+@login_required
 def contact():
     form = ContactForm()
 
     if form.validate_on_submit():
-        # Handle the form submission, e.g., send an email
+        """
+        Handle the form submission, e.g., send an email
+        """
         name = form.name.data
         email = form.email.data
         message = form.message.data
-
-        # Process the data as needed
+        
+        """
+        Process the data as needed
+        """
         email_message = f"Subject: Feedback from {name}\n\nFrom: {email}\n\nMessage: {message}"
 
         # Sending the email
@@ -194,13 +171,6 @@ def contact():
             return redirect(url_for('core.home'))
 
     return render_template('accounts/contact.html', form=form)
-
-
-
-# @accounts_bp.route('/dashboard')
-# @login_required
-# def dashboard():
-#     return render_template('accounts/dashboard.html', name=current_user.email)
 
 
 # from here
@@ -256,6 +226,3 @@ def reset_password(token):
         return redirect(url_for('accounts.login'))
     return render_template('accounts/reset_password.html',
                            title='Reset Password', form=form, token=token)
-
-
-

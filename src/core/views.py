@@ -1,19 +1,32 @@
-from flask import Blueprint, render_template, redirect, flash, url_for
+from flask import Blueprint, render_template, redirect, flash, url_for, request, session
 from flask_login import login_required
-from src.utils.decorators import check_is_confirmed
+from src.utils.decorators import check_is_confirmed, check_is_subscribed
 from src.accounts.forms import LoginForm, RegisterForm, LessonPlanForm, ContactForm
 from flask_login import login_required, login_user, logout_user, current_user
 from openai import OpenAI
 from markupsafe import Markup
-from models import db, User
+from src.accounts.models import db, User, Subscription
+from datetime import datetime, timedelta
+from paystackapi.paystack import Paystack
+from flask_wtf import CSRFProtect
+from src.utils.decorators import logout_required
+from src import bcrypt
+from dotenv import load_dotenv
+import os
+
 
 core_bp = Blueprint("core", __name__)
+
+load_dotenv()
+PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY')
+# PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY')
+paystack = Paystack(secret_key=PAYSTACK_SECRET_KEY)
 
 client = OpenAI()
 
 @core_bp.route("/")
-# @login_required
-# @check_is_confirmed
+@login_required
+@check_is_confirmed
 def home():
     return render_template("core/index.html")
 
@@ -21,6 +34,7 @@ def home():
 @core_bp.route('/generate_lesson', methods=['GET', 'POST'])
 @login_required
 @check_is_confirmed
+@check_is_subscribed
 def generate_lesson():
     form = LessonPlanForm()
     lesson_content = None
@@ -32,14 +46,15 @@ def generate_lesson():
             max_tokens=2048
         )
         text_content = response.choices[0].message.content
-        
-        # Convert line breaks to HTML paragraphs
+        """
+        Convert line breaks to HTML paragraphs
+        """
         lesson_content = Markup('<p>' + '</p><p>'.join(text_content.split('\n\n')) + '</p>')
         
     return render_template('core/generate_lesson.html', form=form, lesson_content=lesson_content)
 
 
-@core_bp.route('/admin/users')
+@core_bp.route('/admin_users')
 @login_required
 def manage_users():
     if not current_user.is_admin:
@@ -52,22 +67,98 @@ def manage_users():
 @core_bp.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('accounts/dashboard.html', name=current_user.email)
+    """
+    Get the user's subscription information
+    """
+    current_user.subscription = None
+    if current_user.subscription:
+        current_user.subscription = {
+            'plan': current_user.subscription.plan,
+            'amount': current_user.subscription.amount,
+            'start_date': current_user.subscription.start_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'end_date': current_user.subscription.end_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'remaining_usages': current_user.subscription.remaining_usages,
+            'paystack_subscription_id': current_user.subscription.paystack_subscription_id
+        }
+    return render_template('accounts/dashboard.html', user=current_user)
+
+# Subscription model configuration
+plans = {
+    'starter': {'name': 'Starter Plan', 'cost': 2000, 'duration': 1, 'usage_limit': 2},
+    'basic': {'name': 'Basic Plan', 'cost': 5000, 'duration': 7, 'usage_limit': 4},
+    'premium': {'name': 'Premium Plan', 'cost': 10000, 'duration': 30, 'usage_limit': None}
+}
+
+@core_bp.route('/subscribe', methods=['GET', 'POST'])
+@login_required
+def subscribe():
+    user_info = {
+        'email': current_user.email,
+        'first_name': current_user.first_name,
+        'last_name': current_user.last_name,
+    }
+
+    if request.method == 'POST':
+        selected_plan = request.form.get('selectedPlan')
+        if selected_plan not in plans:
+            flash('Invalid subscription plan selected.', 'danger')
+            return redirect(url_for('accounts.subscribe'))
+
+        try:
+            """
+            Create Paystack subscription
+            """
+            subscription_response = paystack.subscription.create(
+                customer=current_user.email,
+                plan=plans[selected_plan],
+                authorization=paystack
+            )
+
+            if subscription_response['status']:
+                """
+                Create Subscription model instance
+                """
+                subscription = Subscription(
+                    plan=selected_plan,
+                    amount=plans[selected_plan]['cost'],
+                    start_date=datetime.utcnow(),
+                    end_date=datetime.utcnow() + timedelta(days=plans[selected_plan]['duration']),
+                    remaining_usages=plans[selected_plan]['usage_limit'],
+                    user_id=current_user.id,
+                    paystack_subscription_id=subscription_response['data']['id'],
+                )
+
+                db.session.add(subscription)
+                db.session.commit()
+
+                flash('Subscription successful!', 'success')
+                return redirect(url_for('accounts.dashboard'))
+            else:
+                flash('Paystack subscription creation failed.', 'danger')
+
+        except Exception as e:
+            flash(f'Subscription creation failed: {str(e)}', 'danger')
+            db.session.rollback() 
+
+        return redirect(url_for('accounts.subscribe'))
+
+    plans_list = [(plan_id, plans[plan_id]) for plan_id in plans]
+
+    return render_template('accounts/subscribe.html', user=current_user, plans=plans_list, user_info=user_info)
 
 
-
+# Admin user configuration
 @core_bp.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
     if not current_user.is_admin:
         flash('Access denied: You must be an admin to view this page.', 'danger')
         return redirect(url_for('core/index'))
-    # You could pass in more data here if needed
     return render_template('core/admin_dashboard.html')
 
 
 @core_bp.route('/delete_user/<int:user_id>')
-# @login_required  
+@login_required  
 def delete_user(user_id):
     user_to_delete = User.query.get(user_id)
     if user_to_delete:
@@ -77,71 +168,3 @@ def delete_user(user_id):
     else:
         flash('User not found', 'error')
     return redirect(url_for('core/admin_dashboard'))  
-
-
-
-
-
-
-
-# @core_bp.route('/admin/remove_user/<int:user_id>', methods=['POST'])
-# @login_required
-# def remove_user(user_id):
-#     if not current_user.is_admin:
-#         flash('Access denied: You must be an admin to perform this action.', 'danger')
-#         return redirect(url_for('main.index'))
-    
-#     user_to_remove = User.query.get_or_404(user_id)
-#     db.session.delete(user_to_remove)
-#     db.session.commit()
-#     flash('User removed successfully.', 'success')
-#     return redirect(url_for('main.manage_users'))
-
-
-
-
-
-
-
-
-
-
-# @core_bp.route('/admin/manage_services')
-# @login_required
-# def manage_services():
-#     if not current_user.is_admin:
-#         flash('Access denied: You must be an admin to view this page.', 'danger')
-#         return redirect(url_for('core/index'))
-#     # Query your services from the database
-#     services = Service.query.all() # Assuming you have a Service model
-#     return render_template('core/manage_services.html', services=services)
-
-# # Add service route example
-# @core_bp.route('/admin/add_service', methods=['GET', 'POST'])
-# @login_required
-# def add_service():
-#     if not current_user.is_admin:
-#         flash('Access denied: You must be an admin to view this page.', 'danger')
-#         return redirect(url_for('core/admin_dashboard'))
-#     # Handle GET to show a form and POST to save the new service
-    # ...
-
-# # Edit service route example
-# @core_bp.route('/admin/edit_service/<int:service_id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_service(service_id):
-#     if not current_user.is_admin:
-#         flash('Access denied: You must be an admin to view this page.', 'danger')
-#         return redirect(url_for('core/admin_dashboard'))
-#     # Handle GET to show the service data and POST to update the service
-#     # ...
-
-# # Delete service route example
-# @core_bp.route('/admin/delete_service/<int:service_id>', methods=['POST'])
-# @login_required
-# def delete_service(service_id):
-#     if not current_user.is_admin:
-#         flash('Access denied: You must be an admin to perform this action.', 'danger')
-#         return redirect(url_for('core/admin_dashboard'))
-#     # Handle POST to delete the service
-    # ...

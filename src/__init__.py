@@ -5,6 +5,7 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
+from paystackapi.paystack import Paystack
 
 
 
@@ -20,6 +21,14 @@ migrate = Migrate(app, db)
 
 # initialize the flask mail
 mail = Mail(app)
+
+
+# paystack = Paystack(secret_key=paystack_secret_key)
+
+# from paystackapi.paystack import Paystack
+# paystack_secret_key = "5om3secretK3y"
+
+
 
 # Registering blueprints
 from src.accounts.views import accounts_bp

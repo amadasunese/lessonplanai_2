@@ -12,14 +12,14 @@
         <th style="border: 1px solid black;">Confirmed On</th>
         <th style="border: 1px solid black;">Actions</th>
     </tr>
-    {% for user in users %}
+    {% for current_user in users %}
     <tr>
-        <td style="border: 1px solid black;">{{ user.email }}</td>
-        <td style="border: 1px solid black;">{{ 'Yes' if user.is_admin else 'No' }}</td>
-        <td style="border: 1px solid black;">{{ 'Yes' if user.is_confirmed else 'No' }}</td>
-        <td style="border: 1px solid black;">{{ user.confirmed_on.strftime('%Y-%m-%d %H:%M:%S') if user.confirmed_on else 'Not Confirmed' }}</td>
+        <td style="border: 1px solid black;">{{ current_user.email }}</td>
+        <td style="border: 1px solid black;">{{ 'Yes' if current_user.is_admin else 'No' }}</td>
+        <td style="border: 1px solid black;">{{ 'Yes' if current_user.is_confirmed else 'No' }}</td>
+        <td style="border: 1px solid black;">{{ current_user.confirmed_on.strftime('%Y-%m-%d %H:%M:%S') if user.confirmed_on else 'Not Confirmed' }}</td>
         <td style="border: 1px solid black;">
-            <a href="{{ url_for('main.delete_user', user_id=user.id) }}">Remove</a>
+            <a href="{{ url_for('delete_user', user_id=user.id) }}">Remove</a>
         </td>
     </tr>
     {% endfor %}
