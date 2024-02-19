@@ -73,17 +73,20 @@ def dashboard():
     """
     Get the user's subscription information
     """
-    current_user.subscription = None
-    if current_user.subscription:
-        current_user.subscription = {
-            'plan': current_user.subscription.plan,
-            'amount': current_user.subscription.amount,
-            'start_date': current_user.subscription.start_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'end_date': current_user.subscription.end_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'remaining_usages': current_user.subscription.remaining_usages,
-            'paystack_subscription_id': current_user.subscription.paystack_subscription_id
-        }
-    return render_template('accounts/dashboard.html', user=current_user)
+    # current_user.subscription = None
+    # if current_user.subscription:
+    #     current_user.subscription = {
+    #         'plan': current_user.subscription.plan,
+    #         'amount': current_user.subscription.amount,
+    #         'start_date': current_user.subscription.start_date.strftime('%Y-%m-%d %H:%M:%S'),
+    #         'end_date': current_user.subscription.end_date.strftime('%Y-%m-%d %H:%M:%S'),
+    #         'remaining_usages': current_user.subscription.remaining_usages,
+    #         'paystack_subscription_id': current_user.subscription.paystack_subscription_id
+    #     }
+
+    subscription = Subscription.query.filter_by(user_id=current_user.id).first()
+    return render_template('accounts/dashboard.html', subscription=subscription)
+    # return render_template('accounts/dashboard.html', user=current_user)
 
 # Subscription model configuration
 plans = {

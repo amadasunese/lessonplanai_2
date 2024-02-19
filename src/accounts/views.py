@@ -77,7 +77,7 @@ def login():
         if user.is_admin:
                 session['is_admin'] = True
                 flash('Admin login successful', 'success')
-                return redirect(url_for('accounts/admin_dashboard'))
+                return redirect(url_for('core/admin_dashboard'))
         else:
             session['is_admin'] = False
             flash('Login successful', 'success')
