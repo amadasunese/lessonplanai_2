@@ -5,6 +5,7 @@
   <div class="row justify-content-center">
     <div class="col-lg-6 text-center">
       <h3 class="display-6 mb-6" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);">Welcome, {{ current_user.first_name }} {{ current_user.last_name }}!</h3>
+      <p>{{ current_user.email }}</p>
       <div class="btn-group">
         <a href="{{ url_for('core.generate_lesson') }}" class="btn btn-primary btn-lg rounded-pill" style="box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease-in-out;">Generate Lesson Plan</a>
         <a href="{{ url_for('core.subscribe') }}" class="btn btn-outline-primary btn-lg rounded-pill" style="box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2); transition: all 0.2s ease-in-out;">Subscribe to a Plan</a>
@@ -36,7 +37,7 @@
         </div>
     </div>
     {% else %}
-    <p class="text-center text-muted">No active subscription.</p>
+    <p class="text-center text-muted">No active subscription. You need to subscribe to plan to use the service. Click on <bold>Subscribe to a Plan</bold> to continue</p>
     {% endif %}
 
     {% with message = get_flashed_messages(with_categories=true) %}
