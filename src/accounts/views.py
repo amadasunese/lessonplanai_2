@@ -60,32 +60,61 @@ def register():
 
     
 
+# @accounts_bp.route('/login', methods=['GET', 'POST'])
+# @logout_required
+# def login():
+#     if current_user.is_authenticated:
+#         flash("You are already logged in.", "info")
+#         return redirect(url_for("core.index"))
+#     form = LoginForm()
+#     if form.validate_on_submit():
+#         user = User.query.filter_by(email=form.email.data).first()
+#         if user and bcrypt.check_password_hash(user.password, request.form["password"]):
+#             login_user(user)
+#             return redirect(url_for('core.home'))
+        
+#         # Check if user is admin
+#         if user.is_admin:
+#                 session['is_admin'] = True
+#                 flash('Admin login successful', 'success')
+#                 return redirect(url_for('core.admin_dashboard'))
+#         else:
+#             session['is_admin'] = False
+#             flash('Login successful', 'success')
+
+#         return redirect(url_for('accounts/dashboard'))
+    
+#     else:
+#         flash('Login Unsuccessful. Please check email and password', 'danger')
+
+#     return render_template('core/landing_page.html', form=form)
+
+
 @accounts_bp.route('/login', methods=['GET', 'POST'])
 @logout_required
 def login():
     if current_user.is_authenticated:
         flash("You are already logged in.", "info")
         return redirect(url_for("core.index"))
+    
     form = LoginForm()
+
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, request.form["password"]):
+
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
-            return redirect(url_for('core.home'))
-        
-        # Check if user is admin
-        if user.is_admin:
+
+            if user.is_admin:
                 session['is_admin'] = True
                 flash('Admin login successful', 'success')
-                return redirect(url_for('core/admin_dashboard'))
+                return redirect(url_for('core.admin_dashboard'))
+            else:
+                session['is_admin'] = False
+                flash('Login successful', 'success')
+                return redirect(url_for('core.home'))
         else:
-            session['is_admin'] = False
-            flash('Login successful', 'success')
-
-        return redirect(url_for('accounts/dashboard'))
-    
-    else:
-        flash('Login Unsuccessful. Please check email and password', 'danger')
+            flash('Login Unsuccessful. Please check email and password', 'danger')
 
     return render_template('core/landing_page.html', form=form)
 

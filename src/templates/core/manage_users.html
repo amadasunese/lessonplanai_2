@@ -1,27 +1,59 @@
-{% extends 'base.html' %}
+{% extends '_base.html' %}
+
 {% block content %}
-<h2>Registered Users</h2>
+  <h2>Registered Users</h2>
+  <button onclick="window.history.back();">Go Back</button>
 
-<button onclick="window.history.back();">Go Back</button>
-
-<table style="border-collapse: collapse; width: 100%;">
+  <table style="border-collapse: collapse; width: 100%;">
     <tr>
-        <th style="border: 1px solid black;">Email</th>
-        <th style="border: 1px solid black;">Is Admin?</th>
-        <th style="border: 1px solid black;">Is Confirmed?</th>
-        <th style="border: 1px solid black;">Confirmed On</th>
-        <th style="border: 1px solid black;">Actions</th>
+      <th style="border: 1px solid black;">Email</th>
+      <th style="border: 1px solid black;">Is Admin?</th>
+      <th style="border: 1px solid black;">Is Confirmed?</th>
+      <th style="border: 1px solid black;">Confirmed On</th>
+      <th style="border: 1px solid black;">Actions</th>
     </tr>
-    {% for current_user in users %}
-    <tr>
-        <td style="border: 1px solid black;">{{ current_user.email }}</td>
-        <td style="border: 1px solid black;">{{ 'Yes' if current_user.is_admin else 'No' }}</td>
-        <td style="border: 1px solid black;">{{ 'Yes' if current_user.is_confirmed else 'No' }}</td>
-        <td style="border: 1px solid black;">{{ current_user.confirmed_on.strftime('%Y-%m-%d %H:%M:%S') if user.confirmed_on else 'Not Confirmed' }}</td>
+
+    {% for user in users %}
+      <tr>
+        <td style="border: 1px solid black;">{{ user.email }}</td>
+        <td style="border: 1px solid black;">{{ 'Yes' if user.is_admin else 'No' }}</td>
+        <td style="border: 1px solid black;">{{ 'Yes' if user.is_confirmed else 'No' }}</td>
+        <td style="border: 1px solid black;">{{ user.confirmed_on.strftime('%Y-%m-%d %H:%M:%S') if user.confirmed_on else 'Not Confirmed' }}</td>
         <td style="border: 1px solid black;">
-            <a href="{{ url_for('delete_user', user_id=user.id) }}">Remove</a>
+          <a href="{{ url_for('core.delete_user', user_id=user.id) }}">Remove</a>
         </td>
-    </tr>
+      </tr>
     {% endfor %}
-</table>
+  </table>
+
+  <h2>Registered Users with Subscriptions</h2>
+  <table style="border-collapse: collapse; width: 100%;">
+    <tr>
+      <th style="border: 1px solid black;">Email</th>
+      <th style="border: 1px solid black;">Subscription Plan</th>
+      <th style="border: 1px solid black;">Subscription Amount</th>
+      <th style="border: 1px solid black;">Subscription Start Date</th>
+      <th style="border: 1px solid black;">Subscription End Date</th>
+      <th style="border: 1px solid black;">Remaining Usages</th>
+      <th style="border: 1px solid black;">Paid?</th>
+      <th style="border: 1px solid black;">Actions</th>
+    </tr>
+
+    {% for user in users %}
+      {% if user.subscription %}
+        <tr>
+          <td style="border: 1px solid black;">{{ user.email }}</td>
+          <td style="border: 1px solid black;">{{ user.subscription.plan }}</td>
+          <td style="border: 1px solid black;">{{ user.subscription.amount }}</td>
+          <td style="border: 1px solid black;">{{ user.subscription.start_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td style="border: 1px solid black;">{{ user.subscription.end_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td style="border: 1px solid black;">{{ user.subscription.remaining_usages }}</td>
+          <td style="border: 1px solid black;">{{ 'Yes' if user.subscription.paid else 'No' }}</td>
+          <td style="border: 1px solid black;">
+            <a href="{{ url_for('core.delete_user', user_id=user.id) }}">Remove</a>
+          </td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+  </table>
 {% endblock %}

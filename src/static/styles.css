@@ -46,10 +46,6 @@ footer {
   color: #0056b3; /* Icon color on hover */
 }
 
-/* Main content styles */
-/* #main-content {
-  /* Add any specific styles for your main content here */
-/* } */ */
 
 /* Social media column */
 #social-media-column {
@@ -69,24 +65,28 @@ footer {
 }
 
 /* Add this to your styles.css file */
-.navbar-toggler-icon {
+/* .navbar-toggler-icon {
   background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'><path stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/></svg>");
-}
+} */
 
 .navbar-nav .nav-link {
   color: white !important;
 }
 
-.navbar-nav .nav-link:hover,
+/* .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link:focus {
   color: rgba(255, 255, 255, 0.75) !important; /* Adjust the hover/focus color as needed */
-}
+} */
+
 .navbar-nav {
   margin-bottom: 0;
-  
 }
-.py-2 {
+/* .bg-primary1 {
   background-color: rgba(179, 197, 21, 0.781) !important;
+} */
+
+.bg-primary1 {
+  background-color: rgba(179, 179, 21, 0.781) !important;
 }
 
 /* Sticky Social Media Sidebar Styles */
@@ -267,4 +267,36 @@ margin-top: 2px !important;
 
 .wider-input {
   width: 300px; /* Adjust the width to your preference */
+}
+
+
+
+
+
+
+
+/* Add this CSS to your stylesheet */
+.navigation-header {
+  background-color: rgba(179, 179, 21, 0.781);
+  height: 90px;
+}
+
+/* Adjust styling for the mobile navigation toggle button if needed */
+.navbar-toggler {
+  border: none;
+  background: transparent;
+  outline: none;
+}
+.navbar-toggler-icon {
+  background-color: #fff; /* Customize the color of the toggle icon */
+}
+
+#logo {
+  margin-top: 0px;    /* Adjust the top margin to your preference */
+  margin-bottom: 2px; /* Adjust the bottom margin to your preference */
+}
+
+.navbar {
+  padding-top: 0;
+  padding-bottom: 20px;
 }

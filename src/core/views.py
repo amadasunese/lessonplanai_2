@@ -22,7 +22,7 @@ core_bp = Blueprint("core", __name__)
 
 load_dotenv()
 PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY')
-# PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY')
+PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY')
 paystack = Paystack(secret_key=PAYSTACK_SECRET_KEY)
 
 client = OpenAI()
@@ -57,14 +57,31 @@ def generate_lesson():
     return render_template('core/generate_lesson.html', form=form, lesson_content=lesson_content)
 
 
+# @core_bp.route('/admin_users')
+# @login_required
+# def manage_users():
+#     if not current_user.is_admin:
+#         flash('Access denied: You must be an admin to view this page.', 'danger')
+#         return redirect(url_for('core/index'))
+#     users = User.query.all()
+#     return render_template('core/manage_users.html', users=users)
+
+
+from sqlalchemy.orm import joinedload
+
 @core_bp.route('/admin_users')
 @login_required
 def manage_users():
     if not current_user.is_admin:
         flash('Access denied: You must be an admin to view this page.', 'danger')
-        return redirect(url_for('core/index'))
-    users = User.query.all()
-    return render_template('core/manage_users.html', users=users)
+        return redirect(url_for('core.index'))
+
+    # Query users with subscriptions
+    users_with_subscriptions = User.query.options(joinedload(User.subscription)).all()
+
+    return render_template('core/manage_users.html', users=users_with_subscriptions)
+
+
 
 
 @core_bp.route('/dashboard')
@@ -159,7 +176,7 @@ def subscribe():
 def admin_dashboard():
     if not current_user.is_admin:
         flash('Access denied: You must be an admin to view this page.', 'danger')
-        return redirect(url_for('core/index'))
+        return redirect(url_for('core.home'))
     return render_template('core/admin_dashboard.html')
 
 
@@ -173,7 +190,7 @@ def delete_user(user_id):
         flash('User successfully removed', 'success')
     else:
         flash('User not found', 'error')
-    return redirect(url_for('core/admin_dashboard'))  
+    return redirect(url_for('core.manager_users'))  
 
 # Payment processing routes
 
@@ -188,10 +205,11 @@ def subscribe_starter():
 
     response = Transaction.initialize(amount=amount, email=email)
 
-    ref = response['data']['reference']
+    ref = response.get('data', {}).get('reference')
     print(f"{first_name} {last_name}")
     # create_pay_instance = Subscription(current_user_name=first_name, customers_email=email,
     #                                                plan='Starter', reference=ref, amount='2000')
+    paystack_subscription_id=response.get('data', {}).get('reference')
     
     create_subscription_instance = Subscription(
         plan='Starter',
@@ -201,15 +219,18 @@ def subscribe_starter():
         remaining_usages=plans['starter']['usage_limit'],
         paid=True,  # Set paid to True for a successful payment
         user_id=current_user.id,
-        paystack_subscription_id=response['data']['reference']
+        paystack_subscription_id=paystack_subscription_id
     )
+
+    print(f"pystack id: {paystack_subscription_id}" )
+
     db.session.add(create_subscription_instance)
     db.session.commit()
 
     # flash('Subscription successful!', 'success')
     # return render_template('core/admin_dashboard.html')
 
-    a_url = response['data']['authorization_url']
+    a_url = response['data']['core.dashboard']
     return redirect(a_url)
 
 @core_bp.route('/subscribe_basic', methods=['GET', 'POST'])
@@ -258,8 +279,6 @@ def subscribe_premium():
 
     ref = response['data']['reference']
     print(f"{first_name} {last_name}")
-    # create_pay_instance = Subscription(current_user_name=first_name, customers_email=email,
-    #                                                plan='Starter', reference=ref, amount='2000')
     
     create_subscription_instance = Subscription(
         plan='Starter',

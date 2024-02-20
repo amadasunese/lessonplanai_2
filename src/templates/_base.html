@@ -2,6 +2,8 @@
 <html>
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>LessonPlanAI</title>
     <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -13,63 +15,16 @@
     <!-- Bootstrap Bundle JS (includes Popper.js) -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <script src="/static//script.js"></script>
-    
-
-
+    <script src="/src/static/styles.css"></script>
+    <script src="/src/static/navbar.js"></script>
 
 
 </head>
 
 <body>
 
-    <header class="bg-primary text-white">
-        <div class="container">
-            <div class="row align-items-center py-2"> <!-- Use row to align items in a grid -->
-                <!-- Logo section -->
-                <div id="logo" class="col-md-6 d-flex align-items-center"> <!-- Adjust the size of logo's column as per requirement -->
-                    <img src="/static/images/logo.png" alt="LessonPlanAI Logo" class="mr-3">
-                    <h2></h2>
-                </div>
-                <!-- Navigation section, right-aligned -->
-                <div class="col-md-6">
-                    <nav class="navbar navbar-expand-lg">
-                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse justify-content-end">
-                            <ul class="navbar-nav text-white">
-                                <!-- Navigation items go here -->
-                                <li class="nav-item"><a class="nav-link" href="{{ url_for('core.home') }}">Home</a></li>
 
-                    {% if not current_user.is_authenticated %}
-                    <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('accounts.register') }}">Sign Up</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('accounts.login') }}">Login</a>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('accounts.contact') }}">Contact</a></li>
-                    {% if current_user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('core.dashboard') }}">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('core.generate_lesson') }}">Generate Lesson</a></li>
-                    <!-- Admin-only link -->
-                    {% if current_user.is_admin %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('core.admin_dashboard') }}">Admin Dashboard</a></li>
-                    {% endif %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('accounts.logout') }}">Logout</a></li>
-                {% else %} 
-                {% endif %}
-                        </ul>
-                    </div>
-                </nav>
-            </div>
-        </div>
-    </div>
-</header>
-                                
-
+    {% include 'navigation2.html' %}
 
     <div class="container mt-4">
         <!-- Google AdSense section -->
