@@ -90,20 +90,8 @@ def dashboard():
     """
     Get the user's subscription information
     """
-    # current_user.subscription = None
-    # if current_user.subscription:
-    #     current_user.subscription = {
-    #         'plan': current_user.subscription.plan,
-    #         'amount': current_user.subscription.amount,
-    #         'start_date': current_user.subscription.start_date.strftime('%Y-%m-%d %H:%M:%S'),
-    #         'end_date': current_user.subscription.end_date.strftime('%Y-%m-%d %H:%M:%S'),
-    #         'remaining_usages': current_user.subscription.remaining_usages,
-    #         'paystack_subscription_id': current_user.subscription.paystack_subscription_id
-    #     }
-
     subscription = Subscription.query.filter_by(user_id=current_user.id).first()
     return render_template('accounts/dashboard.html', subscription=subscription)
-    # return render_template('accounts/dashboard.html', user=current_user)
 
 # Subscription model configuration
 plans = {
@@ -207,9 +195,6 @@ def subscribe_starter():
 
     ref = response.get('data', {}).get('reference')
     print(f"{first_name} {last_name}")
-    # create_pay_instance = Subscription(current_user_name=first_name, customers_email=email,
-    #                                                plan='Starter', reference=ref, amount='2000')
-    paystack_subscription_id=response.get('data', {}).get('reference')
     
     create_subscription_instance = Subscription(
         plan='Starter',
@@ -219,18 +204,13 @@ def subscribe_starter():
         remaining_usages=plans['starter']['usage_limit'],
         paid=True,  # Set paid to True for a successful payment
         user_id=current_user.id,
-        paystack_subscription_id=paystack_subscription_id
+        paystack_subscription_id=response.get('data', {}).get('reference')
     )
-
-    print(f"pystack id: {paystack_subscription_id}" )
 
     db.session.add(create_subscription_instance)
     db.session.commit()
 
-    # flash('Subscription successful!', 'success')
-    # return render_template('core/admin_dashboard.html')
-
-    a_url = response['data']['core.dashboard']
+    a_url = response['data']['authorization_url']
     return redirect(a_url)
 
 @core_bp.route('/subscribe_basic', methods=['GET', 'POST'])
