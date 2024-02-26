@@ -1,8 +1,21 @@
-{% extends "_base.html" %} {% block content %}
+{% extends "_base.html" %} 
+{% block content %}
 
 <div class="text-center">
   <h1>Welcome!</h1>
   <br />
+
+  <!-- Add Flash Message -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flash-messages">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
   <p>
     You have not confirmed your account. Please check your inbox (and your spam
     folder) - you should have received an email with a confirmation link.

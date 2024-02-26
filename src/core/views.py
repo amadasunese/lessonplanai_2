@@ -1,11 +1,11 @@
-from flask import Blueprint, render_template, redirect, flash, url_for, request, session
+from flask import Blueprint, render_template, redirect, flash, url_for, request
 from flask_login import login_required
 from src.utils.decorators import check_is_confirmed, check_is_subscribed
-from src.accounts.forms import LoginForm, RegisterForm, LessonPlanForm, ContactForm
-from flask_login import login_required, login_user, logout_user, current_user
+from src.accounts.forms import LessonPlanForm
+from flask_login import login_required, current_user
 from openai import OpenAI
 from markupsafe import Markup
-from src.accounts.models import db, User, Subscription
+from src.accounts.models import db, User, Subscription, Tutor, TutorFeePayment
 from datetime import datetime, timedelta
 from paystackapi.paystack import Paystack
 from flask_wtf import CSRFProtect
@@ -13,8 +13,9 @@ from src.utils.decorators import logout_required
 from src import bcrypt
 from dotenv import load_dotenv
 import os
-
 from paystackapi.transaction import Transaction
+from sqlalchemy.orm import joinedload
+from werkzeug.utils import secure_filename
 
 
 
@@ -27,12 +28,55 @@ paystack = Paystack(secret_key=PAYSTACK_SECRET_KEY)
 
 client = OpenAI()
 
+#################################
+#      Navigation routes        #
+#################################
+
 @core_bp.route("/")
 @login_required
-@check_is_confirmed
+# @check_is_confirmed
 def home():
     return render_template("core/index.html")
 
+@core_bp.route('/online_tutor', methods=['GET', 'POST'])
+@login_required
+def online_tutor():
+    return render_template('accounts/online_tutor.html') 
+
+
+@core_bp.route('/hire_tutor', methods=['GET', 'POST'])
+@login_required
+def hire_tutor():
+    return render_template('accounts/hire_tutor.html') 
+
+
+@core_bp.route('/tutor_exploration', methods=['GET', 'POST'])
+@login_required
+def tutor_exploration():
+    return render_template('accounts/tutor_exploration.html')
+
+
+@core_bp.route('/about', methods=['GET', 'POST'])
+@login_required
+def about():
+    return render_template('accounts/about.html')
+
+
+@core_bp.route('/faq', methods=['GET', 'POST'])
+@login_required
+def faq():
+    return render_template('accounts/faq.html')
+
+
+@core_bp.route('/subscribe', methods=['GET', 'POST'])
+@login_required
+def subscribe():
+    return render_template('accounts/subscribe.html')
+
+
+#################################
+# Lesson plan generation routes #
+#################################
 
 @core_bp.route('/generate_lesson', methods=['GET', 'POST'])
 @login_required
@@ -57,17 +101,9 @@ def generate_lesson():
     return render_template('core/generate_lesson.html', form=form, lesson_content=lesson_content)
 
 
-# @core_bp.route('/admin_users')
-# @login_required
-# def manage_users():
-#     if not current_user.is_admin:
-#         flash('Access denied: You must be an admin to view this page.', 'danger')
-#         return redirect(url_for('core/index'))
-#     users = User.query.all()
-#     return render_template('core/manage_users.html', users=users)
-
-
-from sqlalchemy.orm import joinedload
+#################################
+#   Admin login users routes     #
+#################################
 
 @core_bp.route('/admin_users')
 @login_required
@@ -76,22 +112,11 @@ def manage_users():
         flash('Access denied: You must be an admin to view this page.', 'danger')
         return redirect(url_for('core.index'))
 
-    # Query users with subscriptions
+    """Query users with subscriptions"""
     users_with_subscriptions = User.query.options(joinedload(User.subscription)).all()
 
     return render_template('core/manage_users.html', users=users_with_subscriptions)
 
-
-
-
-@core_bp.route('/dashboard')
-@login_required
-def dashboard():
-    """
-    Get the user's subscription information
-    """
-    subscription = Subscription.query.filter_by(user_id=current_user.id).first()
-    return render_template('accounts/dashboard.html', subscription=subscription)
 
 # Subscription model configuration
 plans = {
@@ -99,63 +124,6 @@ plans = {
     'basic': {'name': 'Basic Plan', 'cost': 5000, 'duration': 7, 'usage_limit': 4},
     'premium': {'name': 'Premium Plan', 'cost': 10000, 'duration': 30, 'usage_limit': None}
 }
-
-@core_bp.route('/subscribe', methods=['GET', 'POST'])
-@login_required
-def subscribe():
-    # user_info = {
-    #     'email': current_user.email,
-    #     'first_name': current_user.first_name,
-    #     'last_name': current_user.last_name,
-    # }
-
-    # if request.method == 'POST':
-    #     selected_plan = request.form.get('selectedPlan')
-    #     if selected_plan not in plans:
-    #         flash('Invalid subscription plan selected.', 'danger')
-    #         return redirect(url_for('accounts.subscribe'))
-
-    #     try:
-    #         """
-    #         Create Paystack subscription
-    #         """
-    #         subscription_response = paystack.subscription.create(
-    #             customer=current_user.email,
-    #             plan=plans[selected_plan],
-    #             authorization=paystack
-    #         )
-
-    #         if subscription_response['status']:
-    #             """
-    #             Create Subscription model instance
-    #             """
-    #             subscription = Subscription(
-    #                 plan=selected_plan,
-    #                 amount=plans[selected_plan]['cost'],
-    #                 start_date=datetime.utcnow(),
-    #                 end_date=datetime.utcnow() + timedelta(days=plans[selected_plan]['duration']),
-    #                 remaining_usages=plans[selected_plan]['usage_limit'],
-    #                 user_id=current_user.id,
-    #                 paystack_subscription_id=subscription_response['data']['id'],
-    #             )
-
-    #             db.session.add(subscription)
-    #             db.session.commit()
-
-    #             flash('Subscription successful!', 'success')
-    #             return redirect(url_for('accounts.dashboard'))
-    #         else:
-    #             flash('Paystack subscription creation failed.', 'danger')
-
-    #     except Exception as e:
-    #         flash(f'Subscription creation failed: {str(e)}', 'danger')
-    #         db.session.rollback() 
-
-    #     return redirect(url_for('accounts.subscribe'))
-
-    # plans_list = [(plan_id, plans[plan_id]) for plan_id in plans]
-
-    return render_template('accounts/subscribe.html') # , user=current_user, plans=plans_list, user_info=user_info
 
 
 # Admin user configuration
@@ -167,6 +135,21 @@ def admin_dashboard():
         return redirect(url_for('core.home'))
     return render_template('core/admin_dashboard.html')
 
+
+@core_bp.route('/dashboard')
+@login_required
+@check_is_confirmed
+def dashboard():
+    """
+    Get the user's subscription information
+    """
+    subscription = Subscription.query.filter_by(user_id=current_user.id).first()
+    return render_template('accounts/dashboard.html', subscription=subscription)
+
+
+#################################
+#   Users management routes     #
+#################################
 
 @core_bp.route('/delete_user/<int:user_id>')
 @login_required  
@@ -180,7 +163,68 @@ def delete_user(user_id):
         flash('User not found', 'error')
     return redirect(url_for('core.manager_users'))  
 
-# Payment processing routes
+
+@core_bp.route('/delete_tutor/<int:tutor_id>')
+@login_required  
+def delete_tutor(tutor_id):
+    tutor_to_delete = Tutor.query.get(tutor_id)
+    if tutor_to_delete:
+        db.session.delete(tutor_to_delete)
+        db.session.commit()
+        flash('Tutor successfully removed', 'success')
+    else:
+        flash('Tutor not found', 'error')
+    return redirect(url_for('core.manage_users')) 
+
+
+@core_bp.route('/edit-tutor/<int:tutor_id>', methods=['GET', 'POST'])
+def edit_tutor(tutor_id):
+    """
+    Retrieve the existing tutor from the database
+    """
+    tutor = Tutor.query.get_or_404(tutor_id)
+
+    if request.method == 'POST':
+        """Handle form submission for editing"""
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        address = request.form['address']
+        phone_number = request.form['phone_number']
+        age = request.form['age']
+        education_qualification = request.form['education_qualification']
+        interest = request.form['interest']
+        subjects = request.form['subjects']
+        past_experience = 'past_experience' in request.form
+        experience_years = request.form['experience_years']
+        experience_description = request.form['experience_description']
+        interest_join = request.form['interest_join']
+        languages = request.form['languages']
+        availability = request.form['availability']
+        teaching_mode = request.form['teaching_mode']
+        student_level = request.form['student_level']
+        source = request.form['source']
+        confirmation_name = request.form['confirmation_name']
+        photo = request.files['photo']
+
+        db.session.commit()
+
+        flash('Tutor information updated successfully!', 'success')
+        return redirect(url_for('core.tutor_list'))
+
+    """Render the form for editing with pre-filled data"""
+    return render_template('core/edit_tutor.html', tutor=tutor)
+
+
+@core_bp.route('/tutor_list', methods=['GET', 'POST'])
+@login_required
+def tutor_list():
+    return render_template('core/tutor_list.html')
+
+
+######################################
+#   Subscription & payment routes    #
+######################################
 
 @core_bp.route('/subscribe_starter', methods=['GET', 'POST'])
 @login_required
@@ -202,7 +246,7 @@ def subscribe_starter():
         start_date=datetime.utcnow(),
         end_date=datetime.utcnow() + timedelta(days=plans['starter']['duration']),
         remaining_usages=plans['starter']['usage_limit'],
-        paid=True,  # Set paid to True for a successful payment
+        paid=True,
         user_id=current_user.id,
         paystack_subscription_id=response.get('data', {}).get('reference')
     )
@@ -212,6 +256,7 @@ def subscribe_starter():
 
     a_url = response['data']['authorization_url']
     return redirect(a_url)
+
 
 @core_bp.route('/subscribe_basic', methods=['GET', 'POST'])
 @login_required
@@ -225,8 +270,6 @@ def subscribe_basic():
 
     ref = response['data']['reference']
     print(f"{first_name} {last_name}")
-    # create_pay_instance = Subscription(current_user_name=first_name, customers_email=email,
-    #                                                plan='Starter', reference=ref, amount='2000')
     
     create_subscription_instance = Subscription(
         plan='Starter',
@@ -234,18 +277,16 @@ def subscribe_basic():
         start_date=datetime.utcnow(),
         end_date=datetime.utcnow() + timedelta(days=plans['basic']['duration']),
         remaining_usages=plans['basic']['usage_limit'],
-        paid=True,  # Set paid to True for a successful payment
+        paid=True,
         user_id=current_user.id,
         paystack_subscription_id=response['data']['reference']
     )
     db.session.add(create_subscription_instance)
     db.session.commit()
 
-    # flash('Subscription successful!', 'success')
-    # return render_template('core/admin_dashboard.html')
-
     a_url = response['data']['authorization_url']
     return redirect(a_url)
+
 
 @core_bp.route('/subscribe_premium', methods=['GET', 'POST'])
 @login_required
@@ -266,31 +307,26 @@ def subscribe_premium():
         start_date=datetime.utcnow(),
         end_date=datetime.utcnow() + timedelta(days=plans['premium']['duration']),
         remaining_usages=plans['premium']['usage_limit'],
-        paid=True,  # Set paid to True for a successful payment
+        paid=True,
         user_id=current_user.id,
         paystack_subscription_id=response['data']['reference']
     )
     db.session.add(create_subscription_instance)
     db.session.commit()
 
-    # flash('Subscription successful!', 'success')
-    # return render_template('core/admin_dashboard.html')
-
     a_url = response['data']['authorization_url']
     return redirect(a_url)
-
 
 
 @core_bp.route('/verify_payment', methods=['GET', 'POST'])
 @login_required
 def verify_payment():
-    paramz = request.args.get('trxref', 'None')  # Use request.args to get query parameters
+    paramz = request.args.get('trxref', 'None')
     first_name = current_user.first_name
     last_name = current_user.last_name
     email = current_user.email
     print(paramz)
     
-    # Assuming you have a method to verify the payment in your Transaction class
     details = Transaction.verify(reference=paramz)
     status = details['data']['status']
     
@@ -306,7 +342,7 @@ def verify_payment():
 
             pay_instance.update(paid=True, end_date=expiry_date)
 
-            # Update the user subscription details
+            """Update the user subscription details"""
             current_user.update(subscribed=True, expiry_date=expiry_date)
             print('Payment successful!')
         else:
@@ -316,3 +352,141 @@ def verify_payment():
         print('Payment not successful')
 
     return redirect('core.dashboard')
+
+
+# Tutor registration fee
+fees = {
+    'registration_fee': {'name': 'Registration Fee', 'cost': 10000}
+}
+
+@core_bp.route('/tutor_fee_payment', methods=['GET', 'POST'])
+@login_required
+def tutor_fee_payment():
+    amount = '10000'
+    email = current_user.email
+    tutor_id = current_user.id
+
+    response = Transaction.initialize(amount=amount, email=email)
+
+    ref = response['data']['reference']
+    print(f"{amount} {email} {tutor_id}")
+
+    tutor = Tutor.query.get(tutor_id)
+
+    if tutor:
+        tutor_fee_payment_instance = TutorFeePayment(
+            tutor_id=tutor_id,
+            amount=10000,
+            payment_date=datetime.now()
+        )
+
+        db.session.add(tutor_fee_payment_instance)
+        db.session.commit()
+
+    a_url = response['data']['authorization_url']
+    return redirect(a_url)
+    return render_template('core/tutor_fee_payment.html', amount=amount, ref=ref, email=email)
+
+
+@core_bp.route('/service_fee_payment', methods=['GET', 'POST'])
+@login_required
+def service_fee_payment():
+    return render_template('core/tutor_fee_payment.html', fees=fees)
+
+
+######################################
+#   Tutors Registration routes       #
+######################################
+
+@core_bp.route('/tutor_registration', methods=['GET', 'POST'])
+def tutor_registration():
+    """
+    Handle file upload
+    """
+    if 'photo' in request.files:
+        photo = request.files['photo']
+
+        """Check if the file is selected"""
+        if photo.filename == '':
+            flash('No selected file', 'error')
+            return redirect(request.url)
+
+        """
+        Check if the file is allowed
+        """
+        allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
+        if '.' in photo.filename and photo.filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
+            flash('Invalid file type. Allowed types are png, jpg, jpeg, gif', 'error')
+            return redirect(request.url)
+        
+    return render_template('core/tutor_registration_form.html')
+
+
+# route to process the form
+@core_bp.route('/process-registration', methods=['POST'])
+def process_registration():
+    try:
+        # Retrieve form data
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        address = request.form['address']
+        phone_number = request.form['phone_number']
+        age = request.form['age']
+        education_qualification = request.form['education_qualification']
+        interest = request.form['interest']
+        subjects = request.form['subjects']
+        past_experience = 'past_experience' in request.form
+        experience_years = request.form['experience_years']
+        experience_description = request.form['experience_description']
+        interest_join = request.form['interest_join']
+        languages = request.form['languages']
+        availability = request.form['availability']
+        teaching_mode = request.form['teaching_mode']
+        student_level = request.form['student_level']
+        source = request.form['source']
+        confirmation_name = request.form['confirmation_name']
+        photo = request.files['photo']
+
+        # Create a new Tutor instance
+        tutor = Tutor(
+            id=None,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            address=address,
+            phone_number=phone_number,
+            age=age,
+            education_qualification=education_qualification,
+            interest=interest,
+            subjects=subjects,
+            past_experience=past_experience,
+            experience_years=experience_years,
+            experience_description=experience_description,
+            interest_join=interest_join,
+            languages=languages,
+            availability=availability,
+            teaching_mode=teaching_mode,
+            student_level=student_level,
+            source=source,
+            confirmation_name=confirmation_name,
+            photo_data=photo.read(),
+            photo_filename=secure_filename(photo.filename),
+            user_id=current_user.id 
+        )
+
+        # Add the new tutor to the database
+        db.session.add(tutor)
+        db.session.commit()
+
+        flash('Registration successful!', 'success')
+        return render_template('core/tutor_fee_payment.html', fees=fees)
+
+    except Exception as e:
+        # Rollback the transaction in case of an error
+        db.session.rollback()
+        # Flash error message
+        flash('Registration failed. Please try again.', 'error')
+        print(f'Error: {str(e)}')
+        return redirect(url_for('core.tutor_registration'))
+

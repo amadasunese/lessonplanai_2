@@ -1,0 +1,90 @@
+{% extends '_base.html' %}
+
+{% block content %}
+<h1>LessonPlanAI FAQ</h1>
+
+    <div class="container mt-5">
+
+        <div id="accordion">
+
+            <section class="card">
+                <div class="card-header" id="generalQuestionsHeading">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#generalQuestionsCollapse"
+                            aria-expanded="true" aria-controls="generalQuestionsCollapse">
+                            General Questions
+                        </button>
+                    </h2>
+                </div>
+
+                <div id="generalQuestionsCollapse" class="collapse show" aria-labelledby="generalQuestionsHeading"
+                    data-parent="#accordion">
+                    <div class="card-body">
+                        <h3>Q: What is LessonPlanAI?</h3>
+                        <p>A: LessonPlanAI is an innovative platform that uses artificial intelligence to assist educators
+                            in creating effective lesson plans.</p>
+
+                        <h3>Q: How can I benefit from LessonPlanAI?</h3>
+                        <p>A: LessonPlanAI streamlines the lesson planning process, saving time and enhancing the overall
+                            teaching experience. It provides AI-powered lesson recommendations, curriculum alignment
+                            suggestions, and more.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header" id="tutorRegistrationHeading">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link collapsed" data-toggle="collapse"
+                            data-target="#tutorRegistrationCollapse" aria-expanded="false"
+                            aria-controls="tutorRegistrationCollapse">
+                            Registration as a Tutor
+                        </button>
+                    </h2>
+                </div>
+
+                <div id="tutorRegistrationCollapse" class="collapse" aria-labelledby="tutorRegistrationHeading"
+                    data-parent="#accordion">
+                    <div class="card-body">
+                        <h3>Q: How do I register as a tutor on LessonPlanAI?</h3>
+                        <p>A: To register as a tutor, visit our registration page and fill out the required information.
+                            Once submitted, our team will review your application, and upon approval, you can start using
+                            LessonPlanAI's features for tutors.</p>
+
+                        <h3>Q: Are there any fees associated with registering as a tutor?</h3>
+                        <p>A: Registration as a tutor on LessonPlanAI is currently free of charge.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header" id="hiringTutorHeading">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#hiringTutorCollapse"
+                            aria-expanded="false" aria-controls="hiringTutorCollapse">
+                            Hiring a Tutor
+                        </button>
+                    </h2>
+                </div>
+
+                <div id="hiringTutorCollapse" class="collapse" aria-labelledby="hiringTutorHeading"
+                    data-parent="#accordion">
+                    <div class="card-body">
+                        <h3>Q: How can I hire a tutor using LessonPlanAI?</h3>
+                        <p>A: To hire a tutor, log in to your LessonPlanAI account, go to the "Tutors" section, and browse
+                            through available tutors. You can view their profiles, qualifications, and reviews. Once you
+                            find a suitable tutor, you can initiate the hiring process through the platform.</p>
+
+                        <h3>Q: What criteria should I consider when hiring a tutor?</h3>
+                        <p>A: Consider factors such as the tutor's qualifications, experience, teaching style, and reviews
+                            from other users. LessonPlanAI provides detailed profiles to help you make an informed
+                            decision.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+    </div>
+
+{% endblock %}
