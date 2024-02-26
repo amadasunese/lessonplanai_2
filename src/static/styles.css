@@ -300,3 +300,75 @@ margin-top: 2px !important;
   padding-top: 0;
   padding-bottom: 20px;
 }
+
+
+/* tutor registration form */
+.progress {
+  height: 20px; /* Adjust the height as needed */
+}
+
+.progress-bar {
+  background-color: #007bff; /* Blue background */
+}
+
+
+/* styles.css */
+/* body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f4f4f4; /* Light gray background */
+} */
+
+form {
+  background-color: #fff; /* White form background */
+  padding: 30px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  max-width: 500px;
+  margin: 30px auto;    
+}
+
+fieldset {
+  border: none;
+  margin-bottom: 20px;
+}
+
+legend {
+  font-size: 1.4em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+input[type="text"], 
+input[type="email"], 
+input[type="tel"],
+input[type="number"], 
+select, 
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  box-sizing: border-box; 
+}
+
+button[type="submit"] {
+  background-color: #008cba; /* A shade of blue */
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; 
+}
+
+button[type="submit"]:hover {
+  background-color: #0075a4; /* Darker blue on hover */
+}

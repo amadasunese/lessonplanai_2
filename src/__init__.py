@@ -12,6 +12,7 @@ from paystackapi.paystack import Paystack
 
 app = Flask(__name__)
 app.config.from_object(config("APP_SETTINGS"))
+app.config['UPLOAD_FOLDER'] = '/src/static/folder'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -21,14 +22,6 @@ migrate = Migrate(app, db)
 
 # initialize the flask mail
 mail = Mail(app)
-
-
-# paystack = Paystack(secret_key=paystack_secret_key)
-
-# from paystackapi.paystack import Paystack
-# paystack_secret_key = "5om3secretK3y"
-
-
 
 # Registering blueprints
 from src.accounts.views import accounts_bp

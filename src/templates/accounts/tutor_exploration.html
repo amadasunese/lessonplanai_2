@@ -1,0 +1,62 @@
+{% extends "_base.html" %}
+
+{% block content %}
+    <h1>Explore Tutors</h1>
+    
+    <div>
+        <label for="search">Search Tutors:</label>
+        <input type="text" id="search" name="search" placeholder="Enter subject or expertise">
+        <button onclick="searchTutors()">Search</button>
+    </div>
+
+    <div id="tutorList">
+        <!-- Tutors will be dynamically loaded here -->
+    </div>
+
+    <script>
+        // Assume tutors is a JavaScript variable containing tutor data
+        // Example structure: [{first_name: 'John', last_name: 'Doe', expertise: 'Math', teaching_style: 'Interactive'}, {...}]
+    
+        function searchTutors() {
+            var searchInput = document.getElementById("search").value.toLowerCase();
+            var filteredTutors = tutors.filter(function(tutor) {
+                return tutor.subjects.toLowerCase().includes(searchInput);
+            });
+    
+            displayTutors(filteredTutors);
+        }
+    
+        function displayTutors(tutors) {
+            var tutorListDiv = document.getElementById("tutorList");
+            tutorListDiv.innerHTML = "";
+    
+            if (tutors.length === 0) {
+                tutorListDiv.innerHTML = "<p>No tutors found.</p>";
+                return;
+            }
+    
+            tutors.forEach(function(tutor) {
+                var tutorDiv = document.createElement("div");
+                tutorDiv.innerHTML = `
+                    <h2>${tutor.first_name} ${tutor.last_name}</h2>
+                    <p><strong>Email:</strong> ${tutor.email}</p>
+                    <p><strong>Subjects:</strong> ${tutor.subjects}</p>
+                    <p><strong>Teaching Mode:</strong> ${tutor.teaching_mode}</p>
+                    <p><strong>Availability:</strong> ${tutor.availability}</p>
+                    <button onclick="reachOut('${tutor.email}')">Reach Out</button>
+                    <hr>
+                `;
+                tutorListDiv.appendChild(tutorDiv);
+            });
+        }
+    
+        function reachOut(email) {
+            // You can implement the logic to handle reaching out to the tutor
+            alert("Reached out to tutor with email: " + email);
+        }
+    
+        // Initially display all tutors
+        var tutors = [/* ... array of tutor objects ... */];
+        displayTutors(tutors);
+    </script>
+{% endblock %}

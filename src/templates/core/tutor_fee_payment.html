@@ -1,0 +1,38 @@
+<!-- templates/tutor_fee_payment.html -->
+
+{% extends "_base.html" %}
+
+{% block content %}
+  <div class="container">
+    <h2>Tutor Fee Payment</h2>
+    
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flash-messages">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <p>Hello {{ current_user.first_name }} {{ current_user.last_name }},</p>
+
+    <p>
+      You are about to make a fee payment of N{{ fees.registration_fee.cost }}. Please proceed with the payment to complete your registration. Note that your registration will not be approved without payment.
+    </p>
+
+    <!-- Add your payment gateway integration code here -->
+    <form method="post" action="{{ url_for('core.tutor_fee_payment') }}">
+      
+      <!-- Include payment gateway fields (e.g., card details, etc.) -->
+      <input type="hidden" name="amount" value="{{ amount }}">
+      <input type="hidden" name="reference" value="{{ ref }}">
+      <input type="hidden" name="email" value="{{ current_user.email }}">
+      <label for="registration_fee">{{ fees.registration_fee.name }}:</label>
+      <input type="text" name="amount" value="{{ fees.registration_fee.cost }}" readonly>
+      
+      <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+    </form>
+  </div>
+{% endblock %}

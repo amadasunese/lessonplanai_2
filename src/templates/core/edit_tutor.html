@@ -1,0 +1,72 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <h1>Edit Tutor Information</h1>
+    <form method="post" action="{{ url_for('core.edit_tutor', tutor_id=tutor.id) }}" enctype="multipart/form-data">
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" value="{{ tutor.first_name }}" required><br>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" value="{{ tutor.last_name }}" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ tutor.email }}" required><br>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" value="{{ tutor.address }}" required><br>
+
+        <label for="phone_number">Phone Number:</label>
+        <input type="tel" id="phone_number" name="phone_number" value="{{ tutor.phone_number }}" required><br>
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" value="{{ tutor.age }}" required><br>
+
+        <label for="education_qualification">Education Qualification:</label>
+        <input type="text" id="education_qualification" name="education_qualification" value="{{ tutor.education_qualification }}" required><br>
+
+        <label for="interest">Interest:</label>
+        <textarea id="interest" name="interest" value="{{ tutor.interest }}" required></textarea><br>
+
+        <label for="subjects">Subjects:</label>
+        <input type="text" id="subjects" name="subjects" value="{{ tutor.subjects }}" required><br>
+
+        <label for="past_experience">Past Experience:</label>
+        <input type="checkbox" id="past_experience" name="past_experience" value="{{ tutor.past_experience }}" required><br>
+
+        <label for="experience_years">Experience Years:</label>
+        <input type="text" id="experience_years" name="experience_years" value="{{ tutor.experience_years }}" required><br>
+
+        <label for="experience_description">Experience Description:</label>
+        <textarea id="experience_description" name="experience_description" value="{{ tutor.experience_description }}" required></textarea><br>
+
+        <label for="interest_join">Interest to Join:</label>
+        <textarea id="interest_join" name="interest_join" value="{{ tutor.interest_join }}" required></textarea><br>
+
+        <!-- <label for="languages">Languages:</label>
+        <textarea id="languages" name="languages">></textarea><br> -->
+
+        <label for="languages">Languages:</label>
+        <textarea id="languages" name="languages" value="{{ tutor.languages }}" ></textarea><br>
+
+        <label for="availability">Availability:</label>
+        <input type="text" id="availability" name="availability" value="{{ tutor.availability }}" required><br>
+
+        <label for="teaching_mode">Teaching Mode:</label>
+        <input type="text" id="teaching_mode" name="teaching_mode" value="{{ tutor.teaching_mode }}" required><br>
+
+        <label for="student_level">Student Level:</label>
+        <input type="text" id="student_level" name="student_level" value="{{ tutor.student_level }}" required><br>
+
+        <label for="source">Source:</label>
+        <input type="text" id="source" name="source" value="{{ tutor.source }}" required><br>
+
+        <!-- Add a new input for photo upload -->
+        <label for="photo">Photo:</label>
+        <input type="file" id="photo" name="photo" accept="image/*" value="{{ tutor.photo }}" required><br>
+
+        <label for="confirmation_name">Confirmation Name:</label>
+        <input type="text" id="confirmation_name" name="confirmation_name" value="{{ tutor.confirmation_name }}" required><br>
+
+        <input type="submit" value="Update">
+    </form>
+{% endblock %}

@@ -4,10 +4,8 @@
 <div class="container mt-4">
     <h2>Contact Us</h2>
     <form method="post">
-        <!-- Include CSRF token for security -->
         {{ form.hidden_tag() }}
 
-        <!-- Sample contact form structure using Bootstrap classes -->
         <div class="form-group">
             <label for="name">Name:</label>
             <input type="text" class="form-control" id="name" name="name" required>

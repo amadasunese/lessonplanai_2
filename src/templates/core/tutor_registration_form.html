@@ -1,0 +1,79 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <h1>Tutor Registration</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flash-messages">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <form method="post" action="{{ url_for('core.process_registration') }}" enctype="multipart/form-data"> 
+
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" value="{{ current_user['first_name'] }}" required><br>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" value="{{ current_user['last_name'] }}" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ current_user['email'] }}" required><br>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address"><br>
+
+        <label for="phone_number">Phone Number:</label>
+        <input type="tel" id="phone_number" name="phone_number"><br>
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age"><br>
+
+        <label for="education_qualification">Education Qualification:</label>
+        <input type="text" id="education_qualification" name="education_qualification"><br>
+
+        <label for="interest">Interest:</label>
+        <textarea id="interest" name="interest"></textarea><br>
+
+        <label for="subjects">Subjects:</label>
+        <input type="text" id="subjects" name="subjects"><br>
+
+        <label for="past_experience">Past Experience:</label>
+        <input type="checkbox" id="past_experience" name="past_experience"> Yes<br>
+
+        <label for="experience_years">Experience Years:</label>
+        <input type="text" id="experience_years" name="experience_years"><br>
+
+        <label for="experience_description">Experience Description:</label>
+        <textarea id="experience_description" name="experience_description"></textarea><br>
+
+        <label for="interest_join">Interest to Join:</label>
+        <textarea id="interest_join" name="interest_join"></textarea><br>
+
+        <label for="languages">Languages:</label>
+        <textarea id="languages" name="languages"></textarea><br>
+
+        <label for="availability">Availability:</label>
+        <input type="text" id="availability" name="availability"><br>
+
+        <label for="teaching_mode">Teaching Mode:</label>
+        <input type="text" id="teaching_mode" name="teaching_mode"><br>
+
+        <label for="student_level">Student Level:</label>
+        <input type="text" id="student_level" name="student_level"><br>
+
+        <label for="source">Source:</label>
+        <input type="text" id="source" name="source"><br>
+
+        <!-- Add a new input for photo upload -->
+        <label for="photo">Photo:</label>
+        <input type="file" id="photo" name="photo" accept="image/*"><br>
+
+        <label for="confirmation_name">Confirmation Name:</label>
+        <input type="text" id="confirmation_name" name="confirmation_name"><br>
+
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

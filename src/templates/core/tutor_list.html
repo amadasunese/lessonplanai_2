@@ -1,0 +1,51 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <h3>Registered Tutors</h3>
+    <table style="border-collapse: collapse;">
+        <tr>
+            <th style="border: 1px solid black;">Email</th>
+            <th style="border: 1px solid black;">First Name</th>
+            <th style="border: 1px solid black;">Last Name</th>
+            <th style="border: 1px solid black;">Phone Number</th>
+            <th style="border: 1px solid black;">Age</th>
+            <th style="border: 1px solid black;">Educational Qualification</th>
+            <th style="border: 1px solid black;">Subjects</th>
+            <th style="border: 1px solid black;">Teaching Mode</th>
+            <th style="border: 1px solid black;">Days Available</th>
+            <th style="border: 1px solid black;">Student Level</th>
+            <th style="border: 1px solid black;">Registration Fee Paid</th>
+            <th style="border: 1px solid black;">Photo</th>
+            <th style="border: 1px solid black;">Edit</th>
+            <th style="border: 1px solid black;">Actions</th>
+        </tr>
+
+        {% for user in users %}
+            {% if user.tutor %}
+                <tr>
+                    <td style="border: 1px solid black;">{{ user.tutor.email }}</td>
+                    <td style="border: 1px solid black;">{{ user.tutor.first_name }}</td>
+                    <td style="border: 1px solid black;">{{ user.tutor.last_name }}</td>
+                    <td style="border: 1px solid black;">{{ user.tutor.phone_number }}</td>
+                    <td style="border: 1px solid black;">{{ user.tutor.age }}</td>
+                    <td style="border: 1px solid black;">{{ user.tutor.education_qualification }}</td>
+                    <td style="border: 1px solid black;">{{ user.tutor.subjects }}</td>
+                    <td style="border: 1px solid black;">{{ user.tutor.teaching_mode }}</td>
+                    <td style="border: 1px solid black;">{{ user.tutor.availability }}</td>
+                    <td style="border: 1px solid black;">{{ user.tutor.student_level }}</td>
+                    <td style="border: 1px solid black;">{{ user.tutor.fee_payments }}</td>
+                    <td style="border: 1px solid black;">
+                        <img src="{{ url_for('accounts.display_photo', tutor_id=user.tutor.id) }}" alt=""
+                             style="max-width: 100px; max-height: 100px;">
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <a href="{{ url_for('core.edit_tutor', tutor_id=user.tutor.id) }}">Edit</a>
+                    </td>
+                    <td style="border: 1px solid black;">
+                        <a href="{{ url_for('core.delete_tutor', tutor_id=user.tutor.id) }}">Remove</a>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+{% endblock %}
