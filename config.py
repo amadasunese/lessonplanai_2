@@ -17,6 +17,7 @@ class Config(object):
     DEBUG_TB_ENABLED = False
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     SECURITY_PASSWORD_SALT = config("SECURITY_PASSWORD_SALT", default="important")
+    
 
     # Mail Settings
     MAIL_DEFAULT_SENDER = "noreply@flask.com"

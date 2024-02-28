@@ -1,0 +1,58 @@
+<!-- tutor_profile.html -->
+
+{% extends '_base.html' %}
+
+{% block content %}
+<div class="tutor-profile-container">
+    <table class="tutor-info">
+        <tr>
+            <th colspan="2"><h2>{{ tutor.first_name }} {{ tutor.last_name }}'s Profile</h2></th>
+        </tr>
+        <tr>
+            <td>Email:</td>
+            <td>{{ tutor.email }}</td>
+        </tr>
+        <tr>
+            <td>Address:</td>
+            <td>{{ tutor.address }}</td>
+        </tr>
+        <tr>
+            <td>Age:</td>
+            <td>{{ tutor.age }}</td>
+        </tr>
+        <tr>
+            <td>Phone Number:</td>
+            <td>{{ tutor.phone_number }}</td>
+        </tr>
+        <tr>
+            <td>Qualification:</td>
+            <td>{{ tutor.education_qualification }}</td>
+        </tr>
+        <tr>
+            <td>Subject:</td>
+            <td>{{ tutor.subjects }}</td>
+        </tr>
+        <tr>
+            <td>Years in Teaching:</td>
+            <td>{{ tutor.experience_years }}</td>
+        </tr>
+        <tr>
+            <td>Mode of Teaching:</td>
+            <td>{{ tutor.teaching_mode }}</td>
+        </tr>
+        <tr>
+            <td>Student Level:</td>
+            <td>{{ tutor.student_level }}</td>
+        </tr>
+        <!-- Add other tutor information here -->
+    </table>
+
+    <div class="tutor-photo">
+        {% if tutor.photo_data %}
+            <img src="data:image/jpeg;base64,{{ tutor.photo_data }}" alt="{{ tutor.first_name }} {{ tutor.last_name }} Photo">
+        {% else %}
+            <p>No photo available</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

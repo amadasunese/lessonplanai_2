@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, request
 from flask_login import login_required
-from src.utils.decorators import check_is_confirmed, check_is_subscribed
-from src.accounts.forms import LessonPlanForm
+from src.utils.decorators import check_is_confirmed, check_is_subscribed, check_is_registered
+from src.accounts.forms import LessonPlanForm, ParentRegistrationForm
 from flask_login import login_required, current_user
 from openai import OpenAI
 from markupsafe import Markup
-from src.accounts.models import db, User, Subscription, Tutor, TutorFeePayment
+from src.accounts.models import db, User, Subscription, Tutor, TutorFeePayment, Parent
 from datetime import datetime, timedelta
 from paystackapi.paystack import Paystack
 from flask_wtf import CSRFProtect
@@ -16,7 +16,6 @@ import os
 from paystackapi.transaction import Transaction
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
-
 
 
 core_bp = Blueprint("core", __name__)
@@ -144,7 +143,7 @@ def dashboard():
     Get the user's subscription information
     """
     subscription = Subscription.query.filter_by(user_id=current_user.id).first()
-    return render_template('accounts/dashboard.html', subscription=subscription)
+    return render_template('accounts/dashboard.html', subscription=subscription, today=datetime.now())
 
 
 #################################
@@ -175,6 +174,19 @@ def delete_tutor(tutor_id):
     else:
         flash('Tutor not found', 'error')
     return redirect(url_for('core.manage_users')) 
+
+
+@core_bp.route('/delete_parent/<int:parent_id>')
+@login_required  
+def delete_parent(parent_id):
+    parent_to_delete = Parent.query.get(parent_id)
+    if parent_to_delete:
+        db.session.delete(parent_to_delete)
+        db.session.commit()
+        flash('Parent successfully removed', 'success')
+    else:
+        flash('Parent not found', 'error')
+    return redirect(url_for('core.registered_parent'))
 
 
 @core_bp.route('/edit-tutor/<int:tutor_id>', methods=['GET', 'POST'])
@@ -215,11 +227,6 @@ def edit_tutor(tutor_id):
     """Render the form for editing with pre-filled data"""
     return render_template('core/edit_tutor.html', tutor=tutor)
 
-
-@core_bp.route('/tutor_list', methods=['GET', 'POST'])
-@login_required
-def tutor_list():
-    return render_template('core/tutor_list.html')
 
 
 ######################################
@@ -398,6 +405,7 @@ def service_fee_payment():
 #   Tutors Registration routes       #
 ######################################
 
+# Tutor registration form
 @core_bp.route('/tutor_registration', methods=['GET', 'POST'])
 def tutor_registration():
     """
@@ -422,7 +430,7 @@ def tutor_registration():
     return render_template('core/tutor_registration_form.html')
 
 
-# route to process the form
+# Tutor registration route to process the form
 @core_bp.route('/process-registration', methods=['POST'])
 def process_registration():
     try:
@@ -489,4 +497,97 @@ def process_registration():
         flash('Registration failed. Please try again.', 'error')
         print(f'Error: {str(e)}')
         return redirect(url_for('core.tutor_registration'))
+
+
+@core_bp.route('/register_parent', methods=['GET', 'POST'])
+@login_required
+def register_parent():
+    form = ParentRegistrationForm()
+
+    if form.validate_on_submit():
+        # Check if the email is already registered
+        existing_parent = Parent.query.filter_by(email=form.email.data).first()
+
+        if existing_parent:
+            flash('This email is already registered. Please use a different email address.', 'danger')
+        else:
+            try:
+                parent = Parent(
+                    full_name=form.full_name.data,
+                    phone_number=form.phone_number.data,
+                    email=form.email.data,
+                    age_range=form.age_range.data,
+                    subject_area=form.subject_area.data,
+                    user_id=current_user.id
+                )
+
+                db.session.add(parent)
+                db.session.commit()
+
+                flash('Registration successful!', 'success')
+                return redirect(url_for('core.tutor_exploration'))
+
+            except Exception as e:
+                # Handle unexpected errors, log the error, and display a flash message
+                db.session.rollback()
+                flash('An unexpected error occurred. Please try again later.', 'danger')
+                print(f"Error during registration: {e}")
+    return render_template('accounts/register_parent.html', form=form, errors=form.errors)
+
+
+@core_bp.route('/tutor_profile/<int:tutor_id>')
+@login_required
+def tutor_profile(tutor_id):
+    tutor = Tutor.query.get_or_404(tutor_id)
+    return render_template('accounts/tutor_profile.html', tutor=tutor)
+
+
+# Add this route to your Flask application
+@core_bp.route('/search_tutors', methods=['GET', 'POST'])
+@login_required
+@check_is_registered
+def search_tutors():
+    if request.method == 'POST':
+        subject_to_search = request.form.get('subject')
+        tutors = Tutor.query.filter(Tutor.subjects.ilike(f'%{subject_to_search}%')).all()
+    else:
+        tutors = Tutor.query.all()
+
+    return render_template('accounts/search_tutors.html', tutors=tutors)
+
+
+@core_bp.route('/registered_parents')
+def registered_parents():
+    # Query your database for all registered parents
+    parents = Parent.query.all()  # Replace with your actual database query
+
+    # Render a template, passing the parents data
+    return render_template('accounts/registered_parents.html', parents=parents)
+
+
+@core_bp.route('/registered_tutors')
+def registered_tutors():
+    # Query your database for all registered tutors
+    tutors = Tutor.query.all()  # Replace with your actual database query
+
+    # Render a template, passing the tutors data
+    return render_template('accounts/tutors_list.html', users=[tutor.user for tutor in tutors])
+
+
+from flask import send_file
+
+@core_bp.route('/accounts/display_photo/<int:tutor_id>')
+def display_photo(tutor_id):
+    tutor = Tutor.query.get(tutor_id)
+    if tutor and tutor.photo_path:
+        return send_file(tutor.photo_path, mimetype='image/jpeg')
+    else:
+        return send_file('path_to_default_image', mimetype='image/jpeg')
+
+
+@core_bp.route('/subscribed_users')
+def subscribed_users():
+    users = User.query.filter(User.subscription != None).all()
+    return render_template('accounts/subscribed_users.html', users=users)
+
 

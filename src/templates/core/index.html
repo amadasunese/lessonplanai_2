@@ -31,7 +31,14 @@
                     <!-- More links as needed -->
                 </ul>
             <hr>
-                <h4>Place Ad Here</h4>
+                <h4>Need a Tutor?</h4>
+                <p>
+                    
+                We connects you with qualified tutors who can provide personalized support.
+                <div>
+                    <a href="{{ url_for('core.hire_tutor') }}" class="cta-generate">Click here to begin</a>
+                </div>
+                </p>
                 <img src="" />
             </div>
             <div class="sidebar-widget">
@@ -70,17 +77,16 @@
             <div class="sidebar-widget">
                 <!-- This could be another Google AdSense spot or a custom widget -->
                 <div class="link">
+                    <h3>Become a Tutor</h3>
                     <p>
-                      Join us in the AI revolution and empower your educational journey. Sign up and elevate your lesson planning today!
+                        Unlock the potential to make a difference in students' lives by becoming a tutor with our platform. Share your knowledge, inspire others, and earn while doing it!
                     </p>
                 </div>
             
                 <div class="cta-buttons">
-                    <a href="{{ url_for('accounts.register') }}" class="cta-signup">Sign Up for Free | </a>
+                    <a href="{{ url_for('core.online_tutor') }}" class="cta-signup">Click here to begin | </a>
                 </div>
-                <div>
-                    <a href="{{ url_for('core.generate_lesson') }}" class="cta-generate">Start a New Lesson Plan if you already have an account</a>
-                </div>
+               
                 
                 <img src="" />
                 <div class="adsense-widget">

@@ -119,3 +119,12 @@ class TutorFeePaymentForm(FlaskForm):
     tutor_id = IntegerField('Tutor ID', validators=[InputRequired()])
     amount = DecimalField('Amount', validators=[InputRequired()])
     payment_date = DateField('Payment Date', validators=[InputRequired()])
+
+
+class ParentRegistrationForm(FlaskForm):
+    full_name = StringField('Full Name', validators=[DataRequired()])
+    phone_number = StringField('Phone Number', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    age_range = StringField('Age Range of Child/Children')
+    subject_area = StringField('Subject Area Needed', validators=[DataRequired()])
+    submit = SubmitField('Register')

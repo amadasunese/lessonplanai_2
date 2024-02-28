@@ -2,7 +2,7 @@ from functools import wraps
 
 from flask import flash, redirect, url_for
 from flask_login import current_user
-
+from src.accounts.models import Parent
 from datetime import datetime
 
 
@@ -35,4 +35,18 @@ def check_is_subscribed(func):
             return redirect(url_for("core.subscribe"))
         return func(*args, **kwargs)
 
+    return decorated_function
+
+
+def is_parent(user_id):
+    # This function checks if a parent with the given user_id exists
+    return Parent.query.filter_by(user_id=user_id).first() is not None
+
+def check_is_registered(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if not is_parent(current_user.id):  # Check if current user is a registered parent
+            flash('You need to be registered as a parent to use this service.', 'warning')
+            return redirect(url_for('core.register_parent'))  # Redirect to registration
+        return func(*args, **kwargs)
     return decorated_function
