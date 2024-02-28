@@ -1,0 +1,25 @@
+<!-- search_tutors.html -->
+
+{% extends '_base.html' %}
+
+{% block content %}
+<div>
+    <h2>Search Results</h2>
+
+    <form method="POST" action="{{ url_for('core.search_tutors') }}">
+        <label for="subject">Search by Subject:</label>
+        <input type="text" name="subject" id="subject">
+        <button type="submit">Search</button>
+    </form>
+
+    <ul>
+        {% for tutor in tutors %}
+            <li>
+                <a href="{{ url_for('core.tutor_profile', tutor_id=tutor.id) }}">
+                    {{ tutor.first_name }} {{ tutor.last_name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

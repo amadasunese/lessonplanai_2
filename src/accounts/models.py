@@ -135,3 +135,26 @@ class TutorFeePayment(db.Model):
         self.tutor_id = tutor_id
         self.amount = amount
         self.payment_date = payment_date
+
+
+class Parent(db.Model):
+    __tablename__ = "parent"
+
+    id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String(100), nullable=False)
+    phone_number = db.Column(db.String(15), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    age_range = db.Column(db.String(20))
+    subject_area = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('parent', lazy=True))
+
+    def __init__(self, full_name, phone_number, email, age_range, subject_area, user_id):
+        self.full_name = full_name
+        self.phone_number = phone_number
+        self.email = email
+        self.age_range = age_range
+        self.subject_area = subject_area
+        self.user_id = user_id

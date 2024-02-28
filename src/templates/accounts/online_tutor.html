@@ -1,24 +1,37 @@
-
 {% extends "_base.html" %}
 
 {% block content %}
-<h1>Become a Tutor</h1>
-    
-<p>Unlock the potential to make a difference in students' lives by becoming a tutor with our platform. Share your knowledge, inspire others, and earn while doing it!</p>
+<div class="row">
+    <!-- Cover Photo -->
+    <div class="col-md-4">
+        <img src="{{ url_for('static', filename='images/teacher2.jpg') }}" alt="Cover Photo" class="img-fluid" style="max-width: 100%; max-height: 700px;">
+        
+        <!-- Photo Credit -->
+        <div class="photo-credit">
+            <a href="https://www.freepik.com/free-photo/young-professor-holding-book-while-explaining-wearing-glasses-beige-wall_17751875.htm#fromView=search&page=1&position=16&uuid=b78d74e2-8d6b-4507-8a01-ceabdb9e9427">Image by ArthurHidden on Freepik</a>
+        </div>
+    </div>
 
-<h2>Benefits of Registering:</h2>
-<ul>
-    <li>Flexible Schedule: Set your own availability for tutoring sessions.</li>
-    <li>Make a Difference: Help students achieve their academic goals.</li>
-    <li>Earn Income: Get paid for sharing your expertise.</li>
-    <li>Build Your Profile: Showcase your skills and experience.</li>
-</ul>
+    <!-- Tutor Registration Content -->
+    <div class="col-md-8">
+        <h1>Become a Tutor</h1>
 
-<h2>Get Started Today!</h2>
-<p>Ready to embark on a rewarding journey? <a href="{{ url_for('core.tutor_registration') }}">Get started now</a> and join our community of passionate tutors!</p>
+        <p>Unlock the potential to make a difference in students' lives by becoming a tutor with our platform. Share your knowledge, inspire others, and earn while doing it!</p>
 
-<h2>Registration Fee</h2>
-<p>To cover administrative costs and ensure the quality of our tutoring network, there is a one-time registration fee of N10,000.</p>
+        <h2>Benefits of Registering:</h2>
+        <ul>
+            <li>Flexible Schedule: Set your own availability for tutoring sessions.</li>
+            <li>Make a Difference: Help students achieve their academic goals.</li>
+            <li>Earn Income: Get paid for sharing your expertise.</li>
+            <li>Build Your Profile: Showcase your skills and experience.</li>
+        </ul>
 
-<p>Register now and start making a positive impact!</p>
-    {% endblock %}
+        <h2>Get Started Today!</h2>
+        <p>Ready to embark on a rewarding journey? <a href="{{ url_for('core.tutor_registration') }}" class="btn-primary">Get started now</a> and join our community of passionate tutors!</p>
+        <h2>Registration Fee</h2>
+        <p>To cover administrative costs and ensure the quality of our tutoring network, there is a one-time registration fee of N10,000.</p>
+
+        <p>Register now and start making a positive impact!</p>
+    </div>
+</div>
+{% endblock %}

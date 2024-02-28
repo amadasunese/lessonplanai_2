@@ -7,13 +7,9 @@
     <div class="dashboard-links">
         <ul>
             <a href="{{ url_for('core.manage_users') }}">Manage Users</a>
-            <a href="{{ url_for('core.tutor_list')}}">Manage Tutors</a>
-            <a href="{{ url_for('core.service_fee_payment')}}">Pay Tutor Fee</a>
-            <a href="{{ url_for('core.tutor_registration')}}">Register a Tutor</a>
-            
-  
-            <!-- Add other links as needed -->
-
+            <a href="{{ url_for('core.registered_tutors')}}">Manage Tutors</a>
+            <a href="{{ url_for('core.registered_parents')}}">Manage Registered Parents</a>
+            <a href="{{ url_for('core.subscribed_users')}}">Manage Subscribed Users</a>
         </ul>
     </div>
 </div>

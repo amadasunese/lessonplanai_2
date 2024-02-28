@@ -8,11 +8,6 @@ a {
   text-decoration: none;
 }
 
-
-/* From here */
-
-/* Make sure the page is at least full height */
-
 body {
   display: flex;
   flex-direction: column;
@@ -27,29 +22,27 @@ footer {
   flex-shrink: 0;
 }
 
-/* styles.css */
-
 /* Social Media Icons */
 .social-media-icons {
   text-align: center;
-  padding-top: 1rem; /* Add some spacing at the top */
+  padding-top: 1rem;
 }
 
 .social-media-icons a {
-  color: #333; /* Icon color */
-  margin: 0 10px; /* Spacing between icons */
-  font-size: 24px; /* Icon size */
-  transition: color 0.3s ease; /* Smooth color transition for hover effect */
+  color: #333;
+  margin: 0 10px;
+  font-size: 24px;
+  transition: color 0.3s ease;
 }
 
 .social-media-icons a:hover {
-  color: #0056b3; /* Icon color on hover */
+  color: #0056b3;
 }
 
 
 /* Social media column */
 #social-media-column {
-  padding-left: 1rem; /* Add some padding to the left of the social media column */
+  padding-left: 1rem;
 }
 
 @media (max-width: 768px) {
@@ -60,30 +53,17 @@ footer {
   
   #social-media-column {
       padding-left: 0;
-      margin-top: 1rem; /* Add some space above the social media section on small screens */
+      margin-top: 1rem;
   }
 }
-
-/* Add this to your styles.css file */
-/* .navbar-toggler-icon {
-  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'><path stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/></svg>");
-} */
 
 .navbar-nav .nav-link {
   color: white !important;
 }
 
-/* .navbar-nav .nav-link:hover,
-.navbar-nav .nav-link:focus {
-  color: rgba(255, 255, 255, 0.75) !important; /* Adjust the hover/focus color as needed */
-} */
-
 .navbar-nav {
   margin-bottom: 0;
 }
-/* .bg-primary1 {
-  background-color: rgba(179, 197, 21, 0.781) !important;
-} */
 
 .bg-primary1 {
   background-color: rgba(179, 179, 21, 0.781) !important;
@@ -92,7 +72,7 @@ footer {
 /* Sticky Social Media Sidebar Styles */
 .social-media-sidebar {
   position: sticky;
-  top: 100px; /* Adjust based on your header's height */
+  top: 100px;
   height: fit-content;
 }
 
@@ -106,8 +86,8 @@ footer {
   display: flex;
   align-items: center;
   margin-bottom: 1rem;
-  color: #fff; /* White color text */
-  background-color: #333; /* Dark background for the icons */
+  color: #fff;
+  background-color: #333;
   padding: 0.5rem;
   border-radius: 0.25rem;
   width: 100%;
@@ -122,8 +102,8 @@ footer {
 .social-links a:hover,
 .social-links a:focus {
   color: #fff;
-  background-color: #007bff; /* Highlight color */
-  text-decoration: none; /* Removes underline from icons */
+  background-color: #007bff;
+  text-decoration: none;
 }
 
 /* Responsive adjustment */
@@ -137,125 +117,87 @@ footer {
 
 /* Custom CSS file */
 .testimonial-text-color {
-  color: #f8f9fa; /* This is a light color suitable for dark backgrounds */
+  color: #f8f9fa;
 }
 
 .testimonial-img {
-  width: 100%; /* This ensures images are responsive */
-  border-radius: 0.25rem; /* Optional: Adds slight rounding to image corners */
+  width: 100%;
+  border-radius: 0.25rem;
 }
 
-/* If you're using Bootstrap, its utility classes can handle the background and text color changes */
 .bg-dark-blue {
-  background-color: #003366 !important; /* This sets a dark blue background */
+  background-color: #003366 !important;
 }
-
-/* body cover photo area style */
-
-/*.features-section {
-/*   background-color: #f4f7f6; /* Soft background color */
-/*   color: #333; /* Primary text color */
-/*   text-align: center; /* Center-align text */
-/*  padding: 15px 0; /* Padding for top and bottom */
-/*  margin-right: 50px;
-
-} */
-/* .features-section h3 {
-  color: #2a5298; /* Dark blue color for heading */
-  /* margin-bottom: 1rem; /* Spacing after the heading */
-/* } */ */ */
-/* .row {
-  margin-right: 0;
-  margin-left: 0;
-} */
-/* .col-md-8 {
-  padding-right: 0;
-  padding-left: 0;
-} */
-/* .img-fluid {
-  width: 200%; /* Forces the image to expand to the full width */
-  /* height: auto; /* Maintains aspect ratio */
- /* border-radius: 0; /* If you want no rounded corners */
- /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  /*display: block; /* Removes bottom space under the image */
-/*} */
 
 hr {
 border: none;
 height: 5px;
-background-color: red; /* Set the color */
+background-color: red;
 }
 
 
 .full-width-image {
-width: 100%; /* Make the image take the full width of its container */
-height: auto; /* Adjust the height automatically */
-display: block; /* Display block to remove any space below the image */
+width: 100%;
+height: auto;
+display: block;
 margin-top: 2px !important;
 }
 
 
 .dark-blue-background {
-  background-color: #00008B; /* Dark blue background */
-  color: white; /* White text */
-  text-align: center; /* Center text */
-  padding: 10px 0; /* Padding above and below the text */
+  background-color: #00008B;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
   margin-top: 0px;
-  animation: fadeIn 1.5s ease-out; /* Apply the fadeIn animation */
+  animation: fadeIn 1.5s ease-out;
 }
 
 .dark-blue-background h3 {
-  margin: 0; /* Remove default margin */
-  padding: 10px 0; /* Add some padding */
-  font-size: 24px; /* Adjust font size as needed */
-  font-weight: bold; /* Bold font */
+  margin: 0;
+  padding: 10px 0;
+  font-size: 24px;
+  font-weight: bold;
 }
 
-/* .dark-blue-background {
-  background-color: #001f3f; /* Dark blue color */
-  /* color: #ffffff; 
-  padding: 20px;
-  text-align: center; */
-
-/*} */
 
 @keyframes fadeIn {
   from {
-      opacity: 0; /* Start with 0 opacity */
+      opacity: 0;
   }
   to {
-      opacity: 1; /* End with full opacity */
+      opacity: 1;
   }
 }
 
 
 
 .dark-blue-background2 {
-  background-color: #00008B; /* Dark blue background */
-  color: white; /* White text */
-  text-align: center; /* Center text */
-  padding: 10px 0; /* Padding above and below the text */
+  background-color: #00008B;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
   margin-bottom: 5px !important;
 }
 
 .dark-blue-background2 h3 {
-  margin: 0; /* Remove default margin */
-  padding: 5px 0; /* Add some padding */
-  font-size: 15px; /* Adjust font size as needed */
-  font-weight: bold; /* Bold font */
+  margin: 0;
+  padding: 5px 0;
+  font-size: 15px;
+  font-weight: bold;
 }
 
 
 .image-container {
-  width: 100%; /* Full width */
-  overflow: hidden; /* Hide any overflow */
+  width: 100%;
+  overflow: hidden;
   margin-bottom: 10px;
 }
 
 .full-width-image {
-  width: 100%; /* Full width of its container */
-  height: auto; /* Keep aspect ratio */
-  display: block; /* Display block to avoid extra space below the image */
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .testimonial-img{
@@ -266,13 +208,8 @@ margin-top: 2px !important;
 /* subscribe email field */
 
 .wider-input {
-  width: 300px; /* Adjust the width to your preference */
+  width: 300px;
 }
-
-
-
-
-
 
 
 /* Add this CSS to your stylesheet */
@@ -288,12 +225,12 @@ margin-top: 2px !important;
   outline: none;
 }
 .navbar-toggler-icon {
-  background-color: #fff; /* Customize the color of the toggle icon */
+  background-color: #fff;
 }
 
 #logo {
-  margin-top: 0px;    /* Adjust the top margin to your preference */
-  margin-bottom: 2px; /* Adjust the bottom margin to your preference */
+  margin-top: 0px;
+  margin-bottom: 2px;
 }
 
 .navbar {
@@ -304,27 +241,19 @@ margin-top: 2px !important;
 
 /* tutor registration form */
 .progress {
-  height: 20px; /* Adjust the height as needed */
+  height: 20px;
 }
 
 .progress-bar {
-  background-color: #007bff; /* Blue background */
+  background-color: #007bff;
 }
 
 
-/* styles.css */
-/* body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 20px;
-  background-color: #f4f4f4; /* Light gray background */
-} */
-
 form {
-  background-color: #fff; /* White form background */
+  background-color: #fff;
   padding: 30px;
   border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   max-width: 500px;
   margin: 30px auto;    
 }
@@ -360,7 +289,7 @@ textarea {
 }
 
 button[type="submit"] {
-  background-color: #008cba; /* A shade of blue */
+  background-color: #008cba;
   color: #fff;
   padding: 12px 20px;
   border: none;
@@ -370,5 +299,161 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background-color: #0075a4; /* Darker blue on hover */
+  background-color: #0075a4;
+}
+
+
+/* tutors profile page */
+
+.tutor-profile-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.tutor-info {
+  width: 70%;
+}
+
+.tutor-photo {
+  width: 30%;
+  text-align: center;
+}
+
+.tutor-photo img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Additional styling for the tutor-info section */
+.tutor-info h2 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.tutor-info p {
+  color: #555;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+/* dropdown menus */
+.nav-item.dropdown:hover > .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu {
+  display: none;
+}
+
+
+.img-with-text img {
+  float: left;
+  margin-right: 20px;
+  width: 600px;
+  height: auto;
+}
+
+.img-with-text {
+  float: left;
+  margin-right: 20px;
+}
+
+.photo-credit {
+  font-size: 0.8em;
+  text-align: left;
+  margin-top: 5px;
+}
+
+.clearfix {
+  clear: both;
+}
+
+/* Registered Parents table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: left;
+}
+
+
+/* General styling for the admin dashboard */
+.admin-dashboard {
+  text-align: center;
+  margin: 20px;
+}
+
+.admin-dashboard h1 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Styling for the Admin dashboard links */
+.dashboard-links ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.dashboard-links a {
+  display: inline-block;
+  margin: 10px 15px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.dashboard-links a:hover {
+  background-color: #0056b3;
+}
+
+/* dashboard */
+
+.button-widget {
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.subscription-info {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.alert {
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+
+.alert-dismissible-d .close-d {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 15px;
 }

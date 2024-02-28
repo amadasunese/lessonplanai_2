@@ -1,27 +1,40 @@
 {% extends "_base.html" %}
 
 {% block content %}
-    <h1>Looking for a Qualified Tutor?</h1>
-    
-    <p>Finding the right tutor for your child is a crucial step in their academic journey. Our platform connects you with qualified tutors who can provide personalized support and guidance.</p>
+<div class="container">  
+    <div class="row">
+        <div class="col-md-12"> 
+            <div class="img-with-text">
+                <img src="{{ url_for('static', filename='images/parent.png') }}" alt="Tutoring Cover Photo" class="img-fluid">
+                <p class="photo-credit">Photo by [Photographer's Name] on [Source Website (optional)]</p>
+            </div>
+            
+            <h1>Looking for a Qualified Tutor?</h1>
+            <p>Finding the right tutor for your child is a crucial step in their academic journey. Our platform connects you with qualified tutors who can provide personalized support and guidance.</p>
 
-    <h2>Why Choose Our Tutors?</h2>
-    <ul>
-        <li>Qualified Experts: Our tutors are experienced and knowledgeable in their respective subjects.</li>
-        <li>Customized Learning: Tailored tutoring sessions to meet your child's unique needs.</li>
-        <li>Verified Profiles: We ensure the authenticity and qualifications of our tutors.</li>
-        <li>Convenient Scheduling: Choose flexible tutoring schedules that suit your family's lifestyle.</li>
-    </ul>
+            <h2>Why Choose Our Tutors?</h2>
+            <ul>
+                <li>Qualified Experts: Our tutors are experienced and knowledgeable in their respective subjects.</li>
+                <li>Customized Learning: Tailored tutoring sessions to meet your child's unique needs.</li>
+                <li>Verified Profiles: We ensure the authenticity and qualifications of our tutors.</li>
+                <li>Convenient Scheduling: Choose flexible tutoring schedules that suit your family's lifestyle.</li>
+            </ul>
 
-    <h2>How It Works</h2>
-    <ol>
-        <li>Explore Tutors: Browse through our list of qualified tutors.</li>
-        <li>Review Profiles: Read about each tutor's background, expertise, and teaching style.</li>
-        <li>Connect: Reach out to potential tutors to discuss your child's needs.</li>
-        <li>Get Started: Schedule a trial session to ensure a good fit.</li>
-    </ol>
+            <h2>How It Works</h2>
+            <ol>
+                <li>Explore Tutors: Browse through our list of qualified tutors.</li>
+                <li>Review Profiles: Read about each tutor's background, expertise, and teaching style.</li>
+                <li>Connect: Reach out to potential tutors to discuss your child's needs.</li>
+                <li>Get Started: Schedule a trial session to ensure a good fit.</li>
+            </ol>
 
-    <h2>Start Your Search Today!</h2>
-    <p>Ready to find the perfect tutor for your child? <a href="{{ url_for('core.tutor_exploration') }}">Start your search now</a> and empower your child's learning journey!</p>
+            <h2>Start Your Search Today!</h2>
+            <p>Ready to find the perfect tutor for your child? <a href="{{ url_for('core.register_parent') }}">Start your search now</a> and empower your child's learning journey!</p>
 
+            <a href="{{ url_for('core.search_tutors') }}" class="btn btn-primary">Find a Tutor</a>
+
+            <div class="clearfix"></div> <!-- Clear the float at the end -->
+        </div>
+    </div>
+</div>
 {% endblock %}

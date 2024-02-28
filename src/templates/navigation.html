@@ -1,5 +1,6 @@
 <!-- Navigation with Logo -->
 <header>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Bootstrap Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
@@ -13,8 +14,6 @@
           <div class="collapse navbar-collapse" id="navbarResponsive">
               <ul class="navbar-nav ml-auto">
             <!-- Navigation items go here -->
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('core.about') }}">About LessonPlanAI</a></li>
-  
             {% if not current_user.is_authenticated %}
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('accounts.register') }}">Sign Up</a>
@@ -23,26 +22,49 @@
               <a class="nav-link" href="{{ url_for('accounts.login') }}">Login</a>
             </li>
             {% endif %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('accounts.contact') }}">Contact</a></li>
+
             <!-- Services Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                About Us
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="{{ url_for('core.hire_tutor') }}">About LessonPlanAI</a>
+                <a class="dropdown-item" href="{{ url_for('core.faq') }}">FAQ</a>
+                <a class="dropdown-item" href="{{ url_for('accounts.contact') }}">Connect With Us</a>
+            </div>
+        </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    For Educators
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="{{ url_for('core.generate_lesson') }}">Generate Lesson Note</a>
+                    <a class="dropdown-item" href="{{ url_for('core.online_tutor') }}">Register as a Tutor</a>
+                </div>
+            </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Services
+                  For Parents
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="{{ url_for('core.about') }}">About LessonPlanAI</a>
-                  <a class="dropdown-item" href="{{ url_for('core.generate_lesson') }}">Generate Lesson Plan</a>
-                  <a class="dropdown-item" href="{{ url_for('core.generate_lesson') }}">Generate Lesson Note</a>
-                  <a class="dropdown-item" href="{{ url_for('core.online_tutor') }}">Register as a Tutor</a>
                   <a class="dropdown-item" href="{{ url_for('core.hire_tutor') }}">Hire a Tutor</a>
-                  <a class="dropdown-item" href="{{ url_for('core.faq') }}">FAQ</a>
+                  <a class="dropdown-item" href="{{ url_for('core.search_tutors') }}">Search for Tutor</a>
+              </div>
+          </li>
+            {% if current_user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Dashboard
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                  <a class="dropdown-item" href="{{ url_for('core.dashboard') }}">Go to Dashboard</a>
+                  <a class="dropdown-item" href="{{ url_for('core.generate_lesson') }}">Generate Lesson</a>
+                  <a class="dropdown-item" href="{{ url_for('core.subscribe') }}">Subscribe to a Plan</a>
+                  <a class="dropdown-item" href="{{ url_for('core.service_fee_payment') }}">Pay Tutor Registration Fee</a>
               </div>
           </li>
 
-
-            {% if current_user.is_authenticated %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('core.dashboard') }}">Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('core.generate_lesson') }}">Generate Lesson</a></li>
             <!-- Admin-only link -->
             {% if current_user.is_admin %}
             <li class="nav-item"><a class="nav-link" href="{{ url_for('core.admin_dashboard') }}">Admin Dashboard</a></li>
@@ -61,5 +83,7 @@
         
       </div>
     </div>
+
+  
   </header>
   
