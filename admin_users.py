@@ -23,7 +23,7 @@ bcrypt = Bcrypt
 # import os
 # from config import config
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
 
 def add_admin(first_name, last_name, email, password):
@@ -37,14 +37,14 @@ def add_admin(first_name, last_name, email, password):
                           password=password, is_admin=True)
         db.session.add(admin_user)
         db.session.commit()
-    return render_template('about.html')
+    # return render_template('about.html')
 
 
 if __name__ == '__main__':
     app.run(debug=True)
 
-    # first_name = input("Enter admin first name: ")
-    # last_name = input("Enter admin last name: ")
-    # email = input("Enter admin email: ")
-    # password = input("Enter admin password: ")
-    # add_admin(first_name, last_name, email, password)
+    first_name = input("Enter admin first name: ")
+    last_name = input("Enter admin last name: ")
+    email = input("Enter admin email: ")
+    password = input("Enter admin password: ")
+    add_admin(first_name, last_name, email, password)

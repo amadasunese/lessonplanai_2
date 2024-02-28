@@ -16,6 +16,7 @@ import os
 from paystackapi.transaction import Transaction
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
+from src.utils.plan import plans
 
 
 core_bp = Blueprint("core", __name__)
@@ -228,6 +229,11 @@ def edit_tutor(tutor_id):
     return render_template('core/edit_tutor.html', tutor=tutor)
 
 
+# @core_bp.route('/tutor_list', methods=['GET', 'POST'])
+# @login_required
+# def tutor_list():
+#     return render_template('core/tutor_list.html')
+
 
 ######################################
 #   Subscription & payment routes    #
@@ -238,24 +244,20 @@ def edit_tutor(tutor_id):
 def subscribe_starter():
     plan = 'Starter'
     amount = '20000'
-    first_name = current_user.first_name
-    last_name = current_user.last_name
     email = current_user.email
 
     response = Transaction.initialize(amount=amount, email=email)
-
     ref = response.get('data', {}).get('reference')
-    print(f"{first_name} {last_name}")
-    
+
     create_subscription_instance = Subscription(
         plan='Starter',
         amount=2000,
         start_date=datetime.utcnow(),
         end_date=datetime.utcnow() + timedelta(days=plans['starter']['duration']),
         remaining_usages=plans['starter']['usage_limit'],
-        paid=True,
+        paid=False,
         user_id=current_user.id,
-        paystack_subscription_id=response.get('data', {}).get('reference')
+        paystack_subscription_id=ref
     )
 
     db.session.add(create_subscription_instance)
@@ -268,26 +270,24 @@ def subscribe_starter():
 @core_bp.route('/subscribe_basic', methods=['GET', 'POST'])
 @login_required
 def subscribe_basic():
+    plan = 'Basic'
     amount = '5000'
-    first_name = current_user.first_name
-    last_name = current_user.last_name
     email = current_user.email
 
     response = Transaction.initialize(amount=amount, email=email)
-
     ref = response['data']['reference']
-    print(f"{first_name} {last_name}")
-    
+
     create_subscription_instance = Subscription(
-        plan='Starter',
+        plan='Basic',
         amount=5000,
         start_date=datetime.utcnow(),
         end_date=datetime.utcnow() + timedelta(days=plans['basic']['duration']),
         remaining_usages=plans['basic']['usage_limit'],
-        paid=True,
+        paid=False,
         user_id=current_user.id,
-        paystack_subscription_id=response['data']['reference']
+        paystack_subscription_id=ref
     )
+
     db.session.add(create_subscription_instance)
     db.session.commit()
 
@@ -298,26 +298,24 @@ def subscribe_basic():
 @core_bp.route('/subscribe_premium', methods=['GET', 'POST'])
 @login_required
 def subscribe_premium():
-    amount = '10000'
-    first_name = current_user.first_name
-    last_name = current_user.last_name
+    plan = 'Premium'
+    amount = '10000'  # Ensure this is the correct amount
     email = current_user.email
 
     response = Transaction.initialize(amount=amount, email=email)
-
     ref = response['data']['reference']
-    print(f"{first_name} {last_name}")
-    
+
     create_subscription_instance = Subscription(
-        plan='Starter',
+        plan=plan,
         amount=10000,
         start_date=datetime.utcnow(),
         end_date=datetime.utcnow() + timedelta(days=plans['premium']['duration']),
         remaining_usages=plans['premium']['usage_limit'],
-        paid=True,
+        paid=False,
         user_id=current_user.id,
-        paystack_subscription_id=response['data']['reference']
+        paystack_subscription_id=ref
     )
+
     db.session.add(create_subscription_instance)
     db.session.commit()
 
@@ -325,40 +323,219 @@ def subscribe_premium():
     return redirect(a_url)
 
 
+# @core_bp.route('/verify_payment', methods=['GET', 'POST'])
+# @login_required
+# def verify_payment():
+#     paramz = request.args.get('trxref', 'None')
+
+#     details = Transaction.verify(reference=paramz)
+#     status = details['data']['status']
+
+#     if status == 'success':
+#         pay_instance = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
+#         if pay_instance:
+#             pay_instance.paid = True
+#             if pay_instance.plan == 'Starter':
+#                 expiry_date = pay_instance.start_date + timedelta(days=1)
+#             elif pay_instance.plan == 'Basic':
+#                 expiry_date = pay_instance.start_date + timedelta(days=7)
+#             elif pay_instance.plan == 'Premium':
+#                 expiry_date = pay_instance.start_date + timedelta(days=30)
+
+#             pay_instance.end_date = expiry_date
+
+#             # Update user subscription details
+#             current_user.subscribed = True
+#             current_user.expiry_date = expiry_date
+#             db.session.commit()
+#             print('Payment successful!')
+#         else:
+#             print('Subscription not found for the given transaction reference.')
+#     else:
+#         print('Payment not successful')
+
+#     return redirect('core.dashboard')
+
+
 @core_bp.route('/verify_payment', methods=['GET', 'POST'])
 @login_required
 def verify_payment():
     paramz = request.args.get('trxref', 'None')
-    first_name = current_user.first_name
-    last_name = current_user.last_name
-    email = current_user.email
-    print(paramz)
-    
+
     details = Transaction.verify(reference=paramz)
     status = details['data']['status']
-    
+
     if status == 'success':
+        # Find the subscription instance
         pay_instance = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
         if pay_instance:
+            pay_instance.paid = True
+            expiry_date = datetime.utcnow()  # Default expiry date
             if pay_instance.plan == 'Starter':
-                expiry_date = pay_instance.start_date + timedelta(days=1)
+                expiry_date += timedelta(days=1)
             elif pay_instance.plan == 'Basic':
-                expiry_date = pay_instance.start_date + timedelta(days=7)
+                expiry_date += timedelta(days=7)
             elif pay_instance.plan == 'Premium':
-                expiry_date = pay_instance.start_date + timedelta(days=30)
+                expiry_date += timedelta(days=30)
 
-            pay_instance.update(paid=True, end_date=expiry_date)
+            pay_instance.end_date = expiry_date
 
-            """Update the user subscription details"""
-            current_user.update(subscribed=True, expiry_date=expiry_date)
+            # Update user subscription details
+            current_user.subscribed = True
+            current_user.expiry_date = expiry_date
+
+            # Create or update TutorFeePayment instance
+            tutor_fee_payment = TutorFeePayment.query.filter_by(transaction_id=paramz).first()
+            if not tutor_fee_payment:
+                tutor_fee_payment = TutorFeePayment(
+                    transaction_id=paramz,
+                    amount=pay_instance.amount,
+                    paid_on=datetime.utcnow(),
+                    tutor_id=current_user.id  # or however you identify the tutor
+                )
+                db.session.add(tutor_fee_payment)
+            else:
+                tutor_fee_payment.amount = pay_instance.amount
+                tutor_fee_payment.paid_on = datetime.utcnow()
+
+            # Associate the payment with the tutor
+            current_user.fee_payments.append(tutor_fee_payment)
+
+            db.session.commit()
             print('Payment successful!')
         else:
             print('Subscription not found for the given transaction reference.')
-
     else:
         print('Payment not successful')
 
     return redirect('core.dashboard')
+
+# @core_bp.route('/subscribe_starter', methods=['GET', 'POST'])
+# @login_required
+# def subscribe_starter():
+#     plan = 'Starter'
+#     amount = '20000'
+#     first_name = current_user.first_name
+#     last_name = current_user.last_name
+#     email = current_user.email
+
+#     response = Transaction.initialize(amount=amount, email=email)
+
+#     ref = response.get('data', {}).get('reference')
+#     print(f"{first_name} {last_name}")
+    
+#     create_subscription_instance = Subscription(
+#         plan='Starter',
+#         amount=2000,
+#         start_date=datetime.utcnow(),
+#         end_date=datetime.utcnow() + timedelta(days=plans['starter']['duration']),
+#         remaining_usages=plans['starter']['usage_limit'],
+#         paid=True,
+#         user_id=current_user.id,
+#         paystack_subscription_id=response.get('data', {}).get('reference')
+#     )
+
+#     db.session.add(create_subscription_instance)
+#     db.session.commit()
+
+#     a_url = response['data']['authorization_url']
+#     return redirect(a_url)
+
+
+# @core_bp.route('/subscribe_basic', methods=['GET', 'POST'])
+# @login_required
+# def subscribe_basic():
+#     amount = '5000'
+#     first_name = current_user.first_name
+#     last_name = current_user.last_name
+#     email = current_user.email
+
+#     response = Transaction.initialize(amount=amount, email=email)
+
+#     ref = response['data']['reference']
+#     print(f"{first_name} {last_name}")
+    
+#     create_subscription_instance = Subscription(
+#         plan='Starter',
+#         amount=5000,
+#         start_date=datetime.utcnow(),
+#         end_date=datetime.utcnow() + timedelta(days=plans['basic']['duration']),
+#         remaining_usages=plans['basic']['usage_limit'],
+#         paid=True,
+#         user_id=current_user.id,
+#         paystack_subscription_id=response['data']['reference']
+#     )
+#     db.session.add(create_subscription_instance)
+#     db.session.commit()
+
+#     a_url = response['data']['authorization_url']
+#     return redirect(a_url)
+
+
+# @core_bp.route('/subscribe_premium', methods=['GET', 'POST'])
+# @login_required
+# def subscribe_premium():
+#     amount = '10000'
+#     first_name = current_user.first_name
+#     last_name = current_user.last_name
+#     email = current_user.email
+
+#     response = Transaction.initialize(amount=amount, email=email)
+
+#     ref = response['data']['reference']
+#     print(f"{first_name} {last_name}")
+    
+#     create_subscription_instance = Subscription(
+#         plan='Starter',
+#         amount=10000,
+#         start_date=datetime.utcnow(),
+#         end_date=datetime.utcnow() + timedelta(days=plans['premium']['duration']),
+#         remaining_usages=plans['premium']['usage_limit'],
+#         paid=True,
+#         user_id=current_user.id,
+#         paystack_subscription_id=response['data']['reference']
+#     )
+#     db.session.add(create_subscription_instance)
+#     db.session.commit()
+
+#     a_url = response['data']['authorization_url']
+#     return redirect(a_url)
+
+
+# @core_bp.route('/verify_payment', methods=['GET', 'POST'])
+# @login_required
+# def verify_payment():
+#     paramz = request.args.get('trxref', 'None')
+#     first_name = current_user.first_name
+#     last_name = current_user.last_name
+#     email = current_user.email
+#     print(paramz)
+    
+#     details = Transaction.verify(reference=paramz)
+#     status = details['data']['status']
+    
+#     if status == 'success':
+#         pay_instance = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
+#         if pay_instance:
+#             if pay_instance.plan == 'Starter':
+#                 expiry_date = pay_instance.start_date + timedelta(days=1)
+#             elif pay_instance.plan == 'Basic':
+#                 expiry_date = pay_instance.start_date + timedelta(days=7)
+#             elif pay_instance.plan == 'Premium':
+#                 expiry_date = pay_instance.start_date + timedelta(days=30)
+
+#             pay_instance.update(paid=True, end_date=expiry_date)
+
+#             """Update the user subscription details"""
+#             current_user.update(subscribed=True, expiry_date=expiry_date)
+#             print('Payment successful!')
+#         else:
+#             print('Subscription not found for the given transaction reference.')
+
+#     else:
+#         print('Payment not successful')
+
+#     return redirect('core.dashboard')
 
 
 # Tutor registration fee
@@ -366,33 +543,50 @@ fees = {
     'registration_fee': {'name': 'Registration Fee', 'cost': 10000}
 }
 
+# @core_bp.route('/tutor_fee_payment', methods=['GET', 'POST'])
+# @login_required
+# def tutor_fee_payment():
+#     amount = '10000'
+#     email = current_user.email
+#     tutor_id = current_user.id
+
+#     response = Transaction.initialize(amount=amount, email=email)
+
+#     ref = response['data']['reference']
+#     print(f"{amount} {email} {tutor_id}")
+
+#     tutor = Tutor.query.get(tutor_id)
+
+#     if tutor:
+#         tutor_fee_payment_instance = TutorFeePayment(
+#             tutor_id=tutor_id,
+#             amount=10000,
+#             payment_date=datetime.now()
+#         )
+
+#         db.session.add(tutor_fee_payment_instance)
+#         db.session.commit()
+
+#     a_url = response['data']['authorization_url']
+#     return redirect(a_url)
+#     return render_template('core/tutor_fee_payment.html', amount=amount, ref=ref, email=email)
+
+
 @core_bp.route('/tutor_fee_payment', methods=['GET', 'POST'])
 @login_required
 def tutor_fee_payment():
-    amount = '10000'
+    amount = 10000  # use an integer for amount
     email = current_user.email
     tutor_id = current_user.id
 
-    response = Transaction.initialize(amount=amount, email=email)
-
+    response = Transaction.initialize(amount=str(amount), email=email)  # convert amount to string here
     ref = response['data']['reference']
     print(f"{amount} {email} {tutor_id}")
 
-    tutor = Tutor.query.get(tutor_id)
-
-    if tutor:
-        tutor_fee_payment_instance = TutorFeePayment(
-            tutor_id=tutor_id,
-            amount=10000,
-            payment_date=datetime.now()
-        )
-
-        db.session.add(tutor_fee_payment_instance)
-        db.session.commit()
-
+    # Redirect to the payment authorization URL
     a_url = response['data']['authorization_url']
     return redirect(a_url)
-    return render_template('core/tutor_fee_payment.html', amount=amount, ref=ref, email=email)
+
 
 
 @core_bp.route('/service_fee_payment', methods=['GET', 'POST'])
@@ -583,6 +777,12 @@ def display_photo(tutor_id):
         return send_file(tutor.photo_path, mimetype='image/jpeg')
     else:
         return send_file('path_to_default_image', mimetype='image/jpeg')
+
+
+# @core_bp.route('/subscribed_users')
+# def subscribed_users():
+#     users = User.query.filter(User.subscription.isnot(None)).all()
+#     return render_template('accounts/subscribed_users.html', users=users)
 
 
 @core_bp.route('/subscribed_users')

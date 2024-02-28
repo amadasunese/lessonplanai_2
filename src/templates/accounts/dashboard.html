@@ -22,7 +22,7 @@
         <h3 class="text-center mb-4">Subscription Information</h3>
         {% if subscription %}
         <div class="card">
-          <div class="card-body">
+          <div class="card-body-d">
             <p class="card-text"><strong>Plan:</strong> {{ subscription.plan }}</p>
             <p class="card-text"><strong>Amount:</strong> {{ subscription.amount }}</p>
             <p class="card-text"><strong>Date Subscribed:</strong> {{ subscription.start_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
