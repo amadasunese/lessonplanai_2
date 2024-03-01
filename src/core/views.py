@@ -364,13 +364,13 @@ def edit_tutor(tutor_id):
 @login_required
 def subscribe_starter():
     plan = 'Starter'
-    amount = '20000'  # Ensure this matches the plan's actual amount
+    amount = '20000'
     email = current_user.email
 
     response = Transaction.initialize(amount=amount, email=email)
-    ref = response.get('data', {}).get('reference')
+    # ref = response.get('data', {}).get('reference')
+    ref = response['data']['reference']
 
-    # Redirect to Paystack payment page
     a_url = response['data']['authorization_url']
     return redirect(a_url)
 
@@ -379,13 +379,12 @@ def subscribe_starter():
 @login_required
 def subscribe_basic():
     plan = 'Basic'
-    amount = '5000'  # Ensure this matches the plan's actual amount
+    amount = '5000'
     email = current_user.email
 
     response = Transaction.initialize(amount=amount, email=email)
     ref = response['data']['reference']
 
-    # Redirect to Paystack payment page
     a_url = response['data']['authorization_url']
     return redirect(a_url)
 
@@ -394,13 +393,12 @@ def subscribe_basic():
 @login_required
 def subscribe_premium():
     plan = 'Premium'
-    amount = '10000'  # Ensure this matches the plan's actual amount
+    amount = '10000'
     email = current_user.email
 
     response = Transaction.initialize(amount=amount, email=email)
     ref = response['data']['reference']
 
-    # Redirect to Paystack payment page
     a_url = response['data']['authorization_url']
     return redirect(a_url)
 
@@ -429,7 +427,7 @@ def verify_payment():
             elif plan == 'Premium':
                 end_date = datetime.utcnow() + timedelta(days=30)
             else:
-                return 'Invalid plan', 400  # Handle unknown plan
+                return 'Invalid plan', 400
 
             # Create a new subscription instance
             subscription = Subscription(
@@ -481,7 +479,7 @@ def update_end_date(plan, start_date):
     elif plan == 'Premium':
         return start_date + timedelta(days=30)
     else:
-        return start_date  # Default case, should be handled better in real scenarios
+        return start_date
 
 
 
