@@ -405,7 +405,7 @@ def subscribe_premium():
     print(a_url)
     return redirect(a_url)
 
-@core_bp.route('/payment/verify', methods=['POST'])
+@core_bp.route('/payment/verify', methods=['GET', 'POST'])
 def verify_payment():
     # Paystack sends a JSON payload to the webhook URL
     data = request.json
