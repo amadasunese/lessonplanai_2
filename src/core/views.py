@@ -368,9 +368,18 @@ def subscribe_starter():
     amount = '20000'
     email = current_user.email
 
-    response = Transaction.initialize(amount=amount, email=email)
+    # response = Transaction.initialize(amount=amount, email=email)
     # ref = response.get('data', {}).get('reference')
+    
+    # # ref = response.get['data']['reference']
+
+    # a_url = response['data']['authorization_url']
+    # # a_url = response.get('data', {}).get('authorization_url')
+    # return redirect(a_url)
+
+    response = Transaction.initialize(amount=amount, email=email)
     ref = response['data']['reference']
+    print(f'this is {ref}')
 
     a_url = response['data']['authorization_url']
     return redirect(a_url)
@@ -405,65 +414,65 @@ def subscribe_premium():
     print(a_url)
     return redirect(a_url)
 
-@core_bp.route('/payment_verify', methods=['GET', 'POST'])
-def verify_payment():
-    # Paystack sends a JSON payload to the webhook URL
-    data = request.json
+# @core_bp.route('/payment_verify', methods=['GET', 'POST'])
+# def verify_payment():
+#     # Paystack sends a JSON payload to the webhook URL
+#     data = request.json
 
-    # Extract the reference from the data
-    reference = data.get('data', {}).get('reference')
+#     # Extract the reference from the data
+#     reference = data.get('data', {}).get('reference')
 
-    if not reference:
-        return jsonify({'message': 'No reference provided'}), 400
+#     if not reference:
+#         return jsonify({'message': 'No reference provided'}), 400
 
-    # Verify the payment by making a request to Paystack API
-    # This part is pseudo-code, adjust according to your Paystack integration library
-    verification_response = Transaction.verify(reference)
+#     # Verify the payment by making a request to Paystack API
+#     # This part is pseudo-code, adjust according to your Paystack integration library
+#     verification_response = Transaction.verify(reference)
 
-    # Check if the payment is successful
-    if verification_response['data']['status'] == 'success':
-        # Find the subscription by reference
-        subscription = Subscription.query.filter_by(paystack_subscription_id=reference).first()
-        if subscription:
-            # Assuming you have a way to determine the plan details from the subscription instance or elsewhere
-            plans = {
-                'Starter': {
-                    'cost': 2000,
-                    'duration': 1,  # number of days for the plan
-                    'usage_limit': 2,  # some usage limit
-                    # ... other plan details
-                },
-                'Basic': {
-                    'cost': 5000,
-                    'duration': 7,
-                    'usage_limit': 4,
-                    # ... other plan details
-                },
-                'Premium': {
-                    'cost': 10000,
-                    'duration': 30,
-                    'usage_limit': None,
-                    # ... other plan details
-                }
-            }
-            plan_details = plans.get(subscription.plan)
+#     # Check if the payment is successful
+#     if verification_response['data']['status'] == 'success':
+#         # Find the subscription by reference
+#         subscription = Subscription.query.filter_by(paystack_subscription_id=reference).first()
+#         if subscription:
+#             # Assuming you have a way to determine the plan details from the subscription instance or elsewhere
+#             plans = {
+#                 'Starter': {
+#                     'cost': 2000,
+#                     'duration': 1,  # number of days for the plan
+#                     'usage_limit': 2,  # some usage limit
+#                     # ... other plan details
+#                 },
+#                 'Basic': {
+#                     'cost': 5000,
+#                     'duration': 7,
+#                     'usage_limit': 4,
+#                     # ... other plan details
+#                 },
+#                 'Premium': {
+#                     'cost': 10000,
+#                     'duration': 30,
+#                     'usage_limit': None,
+#                     # ... other plan details
+#                 }
+#             }
+#             plan_details = plans.get(subscription.plan)
 
-            # Update subscription status and details
-            subscription.paid = True
-            subscription.amount='cost'
-            subscription.start_date = datetime.utcnow()
-            subscription.end_date = datetime.utcnow() + timedelta(days=plan_details['duration'])
-            subscription.remaining_usages = plan_details['usage_limit']
+#             # Update subscription status and details
+#             subscription.paid = True
+#             subscription.amount='cost'
+#             subscription.start_date = datetime.utcnow()
+#             subscription.end_date = datetime.utcnow() + timedelta(days=plan_details['duration'])
+#             subscription.remaining_usages = plan_details['usage_limit']
             
-            db.session.commit()
+#             db.session.commit()
 
-            return redirect(url_for('core.dashboard'))
+#             return redirect(url_for('core.dashboard'))
         
-            return jsonify({'message': 'Payment verified and subscription updated'}), 200
-        else:
-            return jsonify({'message': 'Subscription not found'}), 404
-    else:
-        return jsonify({'message': 'Payment verification failed'}), 400
+#             return jsonify({'message': 'Payment verified and subscription updated'}), 200
+#         else:
+#             return jsonify({'message': 'Subscription not found'}), 404
+#     else:
+#         return jsonify({'message': 'Payment verification failed'}), 400
 
 ######
 # @core_bp.route('/verify_payment', methods=['GET', 'POST'])
@@ -622,58 +631,58 @@ def tutor_fee_payment():
     return redirect(a_url)
 
 
-# @core_bp.route('/verify_payment', methods=['GET', 'POST'])
-# @login_required
-# def verify_payment():
-#     paramz = request.args.get('trxref', 'None')
+@core_bp.route('/verify_payment', methods=['GET', 'POST'])
+@login_required
+def verify_payment():
+    paramz = request.args.get('trxref', 'None')
 
-#     details = Transaction.verify(reference=paramz)
-#     status = details['data']['status']
+    details = Transaction.verify(reference=paramz)
+    status = details['data']['status']
 
-#     if status == 'success':
-#         # Find the subscription instance
-#         pay_instance = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
-#         if pay_instance:
-#             pay_instance.paid = True
-#             expiry_date = datetime.utcnow()  # Default expiry date
-#             if pay_instance.plan == 'Starter':
-#                 expiry_date += timedelta(days=1)
-#             elif pay_instance.plan == 'Basic':
-#                 expiry_date += timedelta(days=7)
-#             elif pay_instance.plan == 'Premium':
-#                 expiry_date += timedelta(days=30)
+    if status == 'success':
+        # Find the subscription instance
+        pay_instance = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
+        if pay_instance:
+            pay_instance.paid = True
+            expiry_date = datetime.utcnow()  # Default expiry date
+            if pay_instance.plan == 'Starter':
+                expiry_date += timedelta(days=1)
+            elif pay_instance.plan == 'Basic':
+                expiry_date += timedelta(days=7)
+            elif pay_instance.plan == 'Premium':
+                expiry_date += timedelta(days=30)
 
-#             pay_instance.end_date = expiry_date
+            pay_instance.end_date = expiry_date
 
-#             # Update user subscription details
-#             current_user.subscribed = True
-#             current_user.expiry_date = expiry_date
+            # Update user subscription details
+            current_user.subscribed = True
+            current_user.expiry_date = expiry_date
 
-#             # Create or update TutorFeePayment instance
-#             tutor_fee_payment = TutorFeePayment.query.filter_by(transaction_id=paramz).first()
-#             if not tutor_fee_payment:
-#                 tutor_fee_payment = TutorFeePayment(
-#                     transaction_id=paramz,
-#                     amount=pay_instance.amount,
-#                     paid_on=datetime.utcnow(),
-#                     tutor_id=current_user.id  # or however you identify the tutor
-#                 )
-#                 db.session.add(tutor_fee_payment)
-#             else:
-#                 tutor_fee_payment.amount = pay_instance.amount
-#                 tutor_fee_payment.paid_on = datetime.utcnow()
+            # Create or update TutorFeePayment instance
+            tutor_fee_payment = TutorFeePayment.query.filter_by(transaction_id=paramz).first()
+            if not tutor_fee_payment:
+                tutor_fee_payment = TutorFeePayment(
+                    transaction_id=paramz,
+                    amount=pay_instance.amount,
+                    paid_on=datetime.utcnow(),
+                    tutor_id=current_user.id  # or however you identify the tutor
+                )
+                db.session.add(tutor_fee_payment)
+            else:
+                tutor_fee_payment.amount = pay_instance.amount
+                tutor_fee_payment.paid_on = datetime.utcnow()
 
-#             # Associate the payment with the tutor
-#             current_user.fee_payments.append(tutor_fee_payment)
+            # Associate the payment with the tutor
+            current_user.fee_payments.append(tutor_fee_payment)
 
-#             db.session.commit()
-#             print('Payment successful!')
-#         else:
-#             print('Subscription not found for the given transaction reference.')
-#     else:
-#         print('Payment not successful')
+            db.session.commit()
+            print('Payment successful!')
+        else:
+            print('Subscription not found for the given transaction reference.')
+    else:
+        print('Payment not successful')
 
-#     return redirect('core.dashboard')
+    return redirect('core.dashboard')
 
 
 
