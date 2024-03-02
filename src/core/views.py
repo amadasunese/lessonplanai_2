@@ -17,6 +17,7 @@ from paystackapi.transaction import Transaction
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 from src.utils.plan import plans
+from flask import request, jsonify
 
 
 core_bp = Blueprint("core", __name__)
@@ -398,65 +399,170 @@ def subscribe_premium():
 
     response = Transaction.initialize(amount=amount, email=email)
     ref = response['data']['reference']
+    print(ref)
 
     a_url = response['data']['authorization_url']
+    print(a_url)
     return redirect(a_url)
 
-
-@core_bp.route('/verify_payment', methods=['GET', 'POST'])
-@login_required
+@core_bp.route('/payment/verify', methods=['POST'])
 def verify_payment():
-    paramz = request.args.get('trxref', 'None')
+    # Paystack sends a JSON payload to the webhook URL
+    data = request.json
 
-    details = Transaction.verify(reference=paramz)
-    status = details['data']['status']
+    # Extract the reference from the data
+    reference = data.get('data', {}).get('reference')
 
-    if status == 'success':
-        # Fetch or create the Subscription instance
-        subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
+    if not reference:
+        return jsonify({'message': 'No reference provided'}), 400
 
-        if subscription is None:
-            # Assume function `extract_plan_and_amount` returns plan name and amount
-            plan, amount = extract_plan_and_amount(details)
+    # Verify the payment by making a request to Paystack API
+    # This part is pseudo-code, adjust according to your Paystack integration library
+    verification_response = Transaction.verify(reference)
 
-            # Calculate end_date based on plan
-            if plan == 'Starter':
-                end_date = datetime.utcnow() + timedelta(days=1)
-            elif plan == 'Basic':
-                end_date = datetime.utcnow() + timedelta(days=7)
-            elif plan == 'Premium':
-                end_date = datetime.utcnow() + timedelta(days=30)
-            else:
-                return 'Invalid plan', 400
+    # Check if the payment is successful
+    if verification_response['data']['status'] == 'success':
+        # Find the subscription by reference
+        subscription = Subscription.query.filter_by(paystack_subscription_id=reference).first()
+        if subscription:
+            # Assuming you have a way to determine the plan details from the subscription instance or elsewhere
+            plans = {
+                'Starter': {'duration': 30, 'usage_limit': 10},
+                'Basic': {'duration': 30, 'usage_limit': 20},
+                'Premium': {'duration': 30, 'usage_limit': 30},
+            }
+            plan_details = plans.get(subscription.plan)
 
-            # Create a new subscription instance
-            subscription = Subscription(
-                plan=plan,
-                amount=amount,
-                start_date=datetime.utcnow(),
-                end_date=end_date,
-                remaining_usages=plans[plan]['usage_limit'],
-                paid=True,
-                user_id=current_user.id,
-                paystack_subscription_id=paramz
-            )
-            db.session.add(subscription)
-        else:
-            # Update existing subscription
+            # Update subscription status and details
             subscription.paid = True
-            # Assuming `update_end_date` function updates the end_date based on the plan
-            subscription.end_date = update_end_date(subscription.plan, subscription.start_date)
-
-        # Update user subscription details
-        current_user.subscribed = True
-        current_user.expiry_date = subscription.end_date
-
-        db.session.commit()
-        print('Payment successful!')
+            subscription.start_date = datetime.utcnow()
+            subscription.end_date = datetime.utcnow() + timedelta(days=plan_details['duration'])
+            subscription.remaining_usages = plan_details['usage_limit']
+            
+            db.session.commit()
+            return jsonify({'message': 'Payment verified and subscription updated'}), 200
+        else:
+            return jsonify({'message': 'Subscription not found'}), 404
     else:
-        print('Payment not successful')
+        return jsonify({'message': 'Payment verification failed'}), 400
+    
+        return redirect(url_for('core.dashboard'))
 
-    return redirect(url_for('core.dashboard'))
+######
+# @core_bp.route('/verify_payment', methods=['GET', 'POST'])
+# @login_required
+# def verify_payment():
+#     paramz = request.args.get('trxref', 'None')
+
+#     details = Transaction.verify(reference=paramz)
+#     status = details['data']['status']
+
+#     if status == 'success':
+#         # Fetch or create the Subscription instance
+#         subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
+
+#         if subscription is None:
+#             # Assume function `extract_plan_and_amount` returns plan name and amount
+#             plan, amount = extract_plan_and_amount(details)
+
+#             # Calculate end_date based on plan
+#             if plan == 'Starter':
+#                 end_date = datetime.utcnow() + timedelta(days=1)
+#             elif plan == 'Basic':
+#                 end_date = datetime.utcnow() + timedelta(days=7)
+#             elif plan == 'Premium':
+#                 end_date = datetime.utcnow() + timedelta(days=30)
+#             else:
+#                 return 'Invalid plan', 400
+
+#             # Create a new subscription instance
+#             subscription = Subscription(
+#                 plan=plan,
+#                 amount=amount,
+#                 start_date=datetime.utcnow(),
+#                 end_date=end_date,
+#                 remaining_usages=plans[plan]['usage_limit'],
+#                 paid=True,
+#                 user_id=current_user.id,
+#                 paystack_subscription_id=paramz
+#             )
+#             db.session.add(subscription)
+#         else:
+#             # Update existing subscription
+#             subscription.paid = True
+#             # Assuming `update_end_date` function updates the end_date based on the plan
+#             subscription.end_date = update_end_date(subscription.plan, subscription.start_date)
+
+#         # Update user subscription details
+#         current_user.subscribed = True
+#         current_user.expiry_date = subscription.end_date
+
+#         db.session.commit()
+#         print('Payment successful!')
+#     else:
+#         print('Payment not successful')
+
+#     return redirect(url_for('core.dashboard'))
+
+####
+
+############
+# @core_bp.route('/verify_payment', methods=['GET', 'POST'])
+# @login_required
+# def verify_payment():
+#     paramz = request.args.get('trxref', 'None')
+
+#     details = Transaction.verify(reference=paramz)
+#     status = details['data']['status']
+
+#     if status == 'success':
+#         # Fetch or create the Subscription instance
+#         subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
+
+#         if subscription is None:
+#             # Assume function `extract_plan_and_amount` returns plan name and amount
+#             plan, amount = extract_plan_and_amount(details)
+
+#             # Calculate end_date based on plan
+#             if plan == 'Starter':
+#                 end_date = datetime.utcnow() + timedelta(days=1)
+#             elif plan == 'Basic':
+#                 end_date = datetime.utcnow() + timedelta(days=7)
+#             elif plan == 'Premium':
+#                 end_date = datetime.utcnow() + timedelta(days=30)
+#             else:
+#                 return 'Invalid plan', 400
+
+#             # Create a new subscription instance
+#             subscription = Subscription(
+#                 plan=plan,
+#                 amount=amount,
+#                 start_date=datetime.utcnow(),
+#                 end_date=end_date,
+#                 remaining_usages=plans[plan]['usage_limit'],
+#                 paid=True,
+#                 user_id=current_user.id,
+#                 paystack_subscription_id=paramz
+#             )
+#             db.session.add(subscription)
+#         else:
+#             # Update existing subscription
+#             subscription.paid = True
+#             # Assuming `update_end_date` function updates the end_date based on the plan
+#             subscription.end_date = update_end_date(subscription.plan, subscription.start_date)
+
+#         # Update user subscription details
+#         current_user.subscribed = True
+#         current_user.expiry_date = subscription.end_date
+
+#         db.session.commit()
+#         print('Payment successful!')
+#     else:
+#         print('Payment not successful')
+
+#     return redirect(url_for('core.dashboard'))
+
+#############
 
 def extract_plan_and_amount(details):
     """
