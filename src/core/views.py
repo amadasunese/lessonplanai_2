@@ -427,14 +427,30 @@ def verify_payment():
         if subscription:
             # Assuming you have a way to determine the plan details from the subscription instance or elsewhere
             plans = {
-                'Starter': {'duration': 30, 'usage_limit': 10},
-                'Basic': {'duration': 30, 'usage_limit': 20},
-                'Premium': {'duration': 30, 'usage_limit': 30},
+                'Starter': {
+                    'cost': 2000,
+                    'duration': 1,  # number of days for the plan
+                    'usage_limit': 2,  # some usage limit
+                    # ... other plan details
+                },
+                'Basic': {
+                    'cost': 5000,
+                    'duration': 7,
+                    'usage_limit': 4,
+                    # ... other plan details
+                },
+                'Premium': {
+                    'cost': 10000,
+                    'duration': 30,
+                    'usage_limit': None,
+                    # ... other plan details
+                }
             }
             plan_details = plans.get(subscription.plan)
 
             # Update subscription status and details
             subscription.paid = True
+            subscription.amount='cost'
             subscription.start_date = datetime.utcnow()
             subscription.end_date = datetime.utcnow() + timedelta(days=plan_details['duration'])
             subscription.remaining_usages = plan_details['usage_limit']
