@@ -440,13 +440,14 @@ def verify_payment():
             subscription.remaining_usages = plan_details['usage_limit']
             
             db.session.commit()
+
+            return redirect(url_for('core.dashboard'))
+        
             return jsonify({'message': 'Payment verified and subscription updated'}), 200
         else:
             return jsonify({'message': 'Subscription not found'}), 404
     else:
         return jsonify({'message': 'Payment verification failed'}), 400
-    
-        return redirect(url_for('core.dashboard'))
 
 ######
 # @core_bp.route('/verify_payment', methods=['GET', 'POST'])
