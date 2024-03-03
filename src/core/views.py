@@ -286,7 +286,9 @@ def edit_tutor(tutor_id):
 #     email = current_user.email
 
 #     response = Transaction.initialize(amount=amount, email=email)
+#     print(response)
 #     ref = response.get('data', {}).get('reference')
+#     print(ref)
 
 #     create_subscription_instance = Subscription(
 #         plan='Starter',
@@ -368,18 +370,8 @@ def subscribe_starter():
     amount = '20000'
     email = current_user.email
 
-    # response = Transaction.initialize(amount=amount, email=email)
-    # ref = response.get('data', {}).get('reference')
-    
-    # # ref = response.get['data']['reference']
-
-    # a_url = response['data']['authorization_url']
-    # # a_url = response.get('data', {}).get('authorization_url')
-    # return redirect(a_url)
-
     response = Transaction.initialize(amount=amount, email=email)
-    ref = response['data']['reference']
-    print(f'this is {ref}')
+    ref = response.get('data', {}).get('reference')
 
     a_url = response['data']['authorization_url']
     return redirect(a_url)
@@ -413,6 +405,53 @@ def subscribe_premium():
     a_url = response['data']['authorization_url']
     print(a_url)
     return redirect(a_url)
+
+
+@core_bp.route('/payment_verification', methods=['POST'])
+@login_required
+def payment_verification():
+    data = request.json
+    reference = data.get('reference')
+    # Verify payment with Paystack (or your payment gateway)
+    verification_response = Paystack.verify_payment(reference)
+    if verification_response['status']:  # Assuming 'status' indicates success
+        # Extract necessary information from the verification response
+        plan = verification_response['data']['plan']
+        amount = verification_response['data']['amount']
+        paystack_subscription_id = verification_response['data']['subscription_id']
+        
+        # Calculate subscription dates based on plan
+        start_date = datetime.now()
+        if plan == 'Starter':
+            end_date = start_date + timedelta(days=30)  # 1 month
+            remaining_usages = 100  # Example value
+        elif plan == 'Basic':
+            end_date = start_date + timedelta(days=90)  # 3 months
+            remaining_usages = 300  # Example value
+        elif plan == 'Premium':
+            end_date = start_date + timedelta(days=180)  # 6 months
+            remaining_usages = 600  # Example value
+        
+        # Update the Subscription model
+        subscription = Subscription(
+            plan=plan,
+            amount=amount,
+            start_date=start_date,
+            end_date=end_date,
+            remaining_usages=remaining_usages,
+            paid=True,
+            user_id=current_user.id,
+            paystack_subscription_id=paystack_subscription_id
+        )
+        db.session.add(subscription)
+        db.session.commit()
+        
+        # Redirect to the dashboard
+        return redirect(url_for('dashboard'))
+    else:
+        # Optionally, redirect to an error page or return an error message
+        return redirect(url_for('error_page', error='Payment verification failed'))
+
 
 # @core_bp.route('/payment_verify', methods=['GET', 'POST'])
 # def verify_payment():
@@ -631,58 +670,58 @@ def tutor_fee_payment():
     return redirect(a_url)
 
 
-@core_bp.route('/verify_payment', methods=['GET', 'POST'])
-@login_required
-def verify_payment():
-    paramz = request.args.get('trxref', 'None')
+# @core_bp.route('/verify_payment', methods=['GET', 'POST'])
+# @login_required
+# def verify_payment():
+#     paramz = request.args.get('trxref', 'None')
 
-    details = Transaction.verify(reference=paramz)
-    status = details['data']['status']
+#     details = Transaction.verify(reference=paramz)
+#     status = details['data']['status']
 
-    if status == 'success':
-        # Find the subscription instance
-        pay_instance = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
-        if pay_instance:
-            pay_instance.paid = True
-            expiry_date = datetime.utcnow()  # Default expiry date
-            if pay_instance.plan == 'Starter':
-                expiry_date += timedelta(days=1)
-            elif pay_instance.plan == 'Basic':
-                expiry_date += timedelta(days=7)
-            elif pay_instance.plan == 'Premium':
-                expiry_date += timedelta(days=30)
+#     if status == 'success':
+#         # Find the subscription instance
+#         pay_instance = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
+#         if pay_instance:
+#             pay_instance.paid = True
+#             expiry_date = datetime.utcnow()  # Default expiry date
+#             if pay_instance.plan == 'Starter':
+#                 expiry_date += timedelta(days=1)
+#             elif pay_instance.plan == 'Basic':
+#                 expiry_date += timedelta(days=7)
+#             elif pay_instance.plan == 'Premium':
+#                 expiry_date += timedelta(days=30)
 
-            pay_instance.end_date = expiry_date
+#             pay_instance.end_date = expiry_date
 
-            # Update user subscription details
-            current_user.subscribed = True
-            current_user.expiry_date = expiry_date
+#             # Update user subscription details
+#             current_user.subscribed = True
+#             current_user.expiry_date = expiry_date
 
-            # Create or update TutorFeePayment instance
-            tutor_fee_payment = TutorFeePayment.query.filter_by(transaction_id=paramz).first()
-            if not tutor_fee_payment:
-                tutor_fee_payment = TutorFeePayment(
-                    transaction_id=paramz,
-                    amount=pay_instance.amount,
-                    paid_on=datetime.utcnow(),
-                    tutor_id=current_user.id  # or however you identify the tutor
-                )
-                db.session.add(tutor_fee_payment)
-            else:
-                tutor_fee_payment.amount = pay_instance.amount
-                tutor_fee_payment.paid_on = datetime.utcnow()
+#             # Create or update TutorFeePayment instance
+#             tutor_fee_payment = TutorFeePayment.query.filter_by(transaction_id=paramz).first()
+#             if not tutor_fee_payment:
+#                 tutor_fee_payment = TutorFeePayment(
+#                     transaction_id=paramz,
+#                     amount=pay_instance.amount,
+#                     paid_on=datetime.utcnow(),
+#                     tutor_id=current_user.id  # or however you identify the tutor
+#                 )
+#                 db.session.add(tutor_fee_payment)
+#             else:
+#                 tutor_fee_payment.amount = pay_instance.amount
+#                 tutor_fee_payment.paid_on = datetime.utcnow()
 
-            # Associate the payment with the tutor
-            current_user.fee_payments.append(tutor_fee_payment)
+#             # Associate the payment with the tutor
+#             current_user.fee_payments.append(tutor_fee_payment)
 
-            db.session.commit()
-            print('Payment successful!')
-        else:
-            print('Subscription not found for the given transaction reference.')
-    else:
-        print('Payment not successful')
+#             db.session.commit()
+#             print('Payment successful!')
+#         else:
+#             print('Subscription not found for the given transaction reference.')
+#     else:
+#         print('Payment not successful')
 
-    return redirect('core.dashboard')
+#     return redirect('core.dashboard')
 
 
 
