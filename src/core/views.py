@@ -407,7 +407,7 @@ def subscribe_premium():
     return redirect(a_url)
 
 
-@core_bp.route('/payment_verification', methods=['POST'])
+@core_bp.route('/payment_verification', methods=['GET', 'POST'])
 @login_required
 def payment_verification():
     data = request.json
