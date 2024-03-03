@@ -586,60 +586,60 @@ def subscribe_premium():
 #         return jsonify({'message': 'Payment verification failed'}), 400
 
 ######
-@core_bp.route('/verify_payment', methods=['GET', 'POST'])
-@login_required
-def verify_payment():
-    paramz = request.args.get('trxref', 'None')
+# @core_bp.route('/verify_payment', methods=['GET', 'POST'])
+# @login_required
+# def verify_payment():
+#     paramz = request.args.get('trxref', 'None')
 
-    details = Transaction.verify(reference=paramz)
-    status = details['data']['status']
+#     details = Transaction.verify(reference=paramz)
+#     status = details['data']['status']
 
-    if status == 'success':
-        # Fetch or create the Subscription instance
-        subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
+#     if status == 'success':
+#         # Fetch or create the Subscription instance
+#         subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
 
-        if subscription is None:
-            # Assume function `extract_plan_and_amount` returns plan name and amount
-            plan, amount = extract_plan_and_amount(details)
+#         if subscription is None:
+#             # Assume function `extract_plan_and_amount` returns plan name and amount
+#             plan, amount = extract_plan_and_amount(details)
 
-            # Calculate end_date based on plan
-            if plan == 'Starter':
-                end_date = datetime.utcnow() + timedelta(days=1)
-            elif plan == 'Basic':
-                end_date = datetime.utcnow() + timedelta(days=7)
-            elif plan == 'Premium':
-                end_date = datetime.utcnow() + timedelta(days=30)
-            else:
-                return 'Invalid plan', 400
+#             # Calculate end_date based on plan
+#             if plan == 'Starter':
+#                 end_date = datetime.utcnow() + timedelta(days=1)
+#             elif plan == 'Basic':
+#                 end_date = datetime.utcnow() + timedelta(days=7)
+#             elif plan == 'Premium':
+#                 end_date = datetime.utcnow() + timedelta(days=30)
+#             else:
+#                 return 'Invalid plan', 400
 
-            # Create a new subscription instance
-            subscription = Subscription(
-                plan=plan,
-                amount=amount,
-                start_date=datetime.utcnow(),
-                end_date=end_date,
-                remaining_usages=plans[plan]['usage_limit'],
-                paid=True,
-                user_id=current_user.id,
-                paystack_subscription_id=paramz
-            )
-            db.session.add(subscription)
-        else:
-            # Update existing subscription
-            subscription.paid = True
-            # Assuming `update_end_date` function updates the end_date based on the plan
-            subscription.end_date = update_end_date(subscription.plan, subscription.start_date)
+#             # Create a new subscription instance
+#             subscription = Subscription(
+#                 plan=plan,
+#                 amount=amount,
+#                 start_date=datetime.utcnow(),
+#                 end_date=end_date,
+#                 remaining_usages=plans[plan]['usage_limit'],
+#                 paid=True,
+#                 user_id=current_user.id,
+#                 paystack_subscription_id=paramz
+#             )
+#             db.session.add(subscription)
+#         else:
+#             # Update existing subscription
+#             subscription.paid = True
+#             # Assuming `update_end_date` function updates the end_date based on the plan
+#             subscription.end_date = update_end_date(subscription.plan, subscription.start_date)
 
-        # Update user subscription details
-        current_user.subscribed = True
-        current_user.expiry_date = subscription.end_date
+#         # Update user subscription details
+#         current_user.subscribed = True
+#         current_user.expiry_date = subscription.end_date
 
-        db.session.commit()
-        print('Payment successful!')
-    else:
-        print('Payment not successful')
+#         db.session.commit()
+#         print('Payment successful!')
+#     else:
+#         print('Payment not successful')
 
-    return redirect(url_for('core.dashboard'))
+#     return redirect(url_for('core.dashboard'))
 
 ####
 
@@ -906,40 +906,40 @@ def tutor_fee_payment():
 #     return redirect(a_url)
 
 
-# @core_bp.route('/verify_payment', methods=['GET', 'POST'])
-# @login_required
-# def verify_payment():
-#     paramz = request.args.get('trxref', 'None')
-#     first_name = current_user.first_name
-#     last_name = current_user.last_name
-#     email = current_user.email
-#     print(paramz)
+@core_bp.route('/verify_payment', methods=['GET', 'POST'])
+@login_required
+def verify_payment():
+    paramz = request.args.get('trxref', 'None')
+    first_name = current_user.first_name
+    last_name = current_user.last_name
+    email = current_user.email
+    print(paramz)
     
-#     details = Transaction.verify(reference=paramz)
-#     status = details['data']['status']
+    details = Transaction.verify(reference=paramz)
+    status = details['data']['status']
     
-#     if status == 'success':
-#         pay_instance = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
-#         if pay_instance:
-#             if pay_instance.plan == 'Starter':
-#                 expiry_date = pay_instance.start_date + timedelta(days=1)
-#             elif pay_instance.plan == 'Basic':
-#                 expiry_date = pay_instance.start_date + timedelta(days=7)
-#             elif pay_instance.plan == 'Premium':
-#                 expiry_date = pay_instance.start_date + timedelta(days=30)
+    if status == 'success':
+        pay_instance = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
+        if pay_instance:
+            if pay_instance.plan == 'Starter':
+                expiry_date = pay_instance.start_date + timedelta(days=1)
+            elif pay_instance.plan == 'Basic':
+                expiry_date = pay_instance.start_date + timedelta(days=7)
+            elif pay_instance.plan == 'Premium':
+                expiry_date = pay_instance.start_date + timedelta(days=30)
 
-#             pay_instance.update(paid=True, end_date=expiry_date)
+            pay_instance.update(paid=True, end_date=expiry_date)
 
-#             """Update the user subscription details"""
-#             current_user.update(subscribed=True, expiry_date=expiry_date)
-#             print('Payment successful!')
-#         else:
-#             print('Subscription not found for the given transaction reference.')
+            """Update the user subscription details"""
+            current_user.update(subscribed=True, expiry_date=expiry_date)
+            print('Payment successful!')
+        else:
+            print('Subscription not found for the given transaction reference.')
 
-#     else:
-#         print('Payment not successful')
+    else:
+        print('Payment not successful')
 
-#     return redirect('core.dashboard')
+    return redirect('core.dashboard')
 
 
 # Tutor registration fee
