@@ -457,71 +457,71 @@ def subscribe_premium():
 
 
 
-@core_bp.route('/payment_verification', methods=['GET', 'POST'])
-@login_required
-def payment_verification():
-    # Ensure the request has JSON content
-    if not request.is_json:
-        return jsonify({'error': 'Request must be JSON'}), 400
+# @core_bp.route('/payment_verification', methods=['GET', 'POST'])
+# @login_required
+# def payment_verification():
+#     # Ensure the request has JSON content
+#     if not request.is_json:
+#         return jsonify({'error': 'Request must be JSON'}), 400
 
-    data = request.json
-    reference = data.get('reference')
-    if not reference:
-        return jsonify({'error': 'Reference not provided'}), 400
+#     data = request.json
+#     reference = data.get('reference')
+#     if not reference:
+#         return jsonify({'error': 'Reference not provided'}), 400
 
-    # URL to verify payment on Paystack
-    verification_url = f"https://api.paystack.co/transaction/verify/{reference}"
-    # Your Paystack secret key (use an environment variable in production)
-    secret_key = os.environ.get('PAYSTACK_SECRET_KEY')
+#     # URL to verify payment on Paystack
+#     verification_url = f"https://api.paystack.co/transaction/verify/{reference}"
+#     # Your Paystack secret key (use an environment variable in production)
+#     secret_key = os.environ.get('PAYSTACK_SECRET_KEY')
 
-    try:
-        # Make a request to Paystack to verify the payment
-        headers = {"Authorization": secret_key, "Content-Type": "application/json"}
-        response = requests.get(verification_url, headers=headers)
-        response_data = response.json()
+#     try:
+#         # Make a request to Paystack to verify the payment
+#         headers = {"Authorization": secret_key, "Content-Type": "application/json"}
+#         response = requests.get(verification_url, headers=headers)
+#         response_data = response.json()
 
-        # Check if the request was successful and the payment is verified
-        if response.status_code == 200 and response_data['status'] == True and response_data['data']['status'] == 'success':
-            # Extract necessary information from the verification response
-            # Note: Adjust these according to the actual structure of Paystack's response
-            plan = response_data['data']['metadata']['plan']
-            amount = response_data['data']['amount']
-            paystack_subscription_id = response_data['data']['id']
+#         # Check if the request was successful and the payment is verified
+#         if response.status_code == 200 and response_data['status'] == True and response_data['data']['status'] == 'success':
+#             # Extract necessary information from the verification response
+#             # Note: Adjust these according to the actual structure of Paystack's response
+#             plan = response_data['data']['metadata']['plan']
+#             amount = response_data['data']['amount']
+#             paystack_subscription_id = response_data['data']['id']
 
-            # Calculate subscription dates based on plan
-            start_date = datetime.now()
-            if plan == 'Starter':
-                end_date = start_date + timedelta(days=30)  # 1 month
-                remaining_usages = 100  # Example value
-            elif plan == 'Basic':
-                end_date = start_date + timedelta(days=90)  # 3 months
-                remaining_usages = 300  # Example value
-            elif plan == 'Premium':
-                end_date = start_date + timedelta(days=180)  # 6 months
-                remaining_usages = 600  # Example value
+#             # Calculate subscription dates based on plan
+#             start_date = datetime.now()
+#             if plan == 'Starter':
+#                 end_date = start_date + timedelta(days=30)  # 1 month
+#                 remaining_usages = 100  # Example value
+#             elif plan == 'Basic':
+#                 end_date = start_date + timedelta(days=90)  # 3 months
+#                 remaining_usages = 300  # Example value
+#             elif plan == 'Premium':
+#                 end_date = start_date + timedelta(days=180)  # 6 months
+#                 remaining_usages = 600  # Example value
             
-            # Update the Subscription model
-            subscription = Subscription(
-                plan=plan,
-                amount=amount / 100,  # Assuming amount is in cents
-                start_date=start_date,
-                end_date=end_date,
-                remaining_usages=remaining_usages,
-                paid=True,
-                user_id=current_user.id,
-                paystack_subscription_id=paystack_subscription_id
-            )
-            db.session.add(subscription)
-            db.session.commit()
+#             # Update the Subscription model
+#             subscription = Subscription(
+#                 plan=plan,
+#                 amount=amount / 100,  # Assuming amount is in cents
+#                 start_date=start_date,
+#                 end_date=end_date,
+#                 remaining_usages=remaining_usages,
+#                 paid=True,
+#                 user_id=current_user.id,
+#                 paystack_subscription_id=paystack_subscription_id
+#             )
+#             db.session.add(subscription)
+#             db.session.commit()
             
-            # Redirect to the dashboard
-            return redirect(url_for('dashboard'))
-        else:
-            # Payment verification failed
-            return jsonify({'error': 'Payment verification failed'}), 400
-    except requests.RequestException as e:
-        # Handle request errors
-        return jsonify({'error': 'Failed to connect to Paystack'}), 500
+#             # Redirect to the dashboard
+#             return redirect(url_for('dashboard'))
+#         else:
+#             # Payment verification failed
+#             return jsonify({'error': 'Payment verification failed'}), 400
+#     except requests.RequestException as e:
+#         # Handle request errors
+#         return jsonify({'error': 'Failed to connect to Paystack'}), 500
 
 
 
@@ -586,60 +586,60 @@ def payment_verification():
 #         return jsonify({'message': 'Payment verification failed'}), 400
 
 ######
-# @core_bp.route('/verify_payment', methods=['GET', 'POST'])
-# @login_required
-# def verify_payment():
-#     paramz = request.args.get('trxref', 'None')
+@core_bp.route('/verify_payment', methods=['GET', 'POST'])
+@login_required
+def verify_payment():
+    paramz = request.args.get('trxref', 'None')
 
-#     details = Transaction.verify(reference=paramz)
-#     status = details['data']['status']
+    details = Transaction.verify(reference=paramz)
+    status = details['data']['status']
 
-#     if status == 'success':
-#         # Fetch or create the Subscription instance
-#         subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
+    if status == 'success':
+        # Fetch or create the Subscription instance
+        subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
 
-#         if subscription is None:
-#             # Assume function `extract_plan_and_amount` returns plan name and amount
-#             plan, amount = extract_plan_and_amount(details)
+        if subscription is None:
+            # Assume function `extract_plan_and_amount` returns plan name and amount
+            plan, amount = extract_plan_and_amount(details)
 
-#             # Calculate end_date based on plan
-#             if plan == 'Starter':
-#                 end_date = datetime.utcnow() + timedelta(days=1)
-#             elif plan == 'Basic':
-#                 end_date = datetime.utcnow() + timedelta(days=7)
-#             elif plan == 'Premium':
-#                 end_date = datetime.utcnow() + timedelta(days=30)
-#             else:
-#                 return 'Invalid plan', 400
+            # Calculate end_date based on plan
+            if plan == 'Starter':
+                end_date = datetime.utcnow() + timedelta(days=1)
+            elif plan == 'Basic':
+                end_date = datetime.utcnow() + timedelta(days=7)
+            elif plan == 'Premium':
+                end_date = datetime.utcnow() + timedelta(days=30)
+            else:
+                return 'Invalid plan', 400
 
-#             # Create a new subscription instance
-#             subscription = Subscription(
-#                 plan=plan,
-#                 amount=amount,
-#                 start_date=datetime.utcnow(),
-#                 end_date=end_date,
-#                 remaining_usages=plans[plan]['usage_limit'],
-#                 paid=True,
-#                 user_id=current_user.id,
-#                 paystack_subscription_id=paramz
-#             )
-#             db.session.add(subscription)
-#         else:
-#             # Update existing subscription
-#             subscription.paid = True
-#             # Assuming `update_end_date` function updates the end_date based on the plan
-#             subscription.end_date = update_end_date(subscription.plan, subscription.start_date)
+            # Create a new subscription instance
+            subscription = Subscription(
+                plan=plan,
+                amount=amount,
+                start_date=datetime.utcnow(),
+                end_date=end_date,
+                remaining_usages=plans[plan]['usage_limit'],
+                paid=True,
+                user_id=current_user.id,
+                paystack_subscription_id=paramz
+            )
+            db.session.add(subscription)
+        else:
+            # Update existing subscription
+            subscription.paid = True
+            # Assuming `update_end_date` function updates the end_date based on the plan
+            subscription.end_date = update_end_date(subscription.plan, subscription.start_date)
 
-#         # Update user subscription details
-#         current_user.subscribed = True
-#         current_user.expiry_date = subscription.end_date
+        # Update user subscription details
+        current_user.subscribed = True
+        current_user.expiry_date = subscription.end_date
 
-#         db.session.commit()
-#         print('Payment successful!')
-#     else:
-#         print('Payment not successful')
+        db.session.commit()
+        print('Payment successful!')
+    else:
+        print('Payment not successful')
 
-#     return redirect(url_for('core.dashboard'))
+    return redirect(url_for('core.dashboard'))
 
 ####
 
