@@ -194,44 +194,6 @@ def delete_parent(parent_id):
     return redirect(url_for('core.registered_parent'))
 
 
-# @core_bp.route('/delete_subscribed_user/<int:subscription_id>')
-# @login_required  
-# def delete_subscribed_user(subscription_id):
-#     user_to_delete = Subscription.query.get(subscription_id)
-#     if user_to_delete:
-#         db.session.delete(user_to_delete)
-#         db.session.commit()
-#         flash('User successfully removed', 'success')
-#     else:
-#         flash('User not found', 'error')
-#     return redirect(url_for('core.subscribed_users')) 
-
-
-# @core_bp.route('/delete_subscription/<int:subscription_id>', methods=['POST'])
-# @login_required
-# def delete_subscription(subscription_id):
-#     # Find the subscription by ID
-#     subscription = Subscription.query.get(subscription_id)
-
-#     if subscription is None:
-#         # Handle the case where the subscription does not exist
-#         flash('Subscription not found.', 'error')
-#         return redirect(url_for('some_route'))
-
-#     if subscription.user_id != current_user.id:
-#         # Ensure that the current user owns the subscription or has the right to delete it
-#         flash('You do not have permission to delete this subscription.', 'error')
-#         return redirect(url_for('some_route'))
-
-#     # Delete the subscription
-#     db.session.delete(subscription)
-#     db.session.commit()
-
-#     flash('Subscription deleted successfully.', 'success')
-#     return redirect(url_for('some_route'))
-
-
-
 @core_bp.route('/edit-tutor/<int:tutor_id>', methods=['GET', 'POST'])
 def edit_tutor(tutor_id):
     """
@@ -270,11 +232,6 @@ def edit_tutor(tutor_id):
     """Render the form for editing with pre-filled data"""
     return render_template('core/edit_tutor.html', tutor=tutor)
 
-
-# @core_bp.route('/tutor_list', methods=['GET', 'POST'])
-# @login_required
-# def tutor_list():
-#     return render_template('core/tutor_list.html')
 
 
 ######################################
@@ -333,7 +290,7 @@ def verify_payment():
     if not ref:
         return jsonify({"message": "Payment reference not provided"}), 400
 
-    # Verify payment with Paystack
+    """Verify payment with Paystack"""
     paystack_secret_key = "YOUR_PAYSTACK_SECRET_KEY"
     verification_url = f"https://api.paystack.co/transaction/verify/{ref}"
     headers = {"Authorization": f"Bearer {paystack_secret_key}"}
@@ -343,11 +300,9 @@ def verify_payment():
     if response.status_code != 200 or verification_response['data']['status'] != 'success':
         return jsonify({"message": "Payment verification failed"}), 400
 
-    # Extract payment details
     amount = verification_response['data']['amount']
     paystack_subscription_id = verification_response['data']['subscription']['subscription_code']
     
-    # Determine plan based on amount
     if amount == 20000:
         plan = 'Starter'
     elif amount == 5000:
@@ -357,7 +312,6 @@ def verify_payment():
     else:
         return jsonify({"message": "Invalid payment amount"}), 400
 
-    # Assuming a method to calculate start_date, end_date, and remaining_usages
     start_date, end_date, remaining_usages = calculate_subscription_dates_and_usages(plan)
 
     # Update or create subscription in the database
@@ -371,24 +325,20 @@ def verify_payment():
         subscription.paid = True
         subscription.paystack_subscription_id = paystack_subscription_id
     else:
-        # Create new subscription
         subscription = Subscription(user_id=current_user.id, plan=plan, amount=amount,
                                     start_date=start_date, end_date=end_date, remaining_usages=remaining_usages,
                                     paid=True, paystack_subscription_id=paystack_subscription_id)
         db.session.add(subscription)
 
     db.session.commit()
-    # Redirect to the dashboard after successfully updating the subscription
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('core.dashboard'))
 
 
 def calculate_subscription_dates_and_usages(plan):
-    # Current time as the start date
+    """Current time as the start date"""
     start_date = datetime.utcnow()
-    # End date after 1 month
     end_date = start_date + timedelta(days=30)
 
-    # Define remaining_usages based on the plan
     if plan == 'Starter':
         remaining_usages = 10
     elif plan == 'Basic':
@@ -396,7 +346,6 @@ def calculate_subscription_dates_and_usages(plan):
     elif plan == 'Premium':
         remaining_usages = 40
     else:
-        # Default to a basic plan usage if the plan is unrecognized
         remaining_usages = 20
 
     return start_date, end_date, remaining_usages
@@ -410,7 +359,6 @@ def extract_plan_and_amount(details):
     Extract the plan and amount from the payment details.
     Implement this based on how you're storing this information in the transaction details.
     """
-    # Dummy implementation, replace with actual logic
     plan = details['data'].get('plan')
     amount = details['data'].get('amount')
     return plan, amount
@@ -433,92 +381,24 @@ def update_end_date(plan, start_date):
 @core_bp.route('/tutor_fee_payment', methods=['GET', 'POST'])
 @login_required
 def tutor_fee_payment():
-    amount = 10000  # use an integer for amount
+    amount = 10000
     email = current_user.email
     tutor_id = current_user.id
 
-    response = Transaction.initialize(amount=str(amount), email=email)  # convert amount to string here
+    response = Transaction.initialize(amount=str(amount), email=email)
     ref = response['data']['reference']
     print(f"{amount} {email} {tutor_id}")
 
-    # Redirect to the payment authorization URL
+    """Redirect to the payment authorization URL"""
     a_url = response['data']['authorization_url']
     return redirect(a_url)
 
-
-
-
-# @core_bp.route('/verify_payment', methods=['GET', 'POST'])
-# @login_required
-# def verify_payment():
-#     paramz = request.args.get('trxref', 'None')
-#     first_name = current_user.first_name
-#     last_name = current_user.last_name
-#     email = current_user.email
-#     print(paramz)
-    
-#     details = Transaction.verify(reference=paramz)
-#     status = details['data']['status']
-    
-#     if status == 'success':
-#         pay_instance = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
-#         if pay_instance:
-#             if pay_instance.plan == 'Starter':
-#                 expiry_date = pay_instance.start_date + timedelta(days=1)
-#             elif pay_instance.plan == 'Basic':
-#                 expiry_date = pay_instance.start_date + timedelta(days=7)
-#             elif pay_instance.plan == 'Premium':
-#                 expiry_date = pay_instance.start_date + timedelta(days=30)
-
-#             pay_instance.update(paid=True, end_date=expiry_date)
-
-#             """Update the user subscription details"""
-#             current_user.update(subscribed=True, expiry_date=expiry_date)
-#             print('Payment successful!')
-#         else:
-#             print('Subscription not found for the given transaction reference.')
-
-#     else:
-#         print('Payment not successful')
-
-#     return redirect('core.dashboard')
 
 
 # Tutor registration fee
 fees = {
     'registration_fee': {'name': 'Registration Fee', 'cost': 10000}
 }
-
-# @core_bp.route('/tutor_fee_payment', methods=['GET', 'POST'])
-# @login_required
-# def tutor_fee_payment():
-#     amount = '10000'
-#     email = current_user.email
-#     tutor_id = current_user.id
-
-#     response = Transaction.initialize(amount=amount, email=email)
-
-#     ref = response['data']['reference']
-#     print(f"{amount} {email} {tutor_id}")
-
-#     tutor = Tutor.query.get(tutor_id)
-
-#     if tutor:
-#         tutor_fee_payment_instance = TutorFeePayment(
-#             tutor_id=tutor_id,
-#             amount=10000,
-#             payment_date=datetime.now()
-#         )
-
-#         db.session.add(tutor_fee_payment_instance)
-#         db.session.commit()
-
-#     a_url = response['data']['authorization_url']
-#     return redirect(a_url)
-#     return render_template('core/tutor_fee_payment.html', amount=amount, ref=ref, email=email)
-
-
-
 
 
 
@@ -556,8 +436,6 @@ def tutor_registration():
         
     return render_template('core/tutor_registration_form.html')
 
-
-# Tutor registration route to process the form
 @core_bp.route('/process-registration', methods=['POST'])
 def process_registration():
     try:
@@ -583,7 +461,7 @@ def process_registration():
         confirmation_name = request.form['confirmation_name']
         photo = request.files['photo']
 
-        # Create a new Tutor instance
+        """Create a new Tutor instance"""
         tutor = Tutor(
             id=None,
             first_name=first_name,
@@ -610,7 +488,6 @@ def process_registration():
             user_id=current_user.id 
         )
 
-        # Add the new tutor to the database
         db.session.add(tutor)
         db.session.commit()
 
@@ -618,9 +495,7 @@ def process_registration():
         return render_template('core/tutor_fee_payment.html', fees=fees)
 
     except Exception as e:
-        # Rollback the transaction in case of an error
         db.session.rollback()
-        # Flash error message
         flash('Registration failed. Please try again.', 'error')
         print(f'Error: {str(e)}')
         return redirect(url_for('core.tutor_registration'))
@@ -632,7 +507,7 @@ def register_parent():
     form = ParentRegistrationForm()
 
     if form.validate_on_submit():
-        # Check if the email is already registered
+        """Check if the email is already registered"""
         existing_parent = Parent.query.filter_by(email=form.email.data).first()
 
         if existing_parent:
@@ -655,7 +530,7 @@ def register_parent():
                 return redirect(url_for('core.tutor_exploration'))
 
             except Exception as e:
-                # Handle unexpected errors, log the error, and display a flash message
+                
                 db.session.rollback()
                 flash('An unexpected error occurred. Please try again later.', 'danger')
                 print(f"Error during registration: {e}")
@@ -669,7 +544,6 @@ def tutor_profile(tutor_id):
     return render_template('accounts/tutor_profile.html', tutor=tutor)
 
 
-# Add this route to your Flask application
 @core_bp.route('/search_tutors', methods=['GET', 'POST'])
 @login_required
 @check_is_registered
@@ -685,19 +559,19 @@ def search_tutors():
 
 @core_bp.route('/registered_parents')
 def registered_parents():
-    # Query your database for all registered parents
-    parents = Parent.query.all()  # Replace with your actual database query
-
-    # Render a template, passing the parents data
+    """
+    Query your database for all registered parents
+    """
+    parents = Parent.query.all()
     return render_template('accounts/registered_parents.html', parents=parents)
 
 
 @core_bp.route('/registered_tutors')
 def registered_tutors():
-    # Query your database for all registered tutors
-    tutors = Tutor.query.all()  # Replace with your actual database query
-
-    # Render a template, passing the tutors data
+    """
+    Query your database for all registered tutors
+    """
+    tutors = Tutor.query.all()
     return render_template('accounts/tutors_list.html', users=[tutor.user for tutor in tutors])
 
 
@@ -710,12 +584,6 @@ def display_photo(tutor_id):
         return send_file(tutor.photo_path, mimetype='image/jpeg')
     else:
         return send_file('path_to_default_image', mimetype='image/jpeg')
-
-
-# @core_bp.route('/subscribed_users')
-# def subscribed_users():
-#     users = User.query.filter(User.subscription.isnot(None)).all()
-#     return render_template('accounts/subscribed_users.html', users=users)
 
 
 @core_bp.route('/subscribed_users')
