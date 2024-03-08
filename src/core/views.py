@@ -238,103 +238,173 @@ def edit_tutor(tutor_id):
 #   Subscription & payment routes    #
 ######################################
 
-@core_bp.route('/subscribe_starter', methods=['GET', 'POST'])
+
+# Plan details
+plans = {
+    'starter': {'amount': 20000, 'duration': 1, 'usage_limit': 2},
+    'basic': {'amount': 5000, 'duration': 5, 'usage_limit': 10},
+    'premium': {'amount': 10000, 'duration': 15, 'usage_limit': 20}
+}
+
+# def login_required(f):
+#     @wraps(f)
+#     def decorated_function(*args, **kwargs):
+#         # Implement your login check here
+#         if not current_user.is_authenticated:
+#             return redirect(url_for('login', next=request.url))
+#         return f(*args, **kwargs)
+#     return decorated_function
+
+@core_bp.route('/subscription/<plan_name>', methods=['GET', 'POST'])
 @login_required
-def subscribe_starter():
-    plan = 'Starter'
-    amount = '20000'
+def subscription(plan_name):
+    plan_details = plans.get(plan_name)
+    if not plan_details:
+        return "Invalid plan selected", 404
+
+    amount = plan_details['amount']
+    first_name = current_user.first_name
+    last_name = current_user.last_name
     email = current_user.email
 
-    response = Transaction.initialize(amount=amount, email=email)
-    ref = response.get('data', {}).get('reference')
+    response = Transaction.initialize(amount=str(amount), email=email)
 
-    a_url = response['data']['authorization_url']
-    return redirect(a_url)
-
-
-@core_bp.route('/subscribe_basic', methods=['GET', 'POST'])
-@login_required
-def subscribe_basic():
-    plan = 'Basic'
-    amount = '5000'
-    email = current_user.email
-
-    response = Transaction.initialize(amount=amount, email=email)
-    ref = response['data']['reference']
-
-    a_url = response['data']['authorization_url']
-    return redirect(a_url)
-
-
-@core_bp.route('/subscribe_premium', methods=['GET', 'POST'])
-@login_required
-def subscribe_premium():
-    plan = 'Premium'
-    amount = '10000'
-    email = current_user.email
-
-    response = Transaction.initialize(amount=amount, email=email)
-    ref = response['data']['reference']
-    print(ref)
-
-    a_url = response['data']['authorization_url']
-    print(a_url)
-    return redirect(a_url)
-
-
-@core_bp.route('/verify_payment', methods=['POST'])
-@login_required
-def verify_payment():
-    data = request.json
-    ref = data.get('reference')
-    if not ref:
-        return jsonify({"message": "Payment reference not provided"}), 400
-
-    """Verify payment with Paystack"""
-    paystack_secret_key = "PAYSTACK_SECRET_KEY"
-    verification_url = f"https://api.paystack.co/transaction/verify/{ref}"
-    headers = {"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"}
-    response = requests.get(verification_url, headers=headers)
-    verification_response = response.json()
-
-    if response.status_code != 200 or verification_response['data']['status'] != 'success':
-        return jsonify({"message": "Payment verification failed"}), 400
-
-    amount = verification_response['data']['amount']
-    paystack_subscription_id = verification_response['data']['subscription']['subscription_code']
+    print(f"{first_name} {last_name}")
     
-    if amount == 20000:
-        plan = 'Starter'
-    elif amount == 5000:
-        plan = 'Basic'
-    elif amount == 10000:
-        plan = 'Premium'
-    else:
-        return jsonify({"message": "Invalid payment amount"}), 400
+    create_subscription_instance = Subscription(
+        plan=plan_name.capitalize(),
+        amount=amount,
+        start_date=datetime.utcnow(),
+        end_date=datetime.utcnow() + timedelta(days=plan_details['duration']),
+        remaining_usages=plan_details['usage_limit'],
+        paid=False,
+        user_id=current_user.id,
+        paystack_subscription_id=response.get('data', {}).get('reference')
+    )
 
-
-    start_date, end_date, remaining_usages = calculate_subscription_dates_and_usages(plan)
-
-    # Update or create subscription in thegit database
-    subscription = Subscription.query.filter_by(user_id=current_user.id, plan=plan).first()
-    if subscription:
-        # Update existing subscription
-        # subscription.update(amount = amount, start_date = start_date, end_date = end_date, remaining_usages = remaining_usages, paid = True, paystack_subscription_id = paystack_subscription_id)
-        
-        subscription.amount = amount
-        subscription.start_date = start_date
-        subscription.end_date = end_date
-        subscription.remaining_usages = remaining_usages
-        subscription.paid = True
-        subscription.paystack_subscription_id = paystack_subscription_id
-    else:
-        subscription = Subscription(user_id=current_user.id, plan=plan, amount=amount,
-                                    start_date=start_date, end_date=end_date, remaining_usages=remaining_usages,
-                                    paid=True, paystack_subscription_id=paystack_subscription_id)
-        db.session.add(subscription)
-
+    db.session.add(create_subscription_instance)
     db.session.commit()
-    return redirect(url_for('core.dashboard'))
+
+    a_url = response['data']['authorization_url']
+    return redirect(a_url)
+
+
+@core_bp.route('/payment_verification', methods=['POST'])
+def payment_verification():
+    data = request.json
+
+    reference = data.get('reference')
+    success = data.get('status') == 'success'
+
+    if success:
+        # Update subscription status in the database
+        subscription = Subscription.query.filter_by(paystack_subscription_id=reference).first()
+        if subscription:
+            subscription.paid = True
+            db.session.commit()
+
+            return jsonify({'message': 'Payment verified successfully'}), 200
+    return jsonify({'message': 'Payment verification failed'}), 400
+
+
+
+# @core_bp.route('/subscribe_starter', methods=['GET', 'POST'])
+# @login_required
+# def subscribe_starter():
+#     plan = 'Starter'
+#     amount = '20000'
+#     email = current_user.email
+
+#     response = Transaction.initialize(amount=amount, email=email)
+#     ref = response.get('data', {}).get('reference')
+
+#     a_url = response['data']['authorization_url']
+#     return redirect(a_url)
+
+
+# @core_bp.route('/subscribe_basic', methods=['GET', 'POST'])
+# @login_required
+# def subscribe_basic():
+#     plan = 'Basic'
+#     amount = '5000'
+#     email = current_user.email
+
+#     response = Transaction.initialize(amount=amount, email=email)
+#     ref = response['data']['reference']
+
+#     a_url = response['data']['authorization_url']
+#     return redirect(a_url)
+
+
+# @core_bp.route('/subscribe_premium', methods=['GET', 'POST'])
+# @login_required
+# def subscribe_premium():
+#     plan = 'Premium'
+#     amount = '10000'
+#     email = current_user.email
+
+#     response = Transaction.initialize(amount=amount, email=email)
+#     ref = response['data']['reference']
+#     print(ref)
+
+#     a_url = response['data']['authorization_url']
+#     print(a_url)
+#     return redirect(a_url)
+
+
+# @core_bp.route('/verify_payment', methods=['POST'])
+# @login_required
+# def verify_payment():
+#     data = request.json
+#     ref = data.get('reference')
+#     if not ref:
+#         return jsonify({"message": "Payment reference not provided"}), 400
+
+#     """Verify payment with Paystack"""
+#     paystack_secret_key = "PAYSTACK_SECRET_KEY"
+#     verification_url = f"https://api.paystack.co/transaction/verify/{ref}"
+#     headers = {"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"}
+#     response = requests.get(verification_url, headers=headers)
+#     verification_response = response.json()
+
+#     if response.status_code != 200 or verification_response['data']['status'] != 'success':
+#         return jsonify({"message": "Payment verification failed"}), 400
+
+#     amount = verification_response['data']['amount']
+#     paystack_subscription_id = verification_response['data']['subscription']['subscription_code']
+    
+#     if amount == 20000:
+#         plan = 'Starter'
+#     elif amount == 5000:
+#         plan = 'Basic'
+#     elif amount == 10000:
+#         plan = 'Premium'
+#     else:
+#         return jsonify({"message": "Invalid payment amount"}), 400
+
+
+#     start_date, end_date, remaining_usages = calculate_subscription_dates_and_usages(plan)
+
+#     # Update or create subscription in thegit database
+#     subscription = Subscription.query.filter_by(user_id=current_user.id, plan=plan).first()
+#     if subscription:
+#         # Update existing subscription
+#         # subscription.update(amount = amount, start_date = start_date, end_date = end_date, remaining_usages = remaining_usages, paid = True, paystack_subscription_id = paystack_subscription_id)
+        
+#         subscription.amount = amount
+#         subscription.start_date = start_date
+#         subscription.end_date = end_date
+#         subscription.remaining_usages = remaining_usages
+#         subscription.paid = True
+#         subscription.paystack_subscription_id = paystack_subscription_id
+#     else:
+#         subscription = Subscription(user_id=current_user.id, plan=plan, amount=amount,
+#                                     start_date=start_date, end_date=end_date, remaining_usages=remaining_usages,
+#                                     paid=True, paystack_subscription_id=paystack_subscription_id)
+#         db.session.add(subscription)
+
+#     db.session.commit()
+#     return redirect(url_for('core.dashboard'))
 
 
 def calculate_subscription_dates_and_usages(plan):

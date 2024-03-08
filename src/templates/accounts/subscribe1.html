@@ -12,7 +12,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Starter Plan</h5>
                         <p class="card-text">Price: N2000</p>
-                        <form method="post" action="{{ url_for('core.subscription', plan_name='starter') }}">
+                        <form method="post" action="{{ url_for('core.subscription', ) }}">
                             <button type="submit" class="btn btn-primary">Subscribe</button>
                         </form>
                     </div>
@@ -22,7 +22,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Basic Plan</h5>
                         <p class="card-text">Price: N5000</p>
-                        <form method="post" action="{{ url_for('core.subscription', plan_name='basic') }}">
+                        <form method="post" action="{{ url_for('core.subscribe_basic') }}">
                             <button type="submit" class="btn btn-primary">Subscribe</button>
                         </form>
                     </div>
@@ -32,7 +32,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Premium Plan</h5>
                         <p class="card-text">Price: N10000</p>
-                        <form method="post" action="{{ url_for('core.subscription', plan_name='premium') }}">
+                        <form method="post" action="{{ url_for('core.subscribe_premium') }}">
                             <button type="submit" class="btn btn-primary">Subscribe</button>
                         </form>
                     </div>
