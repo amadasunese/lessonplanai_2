@@ -289,6 +289,25 @@ def subscription(plan_name):
     return redirect(a_url)
 
 
+# @core_bp.route('/payment_verification', methods=['POST'])
+# def payment_verification():
+#     data = request.json
+
+#     reference = data.get('reference')
+#     success = data.get('status') == 'success'
+
+#     if success:
+#         # Update subscription status in the database
+#         subscription = Subscription.query.filter_by(paystack_subscription_id=reference).first()
+#         if subscription:
+#             subscription.paid = True
+#             db.session.commit()
+
+#             return jsonify({'message': 'Payment verified successfully'}), 200
+#     return jsonify({'message': 'Payment verification failed'}), 400
+
+
+
 @core_bp.route('/payment_verification', methods=['POST'])
 def payment_verification():
     data = request.json
@@ -303,8 +322,12 @@ def payment_verification():
             subscription.paid = True
             db.session.commit()
 
-            return jsonify({'message': 'Payment verified successfully'}), 200
-    return jsonify({'message': 'Payment verification failed'}), 400
+            # Redirect to core.dashboard
+            return redirect(url_for('core.dashboard'))  
+
+    # For failed verifications, still return JSON for consistency
+    return jsonify({'message': 'Payment verification failed'}), 400 
+
 
 
 
