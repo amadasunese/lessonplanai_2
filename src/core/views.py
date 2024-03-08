@@ -291,7 +291,7 @@ def verify_payment():
         return jsonify({"message": "Payment reference not provided"}), 400
 
     """Verify payment with Paystack"""
-    paystack_secret_key = "YOUR_PAYSTACK_SECRET_KEY"
+    paystack_secret_key = "PAYSTACK_SECRET_KEY"
     verification_url = f"https://api.paystack.co/transaction/verify/{ref}"
     headers = {"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"}
     response = requests.get(verification_url, headers=headers)
@@ -312,12 +312,15 @@ def verify_payment():
     else:
         return jsonify({"message": "Invalid payment amount"}), 400
 
+
     start_date, end_date, remaining_usages = calculate_subscription_dates_and_usages(plan)
 
-    # Update or create subscription in the database
+    # Update or create subscription in thegit database
     subscription = Subscription.query.filter_by(user_id=current_user.id, plan=plan).first()
     if subscription:
         # Update existing subscription
+        # subscription.update(amount = amount, start_date = start_date, end_date = end_date, remaining_usages = remaining_usages, paid = True, paystack_subscription_id = paystack_subscription_id)
+        
         subscription.amount = amount
         subscription.start_date = start_date
         subscription.end_date = end_date
