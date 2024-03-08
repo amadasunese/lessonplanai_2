@@ -293,7 +293,7 @@ def verify_payment():
     """Verify payment with Paystack"""
     paystack_secret_key = "YOUR_PAYSTACK_SECRET_KEY"
     verification_url = f"https://api.paystack.co/transaction/verify/{ref}"
-    headers = {"Authorization": f"Bearer {paystack_secret_key}"}
+    headers = {"Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"}
     response = requests.get(verification_url, headers=headers)
     verification_response = response.json()
 
