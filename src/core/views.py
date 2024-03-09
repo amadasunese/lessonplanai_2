@@ -342,11 +342,14 @@ def subscription(plan_name):
 def payment_verification():
     data = request.json
     paramz = request.args.get('trxref', None)  # Corrected from request.GET to request.args
+    print(paramz)
 
     # Assuming you want to use paramz for verification as shown in your code
     details = Transaction.verify(reference=paramz)
+    print(details)
 
     status = details['data']['status']  # Moved after the definition of details
+    print(status)
 
     if status == 'success':
         # Corrected filter_by syntax
