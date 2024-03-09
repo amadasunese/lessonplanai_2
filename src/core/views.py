@@ -291,22 +291,18 @@ def subscription(plan_name):
 
 
 
-@core_bp.route('/paystack/webhook', methods=['POST'])
+@core_bp.route('/paystack/webhook', methods=['GET', 'POST'])
 def paystack_webhook():
-    # Assuming you have a way to authenticate and validate Paystack webhook data
-    # This often involves checking a signature in the header against your secret key
     data = request.json
 
     if data['event'] == 'charge.success':
         reference = data['data']['reference']
-        # Lookup the subscription by the Paystack reference
         subscription = Subscription.query.filter_by(paystack_subscription_id=reference).first()
         if subscription:
-            # Verify the payment amount matches, if necessary
-            # Update the subscription status to paid
             subscription.paid = True
             db.session.commit()
             return jsonify({"status": "success"}), 200
+        return redirect(url_for('core.dashboard'))
     return jsonify({"status": "error"}), 400
 
 # 1
