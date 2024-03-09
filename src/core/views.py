@@ -291,19 +291,49 @@ def subscription(plan_name):
 
 
 
-@core_bp.route('/paystack/webhook', methods=['GET', 'POST'])
-def paystack_webhook():
-    data = request.json
+# @core_bp.route('/paystack/webhook', methods=['GET', 'POST'])
+# def paystack_webhook():
+#     data = request.json
 
-    if data['event'] == 'charge.success':
-        reference = data['data']['reference']
-        subscription = Subscription.query.filter_by(paystack_subscription_id=reference).first()
-        if subscription:
-            subscription.paid = True
-            db.session.commit()
-            return jsonify({"status": "success"}), 200
-        return redirect(url_for('core.dashboard'))
-    return jsonify({"status": "error"}), 400
+#     if data['event'] == 'charge.success':
+#         reference = data['data']['reference']
+#         subscription = Subscription.query.filter_by(paystack_subscription_id=reference).first()
+#         if subscription:
+#             subscription.paid = True
+#             db.session.commit()
+#             return jsonify({"status": "success"}), 200
+#         return redirect(url_for('core.dashboard'))
+#     return jsonify({"status": "error"}), 400
+
+
+@core_bp.route('/paystack/webhook', methods=['GET', 'POST'])  # Adjusted for POST only
+def paystack_webhook():
+    if request.is_json:
+        data = request.get_json()
+
+        if data.get('event') == 'charge.success':
+            reference = data.get('data', {}).get('reference')
+            if reference:
+                subscription = Subscription.query.filter_by(paystack_subscription_id=reference).first()
+                if subscription:
+                    subscription.paid = True
+                    db.session.commit()
+                    
+                    # Assuming this is for user-initiated flows, not recommended for server-to-server webhook calls
+                    # Consider using a query parameter or session to pass a message or status back to the dashboard if needed
+                    return redirect(url_for('core.dashboard'))
+                else:
+                    # Subscription not found, handle accordingly
+                    return jsonify({"status": "error", "message": "Subscription not found"}), 404
+            else:
+                # Reference not provided in the payload
+                return jsonify({"status": "error", "message": "No reference provided"}), 400
+        else:
+            # The event is not charge.success, or other unhandled events
+            return jsonify({"status": "error", "message": "Unhandled event type"}), 400
+    else:
+        # If the request does not have JSON content
+        return jsonify({"error": "Invalid Content-Type. Expected application/json"}), 400
 
 # 1
 # @core_bp.route('/payment_verification', methods=['POST'])
