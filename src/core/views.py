@@ -285,9 +285,29 @@ def subscription(plan_name):
     db.session.add(create_subscription_instance)
     db.session.commit()
 
+
     a_url = response['data']['authorization_url']
     return redirect(a_url)
 
+
+
+@core_bp.route('/paystack/webhook', methods=['POST'])
+def paystack_webhook():
+    # Assuming you have a way to authenticate and validate Paystack webhook data
+    # This often involves checking a signature in the header against your secret key
+    data = request.json
+
+    if data['event'] == 'charge.success':
+        reference = data['data']['reference']
+        # Lookup the subscription by the Paystack reference
+        subscription = Subscription.query.filter_by(paystack_subscription_id=reference).first()
+        if subscription:
+            # Verify the payment amount matches, if necessary
+            # Update the subscription status to paid
+            subscription.paid = True
+            db.session.commit()
+            return jsonify({"status": "success"}), 200
+    return jsonify({"status": "error"}), 400
 
 # 1
 # @core_bp.route('/payment_verification', methods=['POST'])
@@ -335,33 +355,28 @@ def subscription(plan_name):
 #     # For failed verifications, still return JSON for consistency
 #     return jsonify({'message': 'Payment verification failed'}), 400 
 
-
 #3
 
 @core_bp.route('/payment_verification', methods=['POST'])
 def payment_verification():
     data = request.json
-    paramz = request.args.get('trxref', None)  # Corrected from request.GET to request.args
+    paramz = request.args.get('trxref', None)
     print(paramz)
 
-    # Assuming you want to use paramz for verification as shown in your code
     details = Transaction.verify(reference=paramz)
     print(details)
 
-    status = details['data']['status']  # Moved after the definition of details
+    status = details['data']['status']
     print(status)
 
     if status == 'success':
-        # Corrected filter_by syntax
         subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
         if subscription:
             subscription.paid = True
             db.session.commit()
 
-            # Redirect to core.dashboard
             return redirect(url_for('core.dashboard'))
 
-    # For failed verifications, still return JSON for consistency
     return jsonify({'message': 'Payment verification failed'}), 400
 
 # @core_bp.route('/subscribe_starter', methods=['GET', 'POST'])
