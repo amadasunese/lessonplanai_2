@@ -15,6 +15,7 @@
       <th style="border: 1px solid black;">Subscription End Date</th>
       <th style="border: 1px solid black;">Remaining Usages</th>
       <th style="border: 1px solid black;">Paid?</th>
+      <th style="border: 1px solid black;">Subscription ID</th>
       <th style="border: 1px solid black;">Actions</th>
     </tr>
 
@@ -30,6 +31,7 @@
           <td style="border: 1px solid black;">{{ user.subscription.end_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
           <td style="border: 1px solid black;">{{ user.subscription.remaining_usages }}</td>
           <td style="border: 1px solid black;">{{ 'Yes' if user.subscription.paid else 'No' }}</td>
+          <td style="border: 1px solid black;">{{ user.subscription.paystack_subscription_id }}</td>
           <td style="border: 1px solid black;">
             <a href="{{ url_for('core.delete_subscribed_user', subscription_id=user.subscription.id) }}">Remove</a>
           </td>

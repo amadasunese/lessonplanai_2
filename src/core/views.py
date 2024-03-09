@@ -338,7 +338,7 @@ def subscription(plan_name):
 
 #3
 
-@core_bp.route('/payment_verification', methods=['POST'])
+@core_bp.route('/payment_verification', methods=['GET', 'POST'])
 def payment_verification():
     data = request.json
     paramz = request.args.get('trxref', None)  # Corrected from request.GET to request.args
