@@ -358,7 +358,11 @@ def subscription(plan_name):
 
 @core_bp.route('/payment_verification', methods=['GET', 'POST'])
 def payment_verification():
-    data = request.json
+    if request.method == 'POST':
+        data = request.json
+        if data is None:
+            return jsonify({'message': 'Request must be JSON with Content-Type application/json'}), 400
+
     paramz = request.args.get('trxref', None)
     print(paramz)
 
