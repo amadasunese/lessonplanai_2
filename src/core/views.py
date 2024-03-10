@@ -305,6 +305,7 @@ def tutor_fee_payment():
         tutor_id=current_user.id,
         paystack_tutorfeepayment_id=response.get('data', {}).get('reference')
     )
+    print(tutor_fee_payment)
     db.session.add(tutor_fee_payment)
 
     """Redirect to the payment authorization URL"""
@@ -346,22 +347,33 @@ def payment_verification():
         # This assumes you have a mechanism to associate a transaction reference with a tutor fee payment or tutor ID
         tutorfeepayment = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
         if tutorfeepayment:
-            tutor_id = tutorfeepayment.tutor_id
-            tutor_fee_payment = TutorFeePayment.query.filter_by(tutor_id=tutor_id).first()
-            if tutor_fee_payment:
-                # Update existing tutor fee payment record
-                tutor_fee_payment.amount += tutorfeepayment.amount
-                tutor_fee_payment.payment_date = datetime.utcnow()
-            else:
-                # Or create a new tutor fee payment record
-                tutor_fee_payment = TutorFeePayment(
-                    tutor_id=tutor_id,
-                    amount=tutorfeepayment.amount,  # Assuming you've stored the amount in PaymentInitiation
-                    payment_date=datetime.utcnow()
-                )
-                db.session.add(tutor_fee_payment)
+            tutor_fee_payment.amount += tutorfeepayment.amount
+            tutor_fee_payment.payment_date = datetime.utcnow()
             db.session.commit()
             return redirect(url_for('core.dashboard'))
+        
+        tutor = Tutor.query.get(tutorfeepayment.tutor_id)
+        if tutor:
+            tutor.tutor_payments = True
+            db.session.commit()
+            return redirect(url_for('core.dashboard'))
+        
+            # tutor_id = current_user.id
+            # tutor_fee_payment = TutorFeePayment.query.filter_by(tutor_id=tutor_id).first()
+            # if tutor_fee_payment:
+            #     # Update existing tutor fee payment record
+            #     tutor_fee_payment.amount += tutorfeepayment.amount
+            #     tutor_fee_payment.payment_date = datetime.utcnow()
+            # else:
+            #     # Or create a new tutor fee payment record
+            #     tutor_fee_payment = TutorFeePayment(
+            #         tutor_id=tutor_id,
+            #         amount=tutorfeepayment.amount,  # Assuming you've stored the amount in PaymentInitiation
+            #         payment_date=datetime.utcnow()
+            #     )
+            #     db.session.add(tutor_fee_payment)
+            # db.session.commit()
+            # return redirect(url_for('core.dashboard'))
 
     return jsonify({'message': 'Payment verification failed'}), 400
 
