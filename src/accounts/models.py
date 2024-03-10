@@ -88,9 +88,10 @@ class Tutor(db.Model):
     source = db.Column(db.String(50))
     confirmation_name = db.Column(db.String(100))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    fee_payments = db.relationship('TutorFeePayment', backref='tutor', lazy=True)
+    fee_payments = db.relationship('TutorFeePayment', back_populates='tutor')
     photo_data = db.Column(db.LargeBinary)
     photo_filename = db.Column(db.String(255))
+   
     
 
 
@@ -132,6 +133,8 @@ class TutorFeePayment(db.Model):
     amount = db.Column(db.Float, nullable=False)
     payment_date = db.Column(db.Date, nullable=False)
     paystack_tutorfeepayment_id = db.Column(db.String(50), nullable=False)
+    tutor = db.relationship('Tutor', back_populates='fee_payments')
+    
 
     def __init__(self, tutor_id, amount, payment_date, paystack_tutorfeepayment_id):
         self.tutor_id = tutor_id

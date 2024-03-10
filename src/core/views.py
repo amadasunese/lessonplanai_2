@@ -299,14 +299,15 @@ def tutor_fee_payment():
     print(f"{amount} {email} {tutor_id}")
 
     # Create TutorFeePayment instance
-    tutor_fee_payment = TutorFeePayment(
+    fee_payment_instance = TutorFeePayment(
         amount=amount,
         payment_date=datetime.utcnow(),
         tutor_id=current_user.id,
         paystack_tutorfeepayment_id=response.get('data', {}).get('reference')
     )
-    print(tutor_fee_payment)
-    db.session.add(tutor_fee_payment)
+    print(fee_payment_instance)
+    db.session.add(fee_payment_instance)
+    db.session.commit()
 
     """Redirect to the payment authorization URL"""
     a_url = response['data']['authorization_url']
@@ -345,10 +346,17 @@ def payment_verification():
         
         # If no subscription is found, check for a tutor fee payment
         # This assumes you have a mechanism to associate a transaction reference with a tutor fee payment or tutor ID
-        tutorfeepayment = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
-        if tutorfeepayment:
-            tutorfeepayment.amount += tutorfeepayment.amount
-            tutorfeepayment.payment_date = datetime.utcnow()
+        # tutorfeepayment = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
+        # if tutorfeepayment:
+        #     tutorfeepayment.amount += tutorfeepayment.amount
+        #     tutorfeepayment.payment_date = datetime.utcnow()
+        #     db.session.commit()
+        #     return redirect(url_for('core.dashboard'))
+
+        
+        tutor = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
+        if tutor:
+            tutor.fee_payments = True
             db.session.commit()
             return redirect(url_for('core.dashboard'))
         
@@ -496,14 +504,14 @@ def process_registration():
         print(f'Error: {str(e)}')
         return redirect(url_for('core.tutor_registration'))
 
+
 @core_bp.route('/subscribed-tutors')
 def subscribed_tutors():
-    # Fetch all unique tutors who have made at least one fee payment.
-    # This query directly utilizes the relationship between TutorFeePayment and Tutor.
-    # We're assuming 'tutor' backref is properly set up in TutorFeePayment model pointing back to the Tutor model.
-    tutors_with_payments = Tutor.query.join(TutorFeePayment).distinct().all()
+    # Fetch all TutorFeePayment entries from the database
+    tutor_fee_payments = TutorFeePayment.query.all()
 
-    return render_template('accounts/subscribed_tutors.html', tutors=tutors_with_payments)
+    # Pass the list of TutorFeePayment objects to the template
+    return render_template('accounts/subscribed_tutors.html', tutor_fee_payments=tutor_fee_payments)
 
 
 
