@@ -347,14 +347,8 @@ def payment_verification():
         # This assumes you have a mechanism to associate a transaction reference with a tutor fee payment or tutor ID
         tutorfeepayment = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
         if tutorfeepayment:
-            tutor_fee_payment.amount += tutorfeepayment.amount
-            tutor_fee_payment.payment_date = datetime.utcnow()
-            db.session.commit()
-            return redirect(url_for('core.dashboard'))
-        
-        tutor = Tutor.query.get(tutorfeepayment.tutor_id)
-        if tutor:
-            tutor.tutor_payments = True
+            tutorfeepayment.amount += tutorfeepayment.amount
+            tutorfeepayment.payment_date = datetime.utcnow()
             db.session.commit()
             return redirect(url_for('core.dashboard'))
         
