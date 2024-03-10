@@ -1,69 +1,59 @@
 {% extends '_base.html' %}
 
 {% block content %}
-{% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div class="alert alert-{{ messages[0].lower().split(' ', 1)[0] }}">
-                {{ messages[0] }}
-            </div>
-        {% endif %}
-    {% endwith %}
-<div>
-    <h2>Parent Registration</h2>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1 class="text-center">Parent Registration</h1>
+            
+            <form method="POST" action="{{ url_for('core.register_parent') }}">
+                {{ form.hidden_tag() }}
 
-    
+                <div>
+                    {{ form.full_name.label }}
+                    {{ form.full_name(class="form-control", placeholder="Enter your full name") }}
+                    {% for error in form.full_name.errors %}
+                        <p class="text-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
 
-    <form method="POST" action="{{ url_for('core.register_parent') }}">
-        {{ form.hidden_tag() }}
+                <div>
+                    {{ form.phone_number.label }}
+                    {{ form.phone_number(class="form-control", placeholder="Enter your phone number") }}
+                    {% for error in form.phone_number.errors %}
+                        <p class="text-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
 
-        <!-- Full Name -->
-        <div>
-            {{ form.full_name.label }}
-            {{ form.full_name(class="form-control", placeholder="Enter your full name") }}
-            {% for error in form.full_name.errors %}
-                <p class="text-danger">{{ error }}</p>
-            {% endfor %}
+                <div>
+                    {{ form.email.label }}
+                    {{ form.email(class="form-control", placeholder="Enter your email") }}
+                    {% for error in form.email.errors %}
+                        <p class="text-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.age_range.label }}
+                    {{ form.age_range(class="form-control") }}
+                    {% for error in form.age_range.errors %}
+                        <p class="text-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.subject_area.label }}
+                    {{ form.subject_area(class="form-control", placeholder="Enter subject area") }}
+                    {% for error in form.subject_area.errors %}
+                        <p class="text-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
         </div>
-
-        <!-- Phone Number -->
-        <div>
-            {{ form.phone_number.label }}
-            {{ form.phone_number(class="form-control", placeholder="Enter your phone number") }}
-            {% for error in form.phone_number.errors %}
-                <p class="text-danger">{{ error }}</p>
-            {% endfor %}
-        </div>
-
-        <!-- Email -->
-        <div>
-            {{ form.email.label }}
-            {{ form.email(class="form-control", placeholder="Enter your email") }}
-            {% for error in form.email.errors %}
-                <p class="text-danger">{{ error }}</p>
-            {% endfor %}
-        </div>
-
-        <!-- Age Range -->
-        <div>
-            {{ form.age_range.label }}
-            {{ form.age_range(class="form-control") }}
-            {% for error in form.age_range.errors %}
-                <p class="text-danger">{{ error }}</p>
-            {% endfor %}
-        </div>
-
-        <!-- Subject Area -->
-        <div>
-            {{ form.subject_area.label }}
-            {{ form.subject_area(class="form-control", placeholder="Enter subject area") }}
-            {% for error in form.subject_area.errors %}
-                <p class="text-danger">{{ error }}</p>
-            {% endfor %}
-        </div>
-
-        <div>
-            <button type="submit" class="btn btn-primary">Register</button>
-        </div>
-    </form>
+    </div>
 </div>
 {% endblock %}

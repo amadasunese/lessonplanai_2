@@ -426,7 +426,7 @@ th, td {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.btn-d {
+.btn {
   width: 100%;
   margin-bottom: 10px;
 }
@@ -457,3 +457,61 @@ th, td {
   right: 0;
   padding: 15px;
 }
+
+
+/* subscribe page */
+
+/* Custom Page Styles */
+
+/* Flash Messages - Adjust colors and padding for visibility */
+.alert-dismissible {
+  margin-bottom: 20px; /* Increased bottom margin for better spacing */
+}
+
+/* Enhance card appearance */
+.card-deck .card {
+  margin: 0 15px; /* Adds space between cards */
+  border: 1px solid #ddd; /* Light border for definition */
+  box-shadow: 0 2px 4px rgba(0,0,0,.1); /* Subtle shadow for depth */
+}
+
+.card-body {
+  padding: 20px; /* More padding for content breathing room */
+}
+
+.card-title {
+  margin-bottom: 15px; /* Space between title and content */
+  font-weight: bold; /* More emphasis on plan names */
+}
+
+.card-text {
+  margin-bottom: 20px; /* Space before button */
+  font-size: 16px; /* Larger text for readability */
+}
+
+/* Button customization for more attractive CTA */
+.btn-primary {
+  background-color: #0056b3; /* Adjusted primary color */
+  border-color: #004094; /* Darker border for contrast */
+  padding: 10px 25px; /* Larger buttons */
+  font-size: 18px; /* Larger font for buttons */
+  border-radius: 5px; /* Rounded corners for buttons */
+}
+
+.btn-primary:hover {
+  background-color: #004094; /* Darker on hover for interaction */
+  border-color: #003473;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-deck .card {
+      margin-bottom: 20px; /* Stack cards with space in between on smaller screens */
+  }
+}
+
+
+
+
+
+

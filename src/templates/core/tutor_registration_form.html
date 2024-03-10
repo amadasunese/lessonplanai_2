@@ -1,79 +1,130 @@
 {% extends '_base.html' %}
 
 {% block content %}
-    <h1>Tutor Registration</h1>
+<div class="container mt-5">
+    
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <ul class="flash-messages">
+            <div class="alert alert-info" role="alert">
                 {% for message in messages %}
-                    <li>{{ message }}</li>
+                    {{ message }}
                 {% endfor %}
-            </ul>
+            </div>
         {% endif %}
     {% endwith %}
-    <form method="post" action="{{ url_for('core.process_registration') }}" enctype="multipart/form-data"> 
 
-        <label for="first_name">First Name:</label>
-        <input type="text" id="first_name" name="first_name" value="{{ current_user['first_name'] }}" required><br>
+    <form method="post" action="{{ url_for('core.process_registration') }}" enctype="multipart/form-data">
+        <h1 class="mb-4">Tutor Registration</h1>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="first_name">First Name:</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ current_user['first_name'] }}" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="last_name">Last Name:</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ current_user['last_name'] }}" required>
+            </div>
+        </div>
 
-        <label for="last_name">Last Name:</label>
-        <input type="text" id="last_name" name="last_name" value="{{ current_user['last_name'] }}" required><br>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ current_user['email'] }}" required>
+        </div>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="{{ current_user['email'] }}" required><br>
+        <div class="form-group">
+            <label for="address">Address:</label>
+            <input type="text" class="form-control" id="address" name="address">
+        </div>
 
-        <label for="address">Address:</label>
-        <input type="text" id="address" name="address"><br>
+        <div class="form-group">
+            <label for="phone_number">Phone Number:</label>
+            <input type="tel" class="form-control" id="phone_number" name="phone_number">
+        </div>
 
-        <label for="phone_number">Phone Number:</label>
-        <input type="tel" id="phone_number" name="phone_number"><br>
+        <div class="form-group">
+            <label for="age">Age:</label>
+            <input type="number" class="form-control" id="age" name="age">
+        </div>
 
-        <label for="age">Age:</label>
-        <input type="number" id="age" name="age"><br>
+        <div class="form-group">
+            <label for="education_qualification">Education Qualification:</label>
+            <input type="text" class="form-control" id="education_qualification" name="education_qualification">
+        </div>
 
-        <label for="education_qualification">Education Qualification:</label>
-        <input type="text" id="education_qualification" name="education_qualification"><br>
+        <div class="form-group">
+            <label for="interest">Interest:</label>
+            <textarea class="form-control" id="interest" name="interest"></textarea>
+        </div>
 
-        <label for="interest">Interest:</label>
-        <textarea id="interest" name="interest"></textarea><br>
+        <div class="form-group">
+            <label for="subjects">Subjects:</label>
+            <input type="text" class="form-control" id="subjects" name="subjects">
+        </div>
 
-        <label for="subjects">Subjects:</label>
-        <input type="text" id="subjects" name="subjects"><br>
+        <div class="form-group">
+            <label for="past_experience">Past Experience:</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="past_experience" name="past_experience" value="Yes">
+                <label class="form-check-label" for="past_experience">
+                    Yes
+                </label>
+            </div>
+        </div>
 
-        <label for="past_experience">Past Experience:</label>
-        <input type="checkbox" id="past_experience" name="past_experience"> Yes<br>
+        <div class="form-group">
+            <label for="experience_years">Experience Years:</label>
+            <input type="text" class="form-control" id="experience_years" name="experience_years">
+        </div>
 
-        <label for="experience_years">Experience Years:</label>
-        <input type="text" id="experience_years" name="experience_years"><br>
+        <div class="form-group">
+            <label for="experience_description">Experience Description:</label>
+            <textarea class="form-control" id="experience_description" name="experience_description"></textarea>
+        </div>
 
-        <label for="experience_description">Experience Description:</label>
-        <textarea id="experience_description" name="experience_description"></textarea><br>
+        <div class="form-group">
+            <label for="interest_join">Interest to Join:</label>
+            <textarea class="form-control" id="interest_join" name="interest_join"></textarea>
+        </div>
 
-        <label for="interest_join">Interest to Join:</label>
-        <textarea id="interest_join" name="interest_join"></textarea><br>
+        <div class="form-group">
+            <label for="languages">Languages:</label>
+            <textarea class="form-control" id="languages" name="languages"></textarea>
+        </div>
 
-        <label for="languages">Languages:</label>
-        <textarea id="languages" name="languages"></textarea><br>
+        <div class="form-group">
+            <label for="availability">Availability:</label>
+            <input type="text" class="form-control" id="availability" name="availability">
+        </div>
 
-        <label for="availability">Availability:</label>
-        <input type="text" id="availability" name="availability"><br>
+        <div class="form-group">
+            <label for="teaching_mode">Teaching Mode:</label>
+            <input type="text" class="form-control" id="teaching_mode" name="teaching_mode">
+        </div>
 
-        <label for="teaching_mode">Teaching Mode:</label>
-        <input type="text" id="teaching_mode" name="teaching_mode"><br>
+        <div class="form-group">
+            <label for="student_level">Student Level:</label>
+            <input type="text" class="form-control" id="student_level" name="student_level">
+        </div>
 
-        <label for="student_level">Student Level:</label>
-        <input type="text" id="student_level" name="student_level"><br>
+        <div class="form-group">
+            <label for="source">Source:</label>
+            <input type="text" class="form-control" id="source" name="source">
+        </div>
 
-        <label for="source">Source:</label>
-        <input type="text" id="source" name="source"><br>
+        <div class="form-group">
+            <label for="photo">Photo:</label>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="photo" name="photo" accept="image/*">
+                <label class="custom-file-label" for="photo">Choose file</label>
+            </div>
+        </div>
 
-        <!-- Add a new input for photo upload -->
-        <label for="photo">Photo:</label>
-        <input type="file" id="photo" name="photo" accept="image/*"><br>
+        <div class="form-group">
+            <label for="confirmation_name">Confirmation Name:</label>
+            <input type="text" class="form-control" id="confirmation_name" name="confirmation_name">
+        </div>
 
-        <label for="confirmation_name">Confirmation Name:</label>
-        <input type="text" id="confirmation_name" name="confirmation_name"><br>
-
-        <input type="submit" value="Submit">
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+</div>
 {% endblock %}

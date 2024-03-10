@@ -91,6 +91,7 @@ class Tutor(db.Model):
     fee_payments = db.relationship('TutorFeePayment', backref='tutor', lazy=True)
     photo_data = db.Column(db.LargeBinary)
     photo_filename = db.Column(db.String(255))
+    
 
 
     def __init__(self, id, first_name, last_name, email, address, phone_number, age, education_qualification,
@@ -130,11 +131,13 @@ class TutorFeePayment(db.Model):
     tutor_id = db.Column(db.Integer, db.ForeignKey('tutor.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     payment_date = db.Column(db.Date, nullable=False)
+    paystack_tutorfeepayment_id = db.Column(db.String(50), nullable=False)
 
-    def __init__(self, tutor_id, amount, payment_date):
+    def __init__(self, tutor_id, amount, payment_date, paystack_tutorfeepayment_id):
         self.tutor_id = tutor_id
         self.amount = amount
         self.payment_date = payment_date
+        self.paystack_tutorfeepayment_id = paystack_tutorfeepayment_id
 
 
 class Parent(db.Model):

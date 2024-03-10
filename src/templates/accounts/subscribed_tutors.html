@@ -1,0 +1,26 @@
+{% extends "_base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Subscribed Tutors</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tutor ID</th>
+                <th>Amount Paid</th>
+                <th>Payment Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscription in subscriptions %}
+            <tr>
+                <td>{{ subscription.tutor_id }}</td>
+                <td>{{ subscription.amount }}</td>
+                <td>{{ subscription.payment_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
