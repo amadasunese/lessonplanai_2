@@ -41,7 +41,7 @@ def add_admin(first_name, last_name, email, password):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
 
     first_name = input("Enter admin first name: ")
     last_name = input("Enter admin last name: ")

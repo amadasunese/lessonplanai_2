@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, flash, url_for, request
 from flask_login import login_required
 from src.utils.decorators import check_is_confirmed, check_is_subscribed, check_is_registered
-from src.accounts.forms import LessonPlanForm, ParentRegistrationForm
+from src.accounts.forms import LessonPlanForm, ParentRegistrationForm, SearchForm
 from flask_login import login_required, current_user
 from openai import OpenAI
 from markupsafe import Markup
@@ -20,7 +20,10 @@ from src.utils.plan import plans
 from flask import request, jsonify
 from datetime import datetime, timedelta
 import requests
-
+from src.accounts.forms import states_and_lgas
+import json
+from flask import send_file
+from src.utils.decorators import check_is_tutor_registered
 
 
 core_bp = Blueprint("core", __name__)
@@ -191,7 +194,7 @@ def delete_parent(parent_id):
         flash('Parent successfully removed', 'success')
     else:
         flash('Parent not found', 'error')
-    return redirect(url_for('core.registered_parent'))
+    return redirect(url_for('core.registered_parents'))
 
 
 @core_bp.route('/edit-tutor/<int:tutor_id>', methods=['GET', 'POST'])
@@ -231,6 +234,34 @@ def edit_tutor(tutor_id):
 
     """Render the form for editing with pre-filled data"""
     return render_template('core/edit_tutor.html', tutor=tutor)
+
+
+@core_bp.route('/edit_parent/<int:parent_id>', methods=['GET', 'POST'])
+@login_required
+def edit_parent(parent_id):
+    parent = Parent.query.get_or_404(parent_id)
+    if parent.user_id != current_user.id:
+        flash('You do not have permission to edit this parent.', 'danger')
+        return redirect(url_for('core.dashboard'))
+
+    form = ParentRegistrationForm(obj=parent)
+    if form.validate_on_submit():
+        try:
+            parent.full_name = form.full_name.data
+            parent.phone_number = form.phone_number.data
+            parent.email = form.email.data
+            parent.age_range = form.age_range.data
+            parent.subject_area = form.subject_area.data
+            parent.state = form.state.data
+            parent.local_government = form.local_government.data
+            db.session.commit()
+            flash('Parent information updated successfully!', 'success')
+            return redirect(url_for('core.registered_parent'))
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred. Please try again.', 'danger')
+
+    return render_template('core/edit_parent.html', form=form)
 
 
 
@@ -295,10 +326,8 @@ def tutor_fee_payment():
     tutor_id = current_user.id
 
     response = Transaction.initialize(amount=str(amount), email=email)
-    # ref = response['data']['reference']
     print(f"{amount} {email} {tutor_id}")
 
-    # Create TutorFeePayment instance
     fee_payment_instance = TutorFeePayment(
         amount=amount,
         payment_date=datetime.utcnow(),
@@ -337,79 +366,18 @@ def payment_verification():
     print(status)
 
     if status == 'success':
-        # Attempt to find a subscription with the given transaction reference
         subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
         if subscription:
             subscription.paid = True
             db.session.commit()
             return redirect(url_for('core.dashboard'))
         
-        # If no subscription is found, check for a tutor fee payment
-        # This assumes you have a mechanism to associate a transaction reference with a tutor fee payment or tutor ID
-        # tutorfeepayment = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
-        # if tutorfeepayment:
-        #     tutorfeepayment.amount += tutorfeepayment.amount
-        #     tutorfeepayment.payment_date = datetime.utcnow()
-        #     db.session.commit()
-        #     return redirect(url_for('core.dashboard'))
-
-        
         tutor = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
         if tutor:
             tutor.fee_payments = True
             db.session.commit()
             return redirect(url_for('core.dashboard'))
-        
-            # tutor_id = current_user.id
-            # tutor_fee_payment = TutorFeePayment.query.filter_by(tutor_id=tutor_id).first()
-            # if tutor_fee_payment:
-            #     # Update existing tutor fee payment record
-            #     tutor_fee_payment.amount += tutorfeepayment.amount
-            #     tutor_fee_payment.payment_date = datetime.utcnow()
-            # else:
-            #     # Or create a new tutor fee payment record
-            #     tutor_fee_payment = TutorFeePayment(
-            #         tutor_id=tutor_id,
-            #         amount=tutorfeepayment.amount,  # Assuming you've stored the amount in PaymentInitiation
-            #         payment_date=datetime.utcnow()
-            #     )
-            #     db.session.add(tutor_fee_payment)
-            # db.session.commit()
-            # return redirect(url_for('core.dashboard'))
-
     return jsonify({'message': 'Payment verification failed'}), 400
-
-
-
-
-# @core_bp.route('/payment_verification', methods=['GET', 'POST'])
-# def payment_verification():
-#     if request.method == 'POST':
-#         data = request.json
-#         if data is None:
-#             return jsonify({'message': 'Request must be JSON with Content-Type application/json'}), 400
-
-#     paramz = request.args.get('trxref', None)
-#     print(paramz)
-
-#     details = Transaction.verify(reference=paramz)
-#     print(details)
-
-#     status = details['data']['status']
-#     print(status)
-
-#     if status == 'success':
-#         subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
-#         if subscription:
-#             subscription.paid = True
-#             db.session.commit()
-
-#             return redirect(url_for('core.dashboard'))
-
-#     return jsonify({'message': 'Payment verification failed'}), 400
-
-
-
 
 
 ######################################
@@ -443,7 +411,6 @@ def tutor_registration():
 @core_bp.route('/process-registration', methods=['POST'])
 def process_registration():
     try:
-        # Retrieve form data
         first_name = request.form['first_name']
         last_name = request.form['last_name']
         email = request.form['email']
@@ -507,50 +474,57 @@ def process_registration():
 
 @core_bp.route('/subscribed-tutors')
 def subscribed_tutors():
-    # Fetch all TutorFeePayment entries from the database
     tutor_fee_payments = TutorFeePayment.query.all()
-
-    # Pass the list of TutorFeePayment objects to the template
     return render_template('accounts/subscribed_tutors.html', tutor_fee_payments=tutor_fee_payments)
 
+
+
+# with open('src/state_lga.json') as f:
+#     states_and_lgas = json.load(f)
+
+
+
+
+# @core_bp.route('/get-local-governments')
+# def get_local_governments():
+#     state_name = request.args.get('state')
+#     lgas = states_and_lgas.get(state_name, {}).get('locals', [])
+#     return jsonify([{"name": lga["name"], "id": lga["id"]} for lga in lgas])
 
 
 @core_bp.route('/register_parent', methods=['GET', 'POST'])
 @login_required
 def register_parent():
     form = ParentRegistrationForm()
+    print("in register_parent")
+    if request.method == 'POST':
+        print("running as a POST request")
 
-    if form.validate_on_submit():
-        """Check if the email is already registered"""
-        existing_parent = Parent.query.filter_by(email=form.email.data).first()
+    if request.method == 'POST' and form.validate_on_submit():
+        print("form just submitted and was received")
+        try:
+            new_parent = Parent(
+                full_name=form.full_name.data,
+                phone_number=form.phone_number.data,
+                email=form.email.data,
+                age_range=form.age_range.data,
+                subject_area=form.subject_area.data,
+                state=form.state.data,
+                local_government=form.local_government.data,
+                user_id=current_user.id
+            )
+            db.session.add(new_parent)
+            db.session.commit()
 
-        if existing_parent:
-            flash('This email is already registered. Please use a different email address.', 'danger')
-        else:
-            try:
-                parent = Parent(
-                    full_name=form.full_name.data,
-                    phone_number=form.phone_number.data,
-                    email=form.email.data,
-                    age_range=form.age_range.data,
-                    subject_area=form.subject_area.data,
-                    user_id=current_user.id
-                )
+            flash('Registration successful!', 'success')
+            return redirect(url_for('core.dashboard'))
+        except Exception as e:
+            flash('An error occurred. Please try again.', 'danger')
+    else:
+        print("else case")        
+    return render_template('accounts/register_parent.html', form=form)
 
-                db.session.add(parent)
-                db.session.commit()
-
-                flash('Registration successful!', 'success')
-                return redirect(url_for('core.tutor_exploration'))
-
-            except Exception as e:
-                
-                db.session.rollback()
-                flash('An unexpected error occurred. Please try again later.', 'danger')
-                print(f"Error during registration: {e}")
-    return render_template('accounts/register_parent.html', form=form, errors=form.errors)
-
-
+            
 @core_bp.route('/tutor_profile/<int:tutor_id>')
 @login_required
 def tutor_profile(tutor_id):
@@ -589,8 +563,6 @@ def registered_tutors():
     return render_template('accounts/tutors_list.html', users=[tutor.user for tutor in tutors])
 
 
-from flask import send_file
-
 @core_bp.route('/accounts/display_photo/<int:tutor_id>')
 def display_photo(tutor_id):
     tutor = Tutor.query.get(tutor_id)
@@ -606,8 +578,6 @@ def subscribed_users():
     return render_template('accounts/subscribed_users.html', users=users)
     
 
-
-
 @core_bp.route('/delete_subscribed_user/<int:subscription_id>')
 @login_required  
 def delete_subscribed_user(subscription_id):
@@ -619,3 +589,18 @@ def delete_subscribed_user(subscription_id):
     else:
         flash('Subscription not found', 'error')
     return redirect(url_for('core.subscribed_users'))
+
+
+@core_bp.route('/search_parent', methods=['GET', 'POST'])
+@check_is_tutor_registered
+def search_parent():
+    form = SearchForm()
+    if form.validate_on_submit():
+        subject_area = form.subject_area.data
+        results = Parent.query.filter(Parent.subject_area.ilike(f'%{subject_area}%')).all()
+
+        return render_template('accounts/search_parent.html', form=form, results=results, subject_area=subject_area)
+    """Initially, or if the form is not submitted, 'results' is not included"""
+    return render_template('accounts/search_parent.html', form=form)
+
+

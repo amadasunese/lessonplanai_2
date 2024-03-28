@@ -5,6 +5,8 @@ from src.accounts.models import User
 from wtforms import SelectField, BooleanField, IntegerField
 from wtforms.validators import Optional, InputRequired
 from wtforms import DecimalField, DateField, IntegerField
+import json
+# from src import state_lga
 
 class LoginForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired(), Email()])
@@ -121,10 +123,35 @@ class TutorFeePaymentForm(FlaskForm):
     payment_date = DateField('Payment Date', validators=[InputRequired()])
 
 
+with open('src/state_lga.json') as f:
+    states_and_lgas = json.load(f)
+
 class ParentRegistrationForm(FlaskForm):
     full_name = StringField('Full Name', validators=[DataRequired()])
     phone_number = StringField('Phone Number', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    age_range = StringField('Age Range of Child/Children')
-    subject_area = StringField('Subject Area Needed', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired()])
+    age_range = SelectField('Age Range', choices=[
+        ('3-5', '3-5'),
+        ('6-10', '6-10'),
+        ('11-14', '11-14'),
+        ('15-17', '15-17'),
+        ('18-24', '18-24'),
+        ('25-34', '25-34'),
+        ('35-44', '35-44'),
+        ('45-54', '45-54'),
+        ('55-64', '55-64'),
+        ('65+', '65+')
+    ], validators=[DataRequired()])
+    subject_area = StringField('Subject Area', validators=[DataRequired()])
+
+    """State field populated from the states_and_lgas dictionary"""
+    # state = SelectField('State', choices=[(state, states_and_lgas[state]['name']) for state in states_and_lgas])
+    state = StringField('State', validators=[DataRequired()], render_kw={"placeholder": "Enter your State of residence"})
+    # local_government = SelectField('Local Government', choices=[('Select State First', 'Select State First')])
+    local_government = StringField('Local Government', validators=[DataRequired()], render_kw={"placeholder": "Enter your local government"})
+    
     submit = SubmitField('Register')
+
+class SearchForm(FlaskForm):
+    subject_area = StringField('Subject Area', validators=[DataRequired()])
+    submit = SubmitField('Search')

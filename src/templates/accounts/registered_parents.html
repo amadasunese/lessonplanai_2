@@ -11,6 +11,8 @@
             <th>Phone Number</th>
             <th>Child/Children Age Range</th>
             <th>Subject Area</th>
+            <th>Location - State</th>
+            <th>Location</th>
             <th>Actions</th>
         </tr>
         {% for parent in parents %}
@@ -20,8 +22,11 @@
                 <td>{{ parent.phone_number }}</td>
                 <td>{{ parent.age_range }}</td>
                 <td>{{ parent.subject_area }}</td>
+                <td>{{ parent.state }}</td>
+                <td>{{ parent.local_government }}</td>
                 <td>
                     <a href="{{ url_for('core.delete_parent', parent_id=parent.id) }}">Remove</a>
+                    <a href="{{ url_for('core.edit_parent', parent_id=parent.id) }}" class="btn btn-info">Edit Information</a>
                 </td>
             </tr>
         {% else %}

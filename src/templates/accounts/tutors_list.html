@@ -1,53 +1,68 @@
 {% extends '_base.html' %}
 
 {% block content %}
-<button onclick="window.history.back();">Go Back</button>
-<br>
-    <h3>Registered Tutors</h3>
-    <table style="border-collapse: collapse;">
-        <tr>
-            <th style="border: 1px solid black;">Email</th>
-            <th style="border: 1px solid black;">First Name</th>
-            <th style="border: 1px solid black;">Last Name</th>
-            <th style="border: 1px solid black;">Phone Number</th>
-            <th style="border: 1px solid black;">Age</th>
-            <th style="border: 1px solid black;">Educational Qualification</th>
-            <th style="border: 1px solid black;">Subjects</th>
-            <th style="border: 1px solid black;">Teaching Mode</th>
-            <th style="border: 1px solid black;">Days Available</th>
-            <th style="border: 1px solid black;">Student Level</th>
-            <th style="border: 1px solid black;">Registration Fee Paid</th>
-            <th style="border: 1px solid black;">Photo</th>
-            <th style="border: 1px solid black;">Edit</th>
-            <th style="border: 1px solid black;">Actions</th>
-        </tr>
+<!-- Bootstrap CSS CDN (Make sure to include this in your _base.html if not already included) -->
 
-        {% for user in users %}
-            {% if user.tutor %}
+
+<div class="container mt-3">
+    <div class="text-right mb-2">
+        <button class="btn btn-primary" onclick="window.history.back();">Go Back</button>
+    </div>
+    <h3>Registered Tutors</h3>
+    <div class="table-responsive">
+        <table class="table">
+            <thead class="thead-dark">
                 <tr>
-                    <td style="border: 1px solid black;">{{ user.tutor.email }}</td>
-                    <td style="border: 1px solid black;">{{ user.tutor.first_name }}</td>
-                    <td style="border: 1px solid black;">{{ user.tutor.last_name }}</td>
-                    <td style="border: 1px solid black;">{{ user.tutor.phone_number }}</td>
-                    <td style="border: 1px solid black;">{{ user.tutor.age }}</td>
-                    <td style="border: 1px solid black;">{{ user.tutor.education_qualification }}</td>
-                    <td style="border: 1px solid black;">{{ user.tutor.subjects }}</td>
-                    <td style="border: 1px solid black;">{{ user.tutor.teaching_mode }}</td>
-                    <td style="border: 1px solid black;">{{ user.tutor.availability }}</td>
-                    <td style="border: 1px solid black;">{{ user.tutor.student_level }}</td>
-                    <td style="border: 1px solid black;">{{ user.tutor.fee_payments }}</td>
-                    <td style="border: 1px solid black;">
-                        <img src="{{ url_for('accounts.display_photo', tutor_id=user.tutor.id) }}" alt=""
-                             style="max-width: 100px; max-height: 100px;">
+                    <th>Email</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Phone Number</th>
+                    <th>Age</th>
+                    <th>Educational Qualification</th>
+                    <th>Subjects</th>
+                    <th>Teaching Mode</th>
+                    <th>Days Available</th>
+                    <th>Student Level</th>
+                    <th>Registration Fee Paid</th>
+                    <th>Photo</th>
+                    <th>Edit</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                {% if user.tutor %}
+                <tr>
+                    <td>{{ user.tutor.email }}</td>
+                    <td>{{ user.tutor.first_name }}</td>
+                    <td>{{ user.tutor.last_name }}</td>
+                    <td>{{ user.tutor.phone_number }}</td>
+                    <td>{{ user.tutor.age }}</td>
+                    <td>{{ user.tutor.education_qualification }}</td>
+                    <td>{{ user.tutor.subjects }}</td>
+                    <td>{{ user.tutor.teaching_mode }}</td>
+                    <td>{{ user.tutor.availability }}</td>
+                    <td>{{ user.tutor.student_level }}</td>
+                    <td>{{ user.tutor.fee_paid }}</td>
+                    <td>
+                        <img src="{{ url_for('accounts.display_photo', tutor_id=user.tutor.id) }}" alt="" class="img-fluid" style="max-width: 100px; max-height: 100px;">
                     </td>
-                    <td style="border: 1px solid black;">
-                        <a href="{{ url_for('core.edit_tutor', tutor_id=user.tutor.id) }}">Edit</a>
+                    <td>
+                        <a href="{{ url_for('core.edit_tutor', tutor_id=user.tutor.id) }}" class="btn btn-secondary btn-sm">Edit</a>
                     </td>
-                    <td style="border: 1px solid black;">
-                        <a href="{{ url_for('core.delete_tutor', tutor_id=user.tutor.id) }}">Remove</a>
+                    <td>
+                        <a href="{{ url_for('core.delete_tutor', tutor_id=user.tutor.id) }}" class="btn btn-danger btn-sm">Remove</a>
                     </td>
                 </tr>
-            {% endif %}
-        {% endfor %}
-    </table>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Optional JavaScript; choose one of the two! -->
+
+<!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+
 {% endblock %}

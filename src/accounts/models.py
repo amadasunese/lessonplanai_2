@@ -87,6 +87,7 @@ class Tutor(db.Model):
     student_level = db.Column(db.String(50))
     source = db.Column(db.String(50))
     confirmation_name = db.Column(db.String(100))
+    fee_paid = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     fee_payments = db.relationship('TutorFeePayment', back_populates='tutor')
     photo_data = db.Column(db.LargeBinary)
@@ -97,7 +98,7 @@ class Tutor(db.Model):
 
     def __init__(self, id, first_name, last_name, email, address, phone_number, age, education_qualification,
                  interest, subjects, past_experience, experience_years, experience_description, interest_join, 
-                 languages, availability, teaching_mode, student_level, source, confirmation_name, user_id, photo_data=None, photo_filename=None):
+                 languages, availability, teaching_mode, student_level, source, confirmation_name, fee_paid, user_id, photo_data=None, photo_filename=None):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -117,6 +118,7 @@ class Tutor(db.Model):
         self.student_level = student_level
         self.source = source
         self.confirmation_name = confirmation_name
+        self.fee_paid = fee_paid
         self.user_id = user_id
         self.photo_data = photo_data
         self.photo_filename = photo_filename
@@ -152,15 +154,19 @@ class Parent(db.Model):
     email = db.Column(db.String(120), nullable=False, unique=True)
     age_range = db.Column(db.String(20))
     subject_area = db.Column(db.String(100))
+    state = db.Column(db.String(100))
+    local_government = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('parent', lazy=True))
 
-    def __init__(self, full_name, phone_number, email, age_range, subject_area, user_id):
+    def __init__(self, full_name, phone_number, email, age_range, subject_area, state, local_government, user_id):
         self.full_name = full_name
         self.phone_number = phone_number
         self.email = email
         self.age_range = age_range
         self.subject_area = subject_area
+        self.state = state
+        self.local_government = local_government
         self.user_id = user_id
