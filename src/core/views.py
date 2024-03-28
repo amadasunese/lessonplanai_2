@@ -381,7 +381,7 @@ def payment_verification():
         
         tutor = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
         if tutor:
-            tutor.fee_payments = True
+            tutor.fee_paid = True
             db.session.commit()
             return redirect(url_for('core.dashboard'))
     return jsonify({'message': 'Payment verification failed'}), 400
@@ -483,20 +483,6 @@ def process_registration():
 def subscribed_tutors():
     tutor_fee_payments = TutorFeePayment.query.all()
     return render_template('accounts/subscribed_tutors.html', tutor_fee_payments=tutor_fee_payments)
-
-
-
-# with open('src/state_lga.json') as f:
-#     states_and_lgas = json.load(f)
-
-
-
-
-# @core_bp.route('/get-local-governments')
-# def get_local_governments():
-#     state_name = request.args.get('state')
-#     lgas = states_and_lgas.get(state_name, {}).get('locals', [])
-#     return jsonify([{"name": lga["name"], "id": lga["id"]} for lga in lgas])
 
 
 @core_bp.route('/register_parent', methods=['GET', 'POST'])
