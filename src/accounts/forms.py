@@ -123,8 +123,8 @@ class TutorFeePaymentForm(FlaskForm):
     payment_date = DateField('Payment Date', validators=[InputRequired()])
 
 
-with open('src/state_lga.json') as f:
-    states_and_lgas = json.load(f)
+# with open('src/state_lga.json') as f:
+#     states_and_lgas = json.load(f)
 
 class ParentRegistrationForm(FlaskForm):
     full_name = StringField('Full Name', validators=[DataRequired()])
