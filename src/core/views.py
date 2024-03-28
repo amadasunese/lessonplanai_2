@@ -20,7 +20,7 @@ from src.utils.plan import plans
 from flask import request, jsonify
 from datetime import datetime, timedelta
 import requests
-from src.accounts.forms import states_and_lgas
+# from src.accounts.forms import states_and_lgas
 import json
 from flask import send_file
 from src.utils.decorators import check_is_tutor_registered
