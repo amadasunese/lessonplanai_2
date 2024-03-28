@@ -1,0 +1,9 @@
+{% extends "_base.html" %} <!-- Replace with your actual base template name -->
+{% block content %}
+<div class="container mt-3">
+    <h2>Registration Fee Payment</h2>
+    <p>For your registration to be completed, you need to pay the registration fee.</p>
+    <!-- Link to the payment service page -->
+    <a href="{{ url_for('core.service_fee_payment') }}" class="btn btn-primary">Pay Registration Fee</a>
+</div>
+{% endblock %}

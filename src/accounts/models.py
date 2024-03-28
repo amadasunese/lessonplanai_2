@@ -98,7 +98,7 @@ class Tutor(db.Model):
 
     def __init__(self, id, first_name, last_name, email, address, phone_number, age, education_qualification,
                  interest, subjects, past_experience, experience_years, experience_description, interest_join, 
-                 languages, availability, teaching_mode, student_level, source, confirmation_name, fee_paid, user_id, photo_data=None, photo_filename=None):
+                 languages, availability, teaching_mode, student_level, source, confirmation_name, user_id, photo_data=None, photo_filename=None):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -118,7 +118,7 @@ class Tutor(db.Model):
         self.student_level = student_level
         self.source = source
         self.confirmation_name = confirmation_name
-        self.fee_paid = fee_paid
+        # self.fee_paid = fee_paid
         self.user_id = user_id
         self.photo_data = photo_data
         self.photo_filename = photo_filename

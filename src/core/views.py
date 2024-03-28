@@ -63,6 +63,13 @@ def tutor_exploration():
     return render_template('accounts/tutor_exploration.html')
 
 
+@core_bp.route('/pay_fee')
+@login_required
+def pay_fee():
+    return render_template('accounts/pay_fee.html')
+
+
+
 @core_bp.route('/about', methods=['GET', 'POST'])
 @login_required
 def about():
@@ -463,7 +470,7 @@ def process_registration():
         db.session.commit()
 
         flash('Registration successful!', 'success')
-        return render_template('core/tutor_fee_payment.html', fees=fees)
+        return render_template('accounts/pay_fee.html', fees=fees)
 
     except Exception as e:
         db.session.rollback()
