@@ -8,6 +8,7 @@
             <tr>
                 <th>Tutor Name</th>
                 <th>Amount Paid</th>
+                <th>Payment Confirmed?</th>
                 <th>Payment Date</th>
                 <th>Payment ID</th>
             </tr>
@@ -15,8 +16,15 @@
         <tbody>
             {% for payment in tutor_fee_payments %}
             <tr>
-                <td>{{ payment.tutor_id }}</td>
+                <!-- <td>{{ payment.tutor_id }}</td>
                 <td>{{ payment.amount }}</td>
+                <td>{{ payment.payment_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ payment.paystack_tutorfeepayment_id }}</td> -->
+
+                <td>{{ payment.tutor_id }}</td>
+                <!-- <td>{{ payment.tutor_id }}</td> -->
+                <td>{{ payment.amount }}</td>
+                <td>{{ payment.paid }}</td>
                 <td>{{ payment.payment_date.strftime('%Y-%m-%d') }}</td>
                 <td>{{ payment.paystack_tutorfeepayment_id }}</td>
                 

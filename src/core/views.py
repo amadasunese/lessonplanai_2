@@ -337,6 +337,7 @@ def tutor_fee_payment():
 
     fee_payment_instance = TutorFeePayment(
         amount=amount,
+        paid=False,
         payment_date=datetime.utcnow(),
         tutor_id=current_user.id,
         paystack_tutorfeepayment_id=response.get('data', {}).get('reference')
@@ -449,8 +450,8 @@ def payment_verification():
 
     subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
     print('this is subscription id', subscription)
-    tutor = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
-    print('this is subscription id', tutor)
+    tutorfeepayment = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
+    print('this is tutor id', tutorfeepayment)
     
     if status == 'success':
         if subscription:
@@ -458,8 +459,8 @@ def payment_verification():
             db.session.commit()
             return redirect(url_for('core.dashboard'))
         
-        elif tutor:
-            tutor.fee_paid = True
+        elif tutorfeepayment:
+            tutorfeepayment.paid = True
             db.session.commit()
             return redirect(url_for('core.dashboard'))
         

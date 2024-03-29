@@ -2,7 +2,7 @@ from functools import wraps
 
 from flask import flash, redirect, url_for
 from flask_login import current_user
-from src.accounts.models import Parent, Tutor
+from src.accounts.models import Parent, Tutor, TutorFeePayment
 from datetime import datetime
 
 
@@ -84,10 +84,10 @@ def is_tutor(user_id):
 #     tutor = Tutor.query.filter_by(user_id=user_id).first()
 #     return tutor is not None
 
-def has_paid_fee(user_id):
+def has_paid_fee(tutor_id):
     # Query the database to check if the fee_paid field for the tutor is True
-    tutor = Tutor.query.filter_by(user_id=user_id).first()
-    return tutor and tutor.fee_paid
+    tutorfeepayment = TutorFeePayment.query.filter_by(tutor_id=tutor_id).first()
+    return tutorfeepayment and tutorfeepayment.paid
 
 def check_is_tutor_registered(func):
     @wraps(func)
