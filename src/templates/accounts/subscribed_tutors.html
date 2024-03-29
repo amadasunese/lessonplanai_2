@@ -17,15 +17,9 @@
         <tbody>
             {% for payment in tutor_fee_payments %}
             <tr>
-                <!-- <td>{{ payment.tutor_id }}</td>
-                <td>{{ payment.amount }}</td>
-                <td>{{ payment.payment_date.strftime('%Y-%m-%d') }}</td>
-                <td>{{ payment.paystack_tutorfeepayment_id }}</td> -->
-
                 <td>{{ payment.tutor_id }}</td>
-                <!-- <td>{{ payment.tutor_id }}</td> -->
                 <td>{{ payment.amount }}</td>
-                <td>{{ payment.paid }}</td>
+                <td>{{ 'Yes' if payment.paid else 'No' }}</td>
                 <td>{{ payment.payment_date.strftime('%Y-%m-%d') }}</td>
                 <td>{{ payment.paystack_tutorfeepayment_id }}</td>
                 <td>
