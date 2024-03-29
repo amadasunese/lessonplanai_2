@@ -11,6 +11,7 @@
                 <th>Payment Confirmed?</th>
                 <th>Payment Date</th>
                 <th>Payment ID</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -27,6 +28,9 @@
                 <td>{{ payment.paid }}</td>
                 <td>{{ payment.payment_date.strftime('%Y-%m-%d') }}</td>
                 <td>{{ payment.paystack_tutorfeepayment_id }}</td>
+                <td>
+                    <a href="{{ url_for('core.delete_tutor_fee_payment', payment_id=payment.id) }}" class="btn btn-danger btn-sm">Remove</a>
+                </td>
                 
             </tr>
             {% endfor %}

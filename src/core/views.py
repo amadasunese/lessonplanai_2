@@ -718,6 +718,14 @@ def delete_subscribed_user(subscription_id):
         flash('Subscription not found', 'error')
     return redirect(url_for('core.subscribed_users'))
 
+@core_bp.route('/delete-tutor-fee-payment/<int:payment_id>', methods=['GET', 'POST'])
+def delete_tutor_fee_payment(payment_id):
+    payment_to_delete = TutorFeePayment.query.get_or_404(payment_id)
+    db.session.delete(payment_to_delete)
+    db.session.commit()
+    flash('Payment deleted successfully.', 'success')
+    return redirect(url_for('core.subscribed_tutors'))
+
 
 @core_bp.route('/search_parent', methods=['GET', 'POST'])
 @check_is_tutor_registered
