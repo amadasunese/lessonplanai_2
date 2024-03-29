@@ -438,16 +438,15 @@ def service_fee_payment():
 
 @core_bp.route('/payment_verification', methods=['GET', 'POST'])
 def payment_verification():
-    # This assumes that 'paramz' is relevant for both GET and POST requests.
-    # If it's only relevant for POST, move this inside the POST check block below.
-    paramz = request.args.get('trxref', None)
-    
     # Only proceed with verification for POST requests
     if request.method == 'POST':
         data = request.json
         if data is None:
             return jsonify({'message': 'Request must be JSON with Content-Type application/json'}), 400
         
+        paramz = request.args.get('trxref', None)
+    
+    #
         print(paramz)  # Consider changing to logging for production
 
         details = Transaction.verify(reference=paramz)
