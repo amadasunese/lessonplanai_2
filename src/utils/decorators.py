@@ -27,17 +27,29 @@ def check_is_confirmed(func):
     return decorated_function
 
 
+# def check_is_subscribed(func):
+#     @wraps(func)
+#     def decorated_function(*args, **kwargs):
+#         subscription = getattr(current_user, 'subscription', None)
+#         if subscription is None or \
+#            subscription.end_date < datetime.utcnow() or \
+#            subscription.paid != 'yes':
+#             flash("Please subscribe to use this service", "warning")
+#             return redirect(url_for("core.subscribe"))
+#         return func(*args, **kwargs)
+#     return decorated_function
+
+
 def check_is_subscribed(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
-        subscription = getattr(current_user, 'subscription', None)
-        if subscription is None or \
-           subscription.end_date < datetime.utcnow() or \
-           subscription.paid != 'yes':
+        if not current_user.subscription or current_user.subscription.end_date < datetime.utcnow():
             flash("Please subscribe to use this service", "warning")
             return redirect(url_for("core.subscribe"))
         return func(*args, **kwargs)
+
     return decorated_function
+
 
 def is_parent(user_id):
     # This function checks if a parent with the given user_id exists
