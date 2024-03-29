@@ -416,6 +416,7 @@ def payment_verification():
         
         # If no subscription is found, look for a tutor fee payment with the matching ID
         tutor = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
+        print('this is tutor fee payment id', tutor)
         if tutor:
             # If a tutor fee payment is found, mark it as paid and commit the changes
             tutor.fee_paid = True
