@@ -188,7 +188,7 @@ def delete_tutor(tutor_id):
         flash('Tutor successfully removed', 'success')
     else:
         flash('Tutor not found', 'error')
-    return redirect(url_for('core.manage_users')) 
+    return redirect(url_for('core.registered_tutors')) 
 
 
 @core_bp.route('/delete_parent/<int:parent_id>')

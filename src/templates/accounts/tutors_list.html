@@ -43,7 +43,7 @@
                     <td>{{ user.tutor.teaching_mode }}</td>
                     <td>{{ user.tutor.availability }}</td>
                     <td>{{ user.tutor.student_level }}</td>
-                    <td>{{ 'Yes' if user.tutor.fee_paid else 'No' }}</td>
+                    <!-- <td>{{ 'Yes' if user.tutor.fee_paid else 'No' }}</td> -->
                     <td>
                         <img src="{{ url_for('accounts.display_photo', tutor_id=user.tutor.id) }}" alt="" class="img-fluid" style="max-width: 100px; max-height: 100px;">
                     </td>
