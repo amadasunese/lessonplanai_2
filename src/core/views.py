@@ -313,7 +313,7 @@ def edit_parent(parent_id):
 
 # Plan details
 plans = {
-    'starter': {'amount': 20000, 'duration': 1, 'usage_limit': 2},
+    'starter': {'amount': 2000, 'duration': 1, 'usage_limit': 2},
     'basic': {'amount': 5000, 'duration': 5, 'usage_limit': 10},
     'premium': {'amount': 10000, 'duration': 15, 'usage_limit': 20}
 }
@@ -326,7 +326,7 @@ def subscription(plan_name):
     if not plan_details:
         return "Invalid plan selected", 404
 
-    amount = plan_details['amount']
+    amount = plan_details['amount'] * 100
     first_name = current_user.first_name
     last_name = current_user.last_name
     email = current_user.email
