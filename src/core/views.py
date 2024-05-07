@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, flash, url_for, request
+from flask import Blueprint, render_template, redirect, flash, url_for, request, session
 from flask_login import login_required
 from src.utils.decorators import check_is_confirmed, check_is_subscribed, check_is_registered
 from src.accounts.forms import LessonPlanForm, ParentRegistrationForm, SearchForm
@@ -150,15 +150,49 @@ def admin_dashboard():
     return render_template('core/admin_dashboard.html')
 
 
+# @core_bp.route('/dashboard')
+# @login_required
+# @check_is_confirmed
+# def dashboard():
+#     """
+#     Get the user's subscription information
+#     """
+#     subscription = Subscription.query.filter_by(user_id=current_user.id).first()
+#     tutor = Tutor.query.all() #filter_by(tutor_id=tutor.id).first()
+#     tutorfeepayment = TutorFeePayment.query.all()
+#     parent = Parent.query.all()
+#     return render_template('accounts/dashboard.html', subscription=subscription,
+#                            tutor=tutor, tutorfeepayment=tutorfeepayment,
+#                            parent=parent, today=datetime.now())
+
 @core_bp.route('/dashboard')
-@login_required
-@check_is_confirmed
 def dashboard():
-    """
-    Get the user's subscription information
-    """
+    # Assuming you have a way to get the current user's id, e.g., from session
+    user_id = session.get('user_id')
+
+    # Fetch subscription details
+    # subscription = Subscription.query.filter_by(user_id=user_id).first()
     subscription = Subscription.query.filter_by(user_id=current_user.id).first()
-    return render_template('accounts/dashboard.html', subscription=subscription, today=datetime.now())
+
+    # Check if the user is registered as a tutor or a parent
+    is_tutor = Tutor.query.filter_by(user_id=current_user.id).first() is not None
+    is_parent = Parent.query.filter_by(user_id=current_user.id).first() is not None
+
+    # Check if tutor fee is paid if the user is a tutor
+    # tutor_fee_paid = False
+    # if is_tutor:
+    #     tutor_fee_payment = TutorFeePayment.query.filter_by(paid=True).first()
+    #     tutor_fee_paid = tutor_fee_payment is not None
+
+    # current_tutor = Tutor.query.filter_by(user_id=user_id).first()  # Assuming `user_id` is how you link a user to a tutor
+    # is_tutor = current_tutor is not None
+
+    tutor_fee_paid = False
+    if is_tutor:
+        tutor_fee_payment = TutorFeePayment.query.filter_by(paid=True).order_by(TutorFeePayment.payment_date.desc()).first()
+        tutor_fee_paid = tutor_fee_payment is not None
+
+    return render_template('accounts/dashboard.html', subscription=subscription, is_tutor=is_tutor, is_parent=is_parent, tutor_fee_paid=tutor_fee_paid, today=datetime.utcnow())
 
 
 #################################

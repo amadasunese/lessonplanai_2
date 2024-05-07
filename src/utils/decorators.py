@@ -2,7 +2,7 @@ from functools import wraps
 
 from flask import flash, redirect, url_for
 from flask_login import current_user
-from src.accounts.models import Parent, Tutor, TutorFeePayment
+from src.accounts.models import Parent, Tutor, TutorFeePayment, Subscription
 from datetime import datetime
 
 
@@ -43,9 +43,21 @@ def check_is_confirmed(func):
 def check_is_subscribed(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
-        if not current_user.subscription or current_user.subscription.end_date < datetime.utcnow():
-            flash("Please subscribe to use this service", "warning")
-            return redirect(url_for("core.subscribe"))
+        # Fetch all active subscriptions for the user
+        active_subscriptions = Subscription.query.filter(
+            Subscription.user_id == current_user.id,
+            Subscription.paid == True,
+            Subscription.end_date >= datetime.utcnow()
+        ).all()
+
+        if not active_subscriptions:
+            flash('You must have an active subscription to access this page. Please subscribe to a plan.', 'warning')
+            return redirect(url_for('core.subscribe'))
+        
+
+        # if not current_user.subscription or current_user.subscription.end_date < datetime.utcnow():
+        #     flash("Please subscribe to use this service", "warning")
+        #     return redirect(url_for("core.subscribe"))
         return func(*args, **kwargs)
 
     return decorated_function

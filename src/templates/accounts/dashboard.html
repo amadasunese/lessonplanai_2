@@ -18,45 +18,65 @@
       <h3 class="display-6 mb-4 text-center">Welcome, {{ current_user.first_name }} {{ current_user.last_name }}!</h3>
       <p class="text-center">{{ current_user.email }}</p>
 
-      <!-- Subscription Information -->
-      <div class="subscription-info mt-5 p-4 rounded-lg shadow">
-        <h3 class="text-center mb-4">Subscription Information</h3>
-        {% if subscription %}
-        <div class="card">
-          <div class="card-body">
-            <p class="card-text"><strong>Plan:</strong> {{ subscription.plan }}</p>
-            <p class="card-text"><strong>Amount:</strong> {{ subscription.amount }}</p>
-            <p class="card-text"><strong>Date Subscribed:</strong> {{ subscription.start_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-            <p class="card-text"><strong>Expiring Date:</strong> {{ subscription.end_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-            <p class="card-text"><strong>Remaining Usages:</strong> 
-              {% if subscription.end_date < today %} 
-                  Expired
-              {% else %}
-                  {{ subscription.remaining_usages }}
-              {% endif %}
-          </p>
-            {% if subscription.paid %}
-            <p class="card-text text-success"><strong>Status:</strong> Subscription Successful</p>
-            {% else %}
-            <p class="card-text text-warning"><strong>Status:</strong> Awaiting Payment</p>
-            {% endif %}
-            <!-- More subscription details here -->
-          </div>
+      <div class="row">
+        <!-- Subscription Information Column -->
+        <div class="col-lg-4 mb-4">
+            <div class="subscription-info p-4 rounded-lg shadow">
+                <h3 class="text-center mb-4">Subscription Information</h3>
+                {% if subscription %}
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text"><strong>Plan:</strong> {{ subscription.plan }}</p>
+                        <p class="card-text"><strong>Amount:</strong> {{ subscription.amount }}</p>
+                        <p class="card-text"><strong>Date Subscribed:</strong> {{ subscription.start_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        <p class="card-text"><strong>Expiring Date:</strong> {{ subscription.end_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        <p class="card-text"><strong>Status:</strong>
+                          {% if subscription.paid %}
+                          <span class="text-success">Subscription Successful</span>
+                          {% else %}
+                          <span class="text-warning">Awaiting Payment</span>
+                          {% endif %}
+                        </p>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-center text-muted">No active subscription. Click on <strong>Subscribe to a Plan</strong> to continue.</p>
+                {% endif %}
+            </div>
         </div>
-        {% else %}
-        <p class="text-center text-muted">No active subscription. Click on <strong>Subscribe to a Plan</strong> to continue.</p>
-        {% endif %}
-      </div>
 
-      <!-- Flash Messages -->
-      {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-      <div class="alert alert-{{ messages[0][1] }} mt-3">
-        {{ messages[0][0] }}
-      </div>
-      {% endif %}
-      {% endwith %}
+        <!-- Tutor and Parent Status Column, dynamically displayed if applicable -->
+        {% if is_tutor or is_parent %}
+        <div class="col-lg-4 mb-4">
+            {% if is_tutor %}
+            <div class="service-info p-4 rounded-lg shadow">
+                <h4 class="text-center mb-3">Tutor Services</h4>
+                <p>You are registered as a tutor.</p>
+            </div>
+            {% endif %}
+
+            {% if is_parent %}
+            <div class="service-info p-4 rounded-lg shadow">
+                <h4 class="text-center mb-3">Parent Services</h4>
+                <p>You are registered as a parent.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Tutor Fee Status Column, displayed if the user is a tutor -->
+        {% if is_tutor %}
+        <div class="col-lg-4 mb-4">
+            <div class="service-info p-4 rounded-lg shadow">
+                <h4 class="text-center mb-3">Tutor Fee Status</h4>
+                {% if tutorfeepayment %}
+                <p class="text-success">Fee Paid</p>
+                {% else %}
+                <p class="text-warning">Fee Pending</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
     </div>
-  </div>
 </div>
 {% endblock %}
