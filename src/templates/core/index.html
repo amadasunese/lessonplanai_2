@@ -6,103 +6,54 @@
 <div class="dark-blue-background">
     <h1>Transform Your Teaching with AI-Powered Lesson Planning</h1>
 </div>
-    <!-- Image Section -->
-    <div class="image-container">
-        <img src="{{ url_for('static', filename='images/backgro.jpeg') }}" alt="Cover Image" class="full-width-image">
-    </div>
+<div class="image-container">
+    <img src="{{ url_for('static', filename='images/backgro.jpeg') }}" alt="Cover Image">
 </div>
 
-
-
 <div class="container-fluid">
-    
-    <!-- Top Row for Sidebar and Main Content -->
     <div class="row">
-        <!-- Left Sidebar for Widgets -->
         <div class="col-lg-2">
-            <!-- Widgets here -->
             <div class="sidebar-widget">
                 <h4>Follow Us</h4>
-                <!-- Social Media Links Widget -->
                 <ul class="social-media-links list-inline">
                     <li class="list-inline-item"><a href="https://twitter.com/amadasunese" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a></li>
                     <li class="list-inline-item"><a href="https://web.facebook.com/amadasun.ese" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
                     <li class="list-inline-item"><a href="https://www.linkedin.com/in/amadasun-ese/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a></li>
-                    <!-- More links as needed -->
                 </ul>
-            <hr>
+                <hr>
                 <h4>Need a Tutor?</h4>
-                <p>
-                    
-                We connects you with qualified tutors who can provide personalized support.
-                <div>
-                    <a href="{{ url_for('core.hire_tutor') }}" class="cta-generate">Click here to begin</a>
-                </div>
-                </p>
-                <img src="" />
+                <p>We connect you with qualified tutors who can provide personalized support.</p>
+                <a href="{{ url_for('core.hire_tutor') }}" class="cta-generate">Click here to begin</a>
             </div>
-            <div class="sidebar-widget">
-                <!-- Placeholder for Google AdSense Widget -->
-                <div class="adsense-widget">
-                    <!-- Include your Google AdSense script here -->
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                    <!-- AdSense ad unit code -->
-                </div>
-            </div>
-            <!-- Additional widgets as needed -->
         </div>
-
-        <!-- Main Content Area -->
         <div class="col-lg-7">
             <div class="homepage-content">
                 <p class="lead">
                     Embrace the future of education with our innovative AI-powered Lesson Plan Writer, crafted for educators who aspire to bring creativity and precision to their classrooms.
                 </p>
-
-                <!-- Info Section with List Group -->
                 <div class="info-section mb-4">
-                    <h3 class="mb-3">Why Choose Our AI Lesson Plan Writer?</h3>
-                    <p>
-                        Leverage the capabilities of our advanced AI models to generate rich and contextually relevant lesson content tailored to various subjects and grade levels. Easily align your lesson plans with national or regional curriculum standards to ensure your teaching is in sync with educational guidelines.
-                    </p>
-
-                    <!-- Testimonials Section -->
+                    <h3>Why Choose Our AI Lesson Plan Writer?</h3>
+                    <p>Leverage the capabilities of our advanced AI models to generate rich and contextually relevant lesson content tailored to various subjects and grade levels.</p>
+                    <p> Our AI-powered tools are designed to simplify and enhance the lesson planning process, allowing educators to customize materials that meet the unique needs of their classrooms.</p>
+                    <p>Embrace the future of education with our AI Lesson Plan Writer and transform how you prepare for your classes, saving time and enriching your teaching experience.</p>
                 </div>
-
+                
             </div>
         </div>
-
-        <!-- Right Sidebar for Widgets or Ads -->
         <div class="col-lg-3">
             <div class="sidebar-widget">
-                <!-- This could be another Google AdSense spot or a custom widget -->
-                <div class="link">
-                    <h3>Become a Tutor</h3>
-                    <p>
-                        Unlock the potential to make a difference in students' lives by becoming a tutor with our platform. Share your knowledge, inspire others, and earn while doing it!
-                    </p>
-                </div>
-            
-                <div class="cta-buttons">
-                    <a href="{{ url_for('core.online_tutor') }}" class="cta-signup">Click here to begin | </a>
-                </div>
-               
-                
-                <img src="" />
-                <div class="adsense-widget">
-                    <!-- Google AdSense code or widget content goes here -->
-                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                    <!-- AdSense ad unit code -->
-                </div>
+                <h3>Become a Tutor</h3>
+                <p>Unlock the potential to make a difference in students' lives by becoming a tutor with our platform.</p> 
+
+                <p>Share your knowledge, inspire others, and earn while doing it!</p> 
+
+                <p>Start your journey with us today and turn your passion for teaching into a rewarding career.</p>
+                <a href="{{ url_for('core.online_tutor') }}" class="cta-signup">Click here to begin</a>
             </div>
-            <!-- Additional widgets as needed -->
         </div>
     </div>
-
-    <!-- Bottom Widgets Area -->
-    <!-- Make sure to close the previous -->
     <div class="dark-blue-background2">
-        <h2>Ready? <a href="{{ url_for('accounts.register') }}" class="cta-signup">Get Started Here </a>
+        <h2>Ready? <a href="{{ url_for('accounts.register') }}" class="cta-signup">Get Started Here</a></h2>
     </div>
 
 <!-- Testimonials Section -->

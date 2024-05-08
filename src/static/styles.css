@@ -515,3 +515,60 @@ th, td {
 
 
 
+.dark-blue-background {
+  background-color: #2c3e50;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+.image-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.container-fluid {
+  padding: 20px;
+}
+.sidebar-widget {
+  background: #ffffff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.social-media-links a {
+  color: #2980b9;
+  margin-right: 10px;
+}
+.cta-generate, .cta-signup {
+  display: inline-block;
+  background-color: #3498db;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  margin-top: 10px;
+}
+.cta-signup:hover, .cta-generate:hover {
+  background-color: #2980b9;
+}
+.lead {
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+hr {
+  border: none;
+  height: 1px;
+  background-color: #ccc;
+  margin: 10px 0;
+}
+.adsense-widget script {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+.info-section {
+  background: #ecf0f1;
+  padding: 15px;
+  border-radius: 5px;
+}
