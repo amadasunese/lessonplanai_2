@@ -362,7 +362,7 @@ fees = {
 @core_bp.route('/tutor_fee_payment', methods=['GET', 'POST'])
 @login_required
 def tutor_fee_payment():
-    amount = 10000
+    amount = 10000 * 100
     email = current_user.email
     tutor_id = current_user.id
 
@@ -390,84 +390,6 @@ def tutor_fee_payment():
 def service_fee_payment():
     return render_template('core/tutor_fee_payment.html', fees=fees)
 
-
-# @core_bp.route('/payment_verification', methods=['GET', 'POST'])
-# def payment_verification():
-#     if request.method == 'POST':
-#         data = request.json
-#         if data is None:
-#             return jsonify({'message': 'Request must be JSON with Content-Type application/json'}), 400
-
-#     paramz = request.args.get('trxref', None)
-#     print(paramz)
-
-#     details = Transaction.verify(reference=paramz)
-#     print(details)
-
-#     status = details['data']['status']
-#     print(status)
-
-#     if status == 'success':
-#         subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
-#         if subscription:
-#             subscription.paid = True
-#             db.session.commit()
-#             return redirect(url_for('core.dashboard'))
-        
-#         tutor = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
-#         if tutor:
-#             tutor.fee_paid = True
-#             db.session.commit()
-#             return redirect(url_for('core.dashboard'))
-#     return jsonify({'message': 'Payment verification failed'}), 400
-
-
-# @core_bp.route('/payment_verification', methods=['GET', 'POST'])
-# def payment_verification():
-#     if request.method == 'POST':
-#         data = request.json
-#         if data is None:
-#             return jsonify({'message': 'Request must be JSON with Content-Type application/json'}), 400
-
-#     paramz = request.args.get('trxref', None)
-#     print(paramz)
-
-#     details = Transaction.verify(reference=paramz)
-#     print(details)
-
-#     status = details['data']['status']
-#     print(status)
-
-#     if status == 'success':
-#         # Attempt to find a subscription matching the paystack_subscription_id
-#         subscription = Subscription.query.filter_by(paystack_subscription_id=paramz).first()
-        
-#         if subscription:
-#             # If a subscription is found, mark it as paid and commit the changes
-#             subscription.paid = True
-#             db.session.commit()
-#             # Redirect to the dashboard after successful processing
-#             return redirect(url_for('core.dashboard'))
-#             # If no subscription is found, look for a tutor fee payment with the matching ID
-#         tutor = TutorFeePayment.query.filter_by(paystack_tutorfeepayment_id=paramz).first()
-#         print('this is tutor fee payment id', tutor)
-#         if tutor:
-#             # If a tutor fee payment is found, mark it as paid and commit the changes
-#             tutor.fee_paid = True
-#             db.session.commit()
-#             # Redirect to the dashboard after successful processing
-#             return redirect(url_for('core.dashboard'))
-        
-#         # If neither subscription nor tutor fee payment is found, log or print an error message
-#         # Consider adding logging here for debugging
-#         print(f"No subscription or tutor fee payment found for ID: {paramz}")
-        
-#     else:
-#         # If the status is not 'success', consider logging the status for debugging
-#         print(f"Payment verification failed with status: {status}")
-    
-#     # Return a failure response if the status is not 'success' or if no matching record is found
-#     return jsonify({'message': 'Payment verification failed'}), 400
 
 
 @core_bp.route('/payment_verification', methods=['GET', 'POST'])

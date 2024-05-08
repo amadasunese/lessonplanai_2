@@ -572,3 +572,49 @@ hr {
   padding: 15px;
   border-radius: 5px;
 }
+
+
+/* subscribe page */
+
+body {
+  background-color: #f4f4f4;
+  color: #333;
+  font-family: 'Arial', sans-serif;
+}
+
+.containersub {
+  padding: 20px;
+}
+
+.alert-dismissible .close {
+  padding: 0.75rem;
+  margin: -1rem -1rem -1rem auto;
+}
+
+.card {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
